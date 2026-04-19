@@ -37,7 +37,7 @@ Antes de clonar e instalar la app, asegúrate de tener instalado:
 1. **Clonar el repositorio:**
    ```bash
    git clone https://github.com/ftrubiolo/proyecto-vet-pp.git
-````
+   ```
 
 2.  **Entrar al directorio del proyecto:**
 
