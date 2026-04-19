@@ -65,7 +65,7 @@ Antes de clonar e instalar la app, asegúrate de tener instalado:
 ## 👥 Equipo de Trabajo
 
   - **Rubiolo Facundo** - [@ftrubiolo](https://github.com/ftrubiolo)
-  - **Tomás Taborda** - [@]()
+  - **Tomás Taborda** - [@tabordatomas](https://github.com/tabordatomas)
   - **Valentin Hinojosa** - [@]()
   - **Ismael Botella** - [@]()
 
