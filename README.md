@@ -1,4 +1,4 @@
-# [Nombre de la App o Nombre del Repositorio] 🐾
+# VetApp 🐾
 
 Este proyecto es una aplicación de **Control Veterinario para Mascotas**, desarrollada como parte de la materia **Prácticas Profesionalizantes I** del Instituto Superior Villa del Rosario.
 
