@@ -66,8 +66,8 @@ Antes de clonar e instalar la app, asegúrate de tener instalado:
 
   - **Rubiolo Facundo** - [@ftrubiolo](https://github.com/ftrubiolo)
   - **Tomás Taborda** - [@tabordatomas](https://github.com/tabordatomas)
-  - **Valentin Hinojosa** - [@]()
-  - **Ismael Botella** - [@]()
+  - **Valentin Hinojosa** - [@valexxarg777](https://github.com/valexxarg777)
+  - **Ismael Botella** - [@ismaelbotella997](https://github.com/ismaelbotella997)
 
 -----
 
