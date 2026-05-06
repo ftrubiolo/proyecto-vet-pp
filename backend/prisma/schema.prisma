@@ -12,9 +12,110 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  name      String?
-  createdAt DateTime @default(now())
+model Usuarios {
+  id           Int            @id @default(autoincrement())
+  email        String         @unique
+  passwordHash String
+  rol          Int
+  createdAt    DateTime       @default(now())
+  Veterinarios Veterinarios[]
+  Propietarios Propietarios[]
+}
+
+model Veterinarios {
+  id              Int    @id @default(autoincrement())
+  usuarioId       Int
+  nombre          String
+  apellido        String
+  telefono        String
+  numeroMatricula String
+
+  usuarios Usuarios  @relation(fields: [usuarioId], references: [id])
+  Citas    Citas[]
+  Vacunas  Vacunas[]
+}
+
+model Propietarios {
+  id        Int    @id @default(autoincrement())
+  usuarioId Int
+  nombre    String
+  apellido  String
+  telefono  String
+  direccion String
+
+  usuarios Usuarios   @relation(fields: [usuarioId], references: [id])
+  Mascotas Mascotas[]
+}
+
+model Mascotas {
+  id              Int      @id @default(autoincrement())
+  propietarioId   Int
+  nombre          String
+  fechaNacimiento DateTime
+  sexo            String
+  especie         String
+  raza            String
+  createdAt       DateTime @default(now())
+
+  propietarios Propietarios @relation(fields: [propietarioId], references: [id])
+
+  Citas   Citas[]
+  Vacunas Vacunas[]
+}
+
+model Citas {
+  id            Int      @id @default(autoincrement())
+  mascotaId     Int
+  veterinarioId Int
+  fecha         DateTime @default(now())
+  motivo        String
+  estadoId      Int
+
+  mascotas     Mascotas     @relation(fields: [mascotaId], references: [id])
+  veterinarios Veterinarios @relation(fields: [veterinarioId], references: [id])
+  estados      Estados      @relation(fields: [estadoId], references: [id])
+  Consultas    Consultas[]
+}
+
+model Estados {
+  id     Int    @id @default(autoincrement())
+  nombre String
+
+  Citas Citas[]
+}
+
+model Consultas {
+  id          Int    @id @default(autoincrement())
+  citaId      Int
+  diagnostico String
+  tratamiento String
+
+  citas        Citas          @relation(fields: [citaId], references: [id])
+  Tratamientos Tratamientos[]
+}
+
+model Tratamientos {
+  id                      Int      @id @default(autoincrement())
+  consultaId              Int
+  nombreMedicamento       String
+  dosis                   String
+  frecuencia              String
+  fechaInicio             DateTime
+  fechaFin                DateTime
+  indicacionesAdicionales String
+
+  consultas Consultas @relation(fields: [consultaId], references: [id])
+}
+
+model Vacunas {
+  id                     Int      @id @default(autoincrement())
+  mascotaId              Int
+  nombreVacuna           String
+  fechaAdministracion    DateTime
+  fechaProximaAplicacion DateTime
+  numeroLote             String
+  veterinarioId          Int
+
+  veterinarios Veterinarios @relation(fields: [veterinarioId], references: [id])
+  mascotas     Mascotas     @relation(fields: [mascotaId], references: [id])
 }
