@@ -8,10 +8,11 @@ router.post('/', async (req, res) => {
     // Handle potential typo 'fechaNacimento' from the request
     const rawFechaNacimiento = req.body.fechaNacimiento || req.body.fechaNacimento;
     const { nombre, raza, razaId, sexo, propietarioId } = req.body;
+    const edad = Date.now() - Date.parse(rawFechaNacimiento);
 
     try {
         const inputRazaId = razaId || raza;
-        
+
         // El frontend probablemente envía el usuarioId como propietarioId
         const propietario = await prisma.propietarios.findUnique({
             where: { usuarioId: parseInt(propietarioId, 10) }

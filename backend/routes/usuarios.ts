@@ -15,7 +15,7 @@ router.get('/', async (req, res) => {
 
     const formattedUsers = users.map(user => {
       const { passwordHash, Veterinarios, Propietarios, ...userData } = user;
-      
+
       if (user.rolId === 1 && Veterinarios.length > 0) {
         const vet = Veterinarios[0];
         return {
