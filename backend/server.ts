@@ -2,7 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { prisma } from './prismaClient';
-import usersRouter from './routes/users';
+import usuariosRouter from './routes/usuarios';
+import mascotasRouter from './routes/mascotas';
 
 const app = express();
 
@@ -16,7 +17,8 @@ app.get('/', (req, res) => {
 });
 
 // Use Routers
-app.use('/users', usersRouter);
+app.use('/usuarios', usuariosRouter);
+app.use('/mascotas', mascotasRouter);
 
 const PORT = process.env.PORT || 5000;
 
