@@ -34,31 +34,42 @@ Antes de clonar e instalar la app, asegúrate de tener instalado:
 
 ## 🔧 Instalación y Configuración
 
+El proyecto está dividido en dos directorios principales: **backend** y **frontend**. Debes configurar e iniciar ambos por separado.
+
 1. **Clonar el repositorio:**
    ```bash
    git clone https://github.com/ftrubiolo/proyecto-vet-pp.git
+   cd proyecto-vet-pp
    ```
 
-2.  **Entrar al directorio del proyecto:**
+2. **Configuración del Backend:**
+   Abre una terminal y dirígete a la carpeta del backend para instalar las dependencias:
+   ```bash
+   cd backend
+   npm install
+   ```
+   **Variables de entorno:** Crea un archivo `.env` dentro de la carpeta `backend` (puedes usar `.env.example` como guía si existe) y configura tu variable `DATABASE_URL`.
+   
+   **Base de datos:** Sincroniza tu esquema de base de datos y genera el cliente de Prisma:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+   **Iniciar backend:**
+   ```bash
+   npm run dev
+   ```
 
-    ```bash
-    cd proyecto-vet-pp
-    ```
-
-3.  **Instalar dependencias:**
-
-    ```bash
-    npm install
-    ```
-
-4.  **Configurar variables de entorno:**
-    Crea un archivo `.env` basado en `.env.example` y completa tus credenciales.
-
-5.  **Ejecutar el proyecto:**
-
-    ```bash
-    npm run dev
-    ```
+3. **Configuración del Frontend:**
+   Abre una **nueva terminal** (dejando el backend corriendo), dirígete a la carpeta del frontend e instala las dependencias:
+   ```bash
+   cd frontend
+   npm install
+   ```
+   **Iniciar frontend:**
+   ```bash
+   npm run dev
+   ```
 
 -----
 
