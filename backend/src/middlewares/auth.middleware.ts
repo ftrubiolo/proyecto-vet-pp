@@ -15,9 +15,9 @@ export interface AuthRequest extends Request {
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-/**
- * Middleware para verificar si el usuario tiene un token válido
- */
+//
+// Middleware para verificar si el usuario tiene un token válido
+//
 export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction): void => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -43,9 +43,9 @@ export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction)
     }
 };
 
-/**
- * Middleware para autorizar según el rol del usuario
- */
+//
+// Middleware para autorizar según el rol del usuario
+//
 export const checkRole = (rolesPermitidos: string[]) => {
     return (req: AuthRequest, res: Response, next: NextFunction): void => {
         // Validamos que exista req.user y que su rol esté en el array permitido
