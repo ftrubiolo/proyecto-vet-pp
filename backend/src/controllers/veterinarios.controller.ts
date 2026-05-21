@@ -18,10 +18,9 @@ export const obtenerPerfil = async (req: AuthRequest, res: Response): Promise<vo
         // 2. Opcional pero recomendado: Seguridad de acceso
         // Si el usuario logueado es un veterinario, verificamos que solo pueda ver su propio perfil
         // (A menos que sea un Admin o un Propietario buscando un veterinario)
-        if (req.user?.rol === 'Veterinario' && req.user.id !== vetId) {
-            // Nota: req.user.id es el ID del Usuario, tendrías que asegurarte de comparar
-            // contra el UsuarioId del veterinario, no el Id del veterinario directamente.
-            // Por simplicidad, este ejemplo asume que verificás permisos si es necesario.
+        if (req.user?.rol === 'Veterinario' && req.user.vetId !== vetId) {
+            res.status(403).json({ error: 'No tienes permiso para acceder a este perfil.' });
+            return;
         }
 
         // 3. Consultamos la base de datos aprovechando las relaciones

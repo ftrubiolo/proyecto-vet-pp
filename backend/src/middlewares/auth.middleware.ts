@@ -4,6 +4,8 @@ import jwt from 'jsonwebtoken';
 // 1. Definimos la forma de los datos que guardamos en el Token
 export interface TokenPayload {
     id: number;
+    vetId?: number;
+    proId?: number;
     email: string;
     rol: string; // 'Veterinario', 'Propietario', 'Admin'
 }

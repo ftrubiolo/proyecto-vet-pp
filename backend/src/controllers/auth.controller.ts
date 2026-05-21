@@ -73,6 +73,7 @@ export const registrarVeterinario = async (req: Request, res: Response): Promise
         const token = jwt.sign(
             {
                 id: nuevoUsuario.id,
+                vetId: nuevoUsuario.Veterinarios[0].id,
                 email: nuevoUsuario.email,
                 rol: nuevoUsuario.Rol.nombre
             },
@@ -158,6 +159,7 @@ export const registrarPropietario = async (req: Request, res: Response): Promise
         const token = jwt.sign(
             {
                 id: nuevoUsuario.id,
+                proId: nuevoUsuario.Propietarios[0].id,
                 email: nuevoUsuario.email,
                 rol: nuevoUsuario.Rol.nombre
             },
