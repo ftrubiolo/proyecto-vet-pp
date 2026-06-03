@@ -1,8 +1,7 @@
-import { pgTable, serial, varchar, text, timestamp, integer, boolean, decimal } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, integer, boolean, decimal, uuid, char } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
-// 1. Roles Table
-export const roles = pgTable('Roles', {
+export const roles = pgTable('roles', {
   id: serial('id').primaryKey(),
   nombre: varchar('nombre').notNull().unique(),
   descripcion: text('descripcion'),
@@ -12,73 +11,79 @@ export const rolesRelations = relations(roles, ({ many }) => ({
   usuarios: many(usuarios),
 }));
 
-// 2. Usuarios Table
-export const usuarios = pgTable('Usuarios', {
-  id: serial('id').primaryKey(),
+export const usuarios = pgTable('usuarios', {
+  id: uuid('id').primaryKey(),
   email: varchar('email').notNull().unique(),
-  passwordHash: varchar('passwordHash').notNull(),
-  rolId: integer('rolId').notNull().references(() => roles.id),
-  createdAt: timestamp('createdAt').defaultNow().notNull(),
+  password_hash: varchar('password_hash').notNull(),
+  rol_id: integer('rol_id').notNull().references(() => roles.id),
+  fecha_creacion: timestamp('fecha_creacion').defaultNow().notNull(),
 });
 
 export const usuariosRelations = relations(usuarios, ({ one, many }) => ({
-  rol: one(roles, { fields: [usuarios.rolId], references: [roles.id] }),
+  rol: one(roles, { fields: [usuarios.rol_id], references: [roles.id] }),
   veterinarios: many(veterinarios),
   propietarios: many(propietarios),
 }));
 
-// 3. Clinicas Table
-export const clinicas = pgTable('Clinicas', {
-  id: serial('id').primaryKey(),
-  nombreComercial: varchar('nombreComercial').notNull(),
-  direccion: varchar('direccion'),
+export const clinicas = pgTable('clinicas', {
+  id: uuid('id').primaryKey(),
+  nombre_comercial: varchar('nombre_comercial').notNull(),
+  direccion: text('direccion'),
   telefono: varchar('telefono'),
 });
 
 export const clinicasRelations = relations(clinicas, ({ many }) => ({
-  veterinarios: many(veterinarios),
+  veterinarios_clinicas: many(veterinarios_clinicas),
   citas: many(citas),
 }));
 
-// 4. Veterinarios Table
-export const veterinarios = pgTable('Veterinarios', {
-  id: serial('id').primaryKey(),
-  usuarioId: integer('usuarioId').notNull().unique().references(() => usuarios.id),
-  clinicaId: integer('clinicaId').notNull().references(() => clinicas.id),
+export const veterinarios = pgTable('veterinarios', {
+  id: uuid('id').primaryKey(),
+  usuario_id: uuid('usuario_id').notNull().unique().references(() => usuarios.id),
   nombre: varchar('nombre').notNull(),
   apellido: varchar('apellido').notNull(),
-  numeroMatricula: varchar('numeroMatricula').notNull().unique(),
+  foto_url: varchar('foto_url'),
+  numero_matricula: varchar('numero_matricula').notNull().unique(),
   telefono: varchar('telefono'),
-  fotoUrl: varchar('fotoUrl'),
 });
 
 export const veterinariosRelations = relations(veterinarios, ({ one, many }) => ({
-  usuario: one(usuarios, { fields: [veterinarios.usuarioId], references: [usuarios.id] }),
-  clinica: one(clinicas, { fields: [veterinarios.clinicaId], references: [clinicas.id] }),
+  veterinarios_clinicas: many(veterinarios_clinicas),
+  usuario: one(usuarios, { fields: [veterinarios.usuario_id], references: [usuarios.id] }),
   citas: many(citas),
-  consultas: many(consultas),
+  atenciones: many(atenciones),
   vacunas: many(vacunas),
 }));
 
-// 5. Propietarios Table
-export const propietarios = pgTable('Propietarios', {
-  id: serial('id').primaryKey(),
-  usuarioId: integer('usuarioId').notNull().unique().references(() => usuarios.id),
+export const veterinarios_clinicas = pgTable('veterinarios_clinicas', {
+  veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
+  clinica_id: uuid('clinica_id').references(() => clinicas.id),
+  estado_activo: boolean('estado_activo').default(true),
+})
+
+export const veterinariosClinicasRelations = relations(veterinarios_clinicas, ({ one }) => ({
+  veterinario: one(veterinarios, { fields: [veterinarios_clinicas.veterinario_id], references: [veterinarios.id] }),
+  clinica: one(clinicas, { fields: [veterinarios_clinicas.clinica_id], references: [clinicas.id] }),
+}));
+
+export const propietarios = pgTable('propietarios', {
+  id: uuid('id').primaryKey(),
+  usuario_id: uuid('usuario_id').notNull().unique().references(() => usuarios.id),
   nombre: varchar('nombre').notNull(),
   apellido: varchar('apellido').notNull(),
-  telefono: varchar('telefono'),
+  es_empresa: boolean('es_empresa').default(false).notNull(),
+  razon_social: varchar('razon_social'),
+  foto_url: varchar('foto_url'),
+  telefono: varchar('telefono').notNull(),
   direccion: varchar('direccion'),
-  razonSocial: varchar('razonSocial'),
-  fotoUrl: varchar('fotoUrl'),
 });
 
 export const propietariosRelations = relations(propietarios, ({ one, many }) => ({
-  usuario: one(usuarios, { fields: [propietarios.usuarioId], references: [usuarios.id] }),
-  mascotas: many(mascotas),
+  usuario_id: one(usuarios, { fields: [propietarios.usuario_id], references: [usuarios.id] }),
+  mascotas_propietarios: many(mascotas_propietarios),
 }));
 
-// 6. Especies Table
-export const especies = pgTable('Especies', {
+export const especies = pgTable('especies', {
   id: serial('id').primaryKey(),
   nombre: varchar('nombre').notNull().unique(),
 });
@@ -87,155 +92,214 @@ export const especiesRelations = relations(especies, ({ many }) => ({
   razas: many(razas),
 }));
 
-// 7. Razas Table
-export const razas = pgTable('Razas', {
+export const razas = pgTable('razas', {
   id: serial('id').primaryKey(),
-  especieId: integer('especieId').notNull().references(() => especies.id),
+  especie_id: integer('especie_id').notNull().references(() => especies.id),
   nombre: varchar('nombre').notNull(),
 });
 
 export const razasRelations = relations(razas, ({ one, many }) => ({
-  especie: one(especies, { fields: [razas.especieId], references: [especies.id] }),
+  especie: one(especies, { fields: [razas.especie_id], references: [especies.id] }),
   mascotas: many(mascotas),
 }));
 
-// 8. Mascotas Table
-export const mascotas = pgTable('Mascotas', {
-  id: serial('id').primaryKey(),
-  propietarioId: integer('propietarioId').notNull().references(() => propietarios.id),
-  razaId: integer('razaId').notNull().references(() => razas.id),
+export const mascotas = pgTable('mascotas', {
+  id: uuid('id').primaryKey(),
   nombre: varchar('nombre').notNull(),
-  fechaNacimiento: timestamp('fechaNacimiento').notNull(),
-  sexo: varchar('sexo').notNull(), // 'M' o 'H'
-  estaCastrado: boolean('estaCastrado').default(false).notNull(),
-  fotoUrl: varchar('fotoUrl'),
-  numeroChip: varchar('numeroChip'),
+  foto_url: varchar('foto_url'),
+  fecha_nacimiento: timestamp('fecha_nacimiento').notNull(),
+  raza_id: integer('raza_id').notNull().references(() => razas.id),
+  sexo: char('sexo', { length: 1 }).notNull(), // 'M' o 'H'
+  es_castrado: boolean('es_castrado').default(false).notNull(),
+  numero_microchip: varchar('numero_microchip'),
 });
 
 export const mascotasRelations = relations(mascotas, ({ one, many }) => ({
-  propietario: one(propietarios, { fields: [mascotas.propietarioId], references: [propietarios.id] }),
-  raza: one(razas, { fields: [mascotas.razaId], references: [razas.id] }),
+  raza: one(razas, { fields: [mascotas.raza_id], references: [razas.id] }),
+  mascotas_propietarios: many(mascotas_propietarios),
   citas: many(citas),
-  consultas: many(consultas),
+  atenciones: many(atenciones),
   vacunas: many(vacunas),
 }));
 
-// 9. Estados Table
-export const estados = pgTable('Estados', {
+export const mascotas_propietarios = pgTable('mascotas_propietarios', {
+  mascota_id: uuid('mascota_id').references(() => mascotas.id),
+  propietario_id: uuid('propietario_id').references(() => propietarios.id),
+  tipo_relacion_id: integer('tipo_relacion_id').references(() => tipos_relacion.id),
+  activo: boolean('activo').default(true).notNull(),
+  fecha_asociacion: timestamp('fecha_asociacion').defaultNow().notNull(),
+});
+
+export const mascotasPropietariosRelations = relations(mascotas_propietarios, ({ one }) => ({
+  mascota: one(mascotas, { fields: [mascotas_propietarios.mascota_id], references: [mascotas.id] }),
+  propietario: one(propietarios, { fields: [mascotas_propietarios.propietario_id], references: [propietarios.id] }),
+}));
+
+export const tipos_relacion = pgTable('tipos_relacion', {
+  id: serial('id').primaryKey(),
+  nombre: varchar('nombre').notNull().unique(),
+  descripcion: text('descripcion'),
+});
+
+export const tiposRelacionRelations = relations(tipos_relacion, ({ many }) => ({
+  mascotas_propietarios: many(mascotas_propietarios),
+}));
+
+export const clinicas_mascotas = pgTable('clinicas_mascotas', {
+  clinica_id: uuid('clinica_id').references(() => clinicas.id),
+  mascota_id: uuid('mascota_id').references(() => mascotas.id),
+  estado_paciente_id: integer('estado_paciente_id').references(() => estados_paciente.id),
+  fecha_admision: timestamp('fecha_admision').notNull(),
+});
+
+export const clinicasMascotasRelations = relations(clinicas_mascotas, ({ one }) => ({
+  clinica: one(clinicas, { fields: [clinicas_mascotas.clinica_id], references: [clinicas.id] }),
+  mascota: one(mascotas, { fields: [clinicas_mascotas.mascota_id], references: [mascotas.id] }),
+}));
+
+export const estados_paciente = pgTable('estados_paciente', {
   id: serial('id').primaryKey(),
   estado: varchar('estado').notNull().unique(),
   descripcion: text('descripcion'),
 });
 
-export const estadosRelations = relations(estados, ({ many }) => ({
+export const estadosPacienteRelations = relations(estados_paciente, ({ many }) => ({
+  clinicas_mascotas: many(clinicas_mascotas),
+}));
+
+export const estados_cita = pgTable('estados_cita', {
+  id: serial('id').primaryKey(),
+  estado: varchar('estado').notNull().unique(),
+  descripcion: text('descripcion'),
+});
+
+export const estadosCitaRelations = relations(estados_cita, ({ many }) => ({
   citas: many(citas),
 }));
 
-// 10. Motivos Table
-export const motivos = pgTable('Motivos', {
+export const motivos_cita = pgTable('motivos_cita', {
   id: serial('id').primaryKey(),
   motivo: varchar('motivo').notNull().unique(),
   descripcion: text('descripcion'),
 });
 
-export const motivosRelations = relations(motivos, ({ many }) => ({
+export const motivosCitaRelations = relations(motivos_cita, ({ many }) => ({
   citas: many(citas),
 }));
 
-// 11. Citas Table
-export const citas = pgTable('Citas', {
-  id: serial('id').primaryKey(),
-  mascotaId: integer('mascotaId').notNull().references(() => mascotas.id),
-  clinicaId: integer('clinicaId').notNull().references(() => clinicas.id),
-  veterinarioId: integer('veterinarioId').references(() => veterinarios.id),
-  estadoId: integer('estadoId').notNull().references(() => estados.id),
-  fechaHora: timestamp('fechaHora').notNull(),
-  motivoId: integer('motivoId').notNull().references(() => motivos.id),
+export const citas = pgTable('citas', {
+  id: uuid('id').primaryKey(),
+  mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
+  veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
+  clinica_id: uuid('clinica_id').notNull().references(() => clinicas.id),
+  fecha_hora: timestamp('fecha_hora').notNull(),
+  motivo_id: integer('motivo_id').notNull().references(() => motivos_cita.id),
+  estado_cita_id: integer('estado_cita_id').notNull().references(() => estados_cita.id),
 });
 
 export const citasRelations = relations(citas, ({ one, many }) => ({
-  mascota: one(mascotas, { fields: [citas.mascotaId], references: [mascotas.id] }),
-  clinica: one(clinicas, { fields: [citas.clinicaId], references: [clinicas.id] }),
-  veterinario: one(veterinarios, { fields: [citas.veterinarioId], references: [veterinarios.id] }),
-  estado: one(estados, { fields: [citas.estadoId], references: [estados.id] }),
-  motivo: one(motivos, { fields: [citas.motivoId], references: [motivos.id] }),
-  consultas: many(consultas),
+  mascota: one(mascotas, { fields: [citas.mascota_id], references: [mascotas.id] }),
+  clinica: one(clinicas, { fields: [citas.clinica_id], references: [clinicas.id] }),
+  veterinario: one(veterinarios, { fields: [citas.veterinario_id], references: [veterinarios.id] }),
+  estado_cita: one(estados_cita, { fields: [citas.estado_cita_id], references: [estados_cita.id] }),
+  motivo_cita: one(motivos_cita, { fields: [citas.motivo_id], references: [motivos_cita.id] }),
+  atenciones: many(atenciones),
 }));
 
-// 12. CatalogoDiagnosticos Table
-export const catalogoDiagnosticos = pgTable('CatalogoDiagnosticos', {
+export const diagnosticos_atencion = pgTable('diagnosticos_atencion', {
   id: serial('id').primaryKey(),
   nombre: varchar('nombre').notNull().unique(),
   categoria: varchar('categoria'),
 });
 
-export const catalogoDiagnosticosRelations = relations(catalogoDiagnosticos, ({ many }) => ({
-  consultas: many(consultas),
+export const diagnosticosAtencionRelations = relations(diagnosticos_atencion, ({ many }) => ({
+  atenciones_diagnosticos: many(atenciones_diagnosticos),
 }));
 
-// 13. Consultas Table
-export const consultas = pgTable('Consultas', {
-  id: serial('id').primaryKey(),
-  citaId: integer('citaId').unique().references(() => citas.id),
-  mascotaId: integer('mascotaId').notNull().references(() => mascotas.id),
-  veterinarioId: integer('veterinarioId').notNull().references(() => veterinarios.id),
-  diagnosticoId: integer('diagnosticoId').notNull().references(() => catalogoDiagnosticos.id),
-  fechaConsulta: timestamp('fechaConsulta').defaultNow().notNull(),
-  notasClinicas: text('notasClinicas'),
-  pesoMedido: decimal('pesoMedido', { precision: 5, scale: 2 }),
+export const atenciones = pgTable('atenciones', {
+  id: uuid('id').primaryKey(),
+  cita_id: uuid('cita_id').unique().references(() => citas.id),
+  mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
+  veterinario_id: uuid('veterinario_id').notNull().references(() => veterinarios.id),
+  clinica_id: uuid('clinica_id').notNull().references(() => clinicas.id),
+  notas_clinicas: text('notas_clinicas'),
+  peso_actual: decimal('peso_actual', { precision: 5, scale: 2 }),
+  fecha_atencion: timestamp('fecha_atencion').defaultNow().notNull(),
 });
 
-export const consultasRelations = relations(consultas, ({ one, many }) => ({
-  cita: one(citas, { fields: [consultas.citaId], references: [citas.id] }),
-  mascota: one(mascotas, { fields: [consultas.mascotaId], references: [mascotas.id] }),
-  veterinario: one(veterinarios, { fields: [consultas.veterinarioId], references: [veterinarios.id] }),
-  diagnostico: one(catalogoDiagnosticos, { fields: [consultas.diagnosticoId], references: [catalogoDiagnosticos.id] }),
+export const atencionesRelations = relations(atenciones, ({ one, many }) => ({
+  cita: one(citas, { fields: [atenciones.cita_id], references: [citas.id] }),
+  mascota: one(mascotas, { fields: [atenciones.mascota_id], references: [mascotas.id] }),
+  veterinario: one(veterinarios, { fields: [atenciones.veterinario_id], references: [veterinarios.id] }),
+  clinica: one(clinicas, { fields: [atenciones.clinica_id], references: [clinicas.id] }),
+  atenciones_diagnosticos: many(atenciones_diagnosticos),
   tratamientos: many(tratamientos),
 }));
 
-// 14. CatalogoProductos Table
-export const catalogoProductos = pgTable('CatalogoProductos', {
-  id: serial('id').primaryKey(),
-  certificadoSenasa: varchar('certificadoSenasa').notNull().unique(),
-  nombreComercial: varchar('nombreComercial').notNull(),
-  laboratorio: varchar('laboratorio').notNull(),
-  esVacuna: boolean('esVacuna').default(false).notNull(),
+export const atenciones_diagnosticos = pgTable('atenciones_diagnosticos', {
+  atencion_id: integer('atencion_id').notNull().references(() => atenciones.id),
+  diagnostico_id: integer('diagnostico_id').notNull().references(() => diagnosticos_atencion.id),
 });
 
-export const catalogoProductosRelations = relations(catalogoProductos, ({ many }) => ({
+export const atencionesDiagnosticosRelations = relations(atenciones_diagnosticos, ({ one }) => ({
+  atencion: one(atenciones, { fields: [atenciones_diagnosticos.atencion_id], references: [atenciones.id] }),
+  diagnostico: one(diagnosticos_atencion, { fields: [atenciones_diagnosticos.diagnostico_id], references: [diagnosticos_atencion.id] }),
+}));
+
+export const catalogo_productos = pgTable('catalogo_productos', {
+  id: uuid('id').primaryKey(),
+  certificado_senasa: varchar('certificado_senasa').notNull().unique(),
+  nombre_comercial: varchar('nombre_comercial').notNull(),
+  laboratorio: varchar('laboratorio').notNull(),
+  es_vacuna: boolean('es_vacuna').default(false).notNull(),
+});
+
+export const catalogoProductosRelations = relations(catalogo_productos, ({ many }) => ({
   vacunas: many(vacunas),
   tratamientos: many(tratamientos),
 }));
 
-// 15. Vacunas Table
-export const vacunas = pgTable('Vacunas', {
-  id: serial('id').primaryKey(),
-  mascotaId: integer('mascotaId').notNull().references(() => mascotas.id),
-  veterinarioId: integer('veterinarioId').references(() => veterinarios.id),
-  productoId: integer('productoId').notNull().references(() => catalogoProductos.id),
-  fechaAplicacion: timestamp('fechaAplicacion').notNull(),
-  fechaProximaDosis: timestamp('fechaProximaDosis'),
-  numeroLote: varchar('numeroLote'),
+export const vacunas = pgTable('vacunas', {
+  id: uuid('id').primaryKey(),
+  mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
+  veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
+  atencion_id: uuid('atencion_id').references(() => atenciones.id),
+  producto_id: uuid('producto_id').notNull().references(() => catalogo_productos.id),
+  numero_lote: varchar('numero_lote'),
+  fecha_aplicacion: timestamp('fecha_aplicacion').notNull(),
+  fecha_proxima_dosis: timestamp('fecha_proxima_dosis'),
 });
 
 export const vacunasRelations = relations(vacunas, ({ one }) => ({
-  mascota: one(mascotas, { fields: [vacunas.mascotaId], references: [mascotas.id] }),
-  veterinario: one(veterinarios, { fields: [vacunas.veterinarioId], references: [veterinarios.id] }),
-  producto: one(catalogoProductos, { fields: [vacunas.productoId], references: [catalogoProductos.id] }),
+  mascota: one(mascotas, { fields: [vacunas.mascota_id], references: [mascotas.id] }),
+  veterinario: one(veterinarios, { fields: [vacunas.veterinario_id], references: [veterinarios.id] }),
+  producto: one(catalogo_productos, { fields: [vacunas.producto_id], references: [catalogo_productos.id] }),
 }));
 
-// 16. Tratamientos Table
-export const tratamientos = pgTable('Tratamientos', {
-  id: serial('id').primaryKey(),
-  consultaId: integer('consultaId').notNull().references(() => consultas.id),
-  productoId: integer('productoId').notNull().references(() => catalogoProductos.id),
+export const tratamientos = pgTable('tratamientos', {
+  id: uuid('id').primaryKey(),
+  atencion_id: uuid('atencion_id').notNull().references(() => atenciones.id),
+  tipo_id: integer('tipo_tratamiento_id').notNull().references(() => tipos_tratamiento.id),
+  producto_id: uuid('producto_id').notNull().references(() => catalogo_productos.id),
   dosis: varchar('dosis').notNull(),
   frecuencia: varchar('frecuencia').notNull(),
-  fechaInicio: timestamp('fechaInicio').notNull(),
-  fechaFin: timestamp('fechaFin'),
+  fecha_inicio: timestamp('fecha_inicio').notNull(),
+  fecha_fin: timestamp('fecha_fin'),
+  indicaciones_adicionales: text('indicaciones_adicionales'),
 });
 
 export const tratamientosRelations = relations(tratamientos, ({ one }) => ({
-  consulta: one(consultas, { fields: [tratamientos.consultaId], references: [consultas.id] }),
-  producto: one(catalogoProductos, { fields: [tratamientos.productoId], references: [catalogoProductos.id] }),
+  atencion: one(atenciones, { fields: [tratamientos.atencion_id], references: [atenciones.id] }),
+  tipo_tratamiento: one(tipos_tratamiento, { fields: [tratamientos.tipo_id], references: [tipos_tratamiento.id] }),
+  producto: one(catalogo_productos, { fields: [tratamientos.producto_id], references: [catalogo_productos.id] }),
+}));
+
+export const tipos_tratamiento = pgTable('tipos_tratamiento', {
+  id: serial('id').primaryKey(),
+  tipo: varchar('tipo').notNull().unique(),
+  descripcion: text('descripcion'),
+});
+
+export const tiposTratamientoRelations = relations(tipos_tratamiento, ({ many }) => ({
+  tratamientos: many(tratamientos),
 }));
