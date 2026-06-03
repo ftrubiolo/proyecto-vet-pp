@@ -1,5 +1,4 @@
-backend/.env
-frontend/.env
+.env
 *.log
 node_modules/
 dist/

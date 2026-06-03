@@ -20,7 +20,7 @@ El objetivo principal es brindar una herramienta integral para que dueños de ma
 
 - **Frontend:** React
 - **Backend:** Node.js
-- **Base de Datos:** Prisma
+- **Base de Datos:** Drizzle ORM
 - **Control de Versiones:** Git & GitHub
 
 ---
