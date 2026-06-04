@@ -1,4 +1,4 @@
-# VetApp 🐾
+# VetVault 🐾
 
 Este proyecto es una aplicación de **Control Veterinario para Mascotas**, desarrollada como parte de la materia **Prácticas Profesionalizantes I** del Instituto Superior Villa del Rosario.
 
@@ -15,60 +15,91 @@ El objetivo principal es brindar una herramienta integral para que dueños de ma
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
-*Este proyecto fue construido con:*
+## 🛠️ Estructura del Proyecto y Tecnologías
 
-- **Frontend:** React
-- **Backend:** Node.js
-- **Base de Datos:** Drizzle ORM
-- **Control de Versiones:** Git & GitHub
+El proyecto está organizado como un **monorrepitorio** con las siguientes divisiones:
+
+### 📱 Aplicaciones (`/apps`)
+- **`web-app`**: Panel web de administración y gestión para clínicas, veterinarios y propietarios. Desarrollado con **React**.
+- **`mobile-app`**: Aplicación móvil para el uso rápido de los propietarios (consultas de turnos, carnet de vacunación digital).
+
+### ⚙️ Servicios (`/services`)
+- **`api-backend`**: API REST centralizada que conecta las aplicaciones con la base de datos.
+  - **Framework**: Fastify (Node.js + TypeScript)
+  - **Base de Datos**: PostgreSQL
+  - **ORM**: Drizzle ORM
 
 ---
 
 ## 📋 Requisitos Previos
-Antes de clonar e instalar la app, asegúrate de tener instalado:
-- Node.js v22.x o superior
-- Git
+Antes de comenzar, asegúrate de tener instalado:
+- **Node.js** (v22.x o superior)
+- **PostgreSQL** (o acceso a una base de datos Postgres remota)
+- **Git**
 
 ---
 
 ## 🔧 Instalación y Configuración
 
-El proyecto está dividido en dos directorios principales: **backend** y **frontend**. Debes configurar e iniciar ambos por separado.
+Sigue estos pasos para clonar el proyecto y poner en marcha cada uno de los componentes:
 
-1. **Clonar el repositorio:**
+### 1. Clonar el repositorio
+```bash
+git clone https://github.com/ftrubiolo/proyecto-vet-pp.git
+cd proyecto-vet-pp
+```
+
+### 2. Configurar el Backend (Servicio API)
+1. Dirígete al directorio de la API:
    ```bash
-   git clone https://github.com/ftrubiolo/proyecto-vet-pp.git
-   cd proyecto-vet-pp
+   cd services/api-backend
    ```
-
-2. **Configuración del Backend:**
-   Abre una terminal y dirígete a la carpeta del backend para instalar las dependencias:
+2. Instala las dependencias:
    ```bash
-   cd backend
    npm install
    ```
-   **Variables de entorno:** Crea un archivo `.env` dentro de la carpeta `backend` (puedes usar `.env.example` como guía si existe) y configura tu variable `DATABASE_URL`.
-   
-   **Base de datos:** Sincroniza tu esquema de base de datos y genera el cliente de Prisma:
-   ```bash
-   npx prisma generate
-   npx prisma db push
+3. Crea un archivo `.env` en la raíz de `services/api-backend` y configura las siguientes variables:
+   ```env
+   PORT=5000
+   DATABASE_URL="postgres://tu_usuario:tu_contraseña@tu_host:5432/tu_db"
+   JWT_SECRET="una_clave_secreta_segura"
    ```
-   **Iniciar backend:**
+4. Sincroniza la estructura de tu base de datos utilizando Drizzle:
+   ```bash
+   npm run db:push
+   ```
+5. Inicia el servidor de desarrollo:
+   ```bash
+   npm run dev
+   ```
+   *La API correrá por defecto en el puerto `5000` (http://localhost:5000).*
+
+### 3. Configurar el Frontend Web
+1. Abre una **nueva terminal** y navega al directorio de la app web:
+   ```bash
+   cd apps/web-app
+   ```
+2. Instala las dependencias:
+   ```bash
+   npm install
+   ```
+3. Inicia el servidor de desarrollo web:
    ```bash
    npm run dev
    ```
 
-3. **Configuración del Frontend:**
-   Abre una **nueva terminal** (dejando el backend corriendo), dirígete a la carpeta del frontend e instala las dependencias:
+### 4. Configurar la Aplicación Móvil
+1. Navega al directorio de la app móvil:
    ```bash
-   cd frontend
+   cd apps/mobile-app
+   ```
+2. Instala las dependencias:
+   ```bash
    npm install
    ```
-   **Iniciar frontend:**
+3. Inicia el entorno de desarrollo móvil:
    ```bash
-   npm run dev
+   npm start
    ```
 
 -----

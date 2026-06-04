@@ -1,19 +1,24 @@
 import 'dotenv/config';
 import fastify from 'fastify';
 import cors from '@fastify/cors';
+import cookie from '@fastify/cookie';
 import apiRoutes from './routes';
 
 const app = fastify({ logger: true });
 
 const start = async () => {
   try {
+    await app.register(cookie, {
+      secret: process.env.JWT_SECRET,
+    });
+
     await app.register(cors, {
       origin: "*",
     });
 
     await app.register(apiRoutes, { prefix: '/api' });
 
-    app.get("/", async (request, reply) => {
+    app.get("/api/health", async (request, reply) => {
       return { message: 'Backend API esta funcionando.' };
     });
 

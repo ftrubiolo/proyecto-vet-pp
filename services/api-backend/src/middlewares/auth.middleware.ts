@@ -23,8 +23,13 @@ const JWT_SECRET = process.env.JWT_SECRET as string;
 // Middleware (preHandler hook) para verificar si el usuario tiene un token válido
 //
 export const verifyToken = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const authHeader = request.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
+    // 1. Intentar obtener el token de las cookies, y caer en el header Authorization como respaldo
+    let token = request.cookies.token;
+
+    if (!token) {
+        const authHeader = request.headers['authorization'];
+        token = authHeader && authHeader.split(' ')[1];
+    }
 
     if (!token) {
         reply.code(401).send({ error: "Acceso denegado. No se proporcionó un token." });

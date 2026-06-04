@@ -12,7 +12,7 @@ export const rolesRelations = relations(roles, ({ many }) => ({
 }));
 
 export const usuarios = pgTable('usuarios', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   email: varchar('email').notNull().unique(),
   password_hash: varchar('password_hash').notNull(),
   rol_id: integer('rol_id').notNull().references(() => roles.id),
@@ -26,7 +26,7 @@ export const usuariosRelations = relations(usuarios, ({ one, many }) => ({
 }));
 
 export const clinicas = pgTable('clinicas', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   nombre_comercial: varchar('nombre_comercial').notNull(),
   direccion: text('direccion'),
   telefono: varchar('telefono'),
@@ -38,7 +38,7 @@ export const clinicasRelations = relations(clinicas, ({ many }) => ({
 }));
 
 export const veterinarios = pgTable('veterinarios', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   usuario_id: uuid('usuario_id').notNull().unique().references(() => usuarios.id),
   nombre: varchar('nombre').notNull(),
   apellido: varchar('apellido').notNull(),
@@ -67,7 +67,7 @@ export const veterinariosClinicasRelations = relations(veterinarios_clinicas, ({
 }));
 
 export const propietarios = pgTable('propietarios', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   usuario_id: uuid('usuario_id').notNull().unique().references(() => usuarios.id),
   nombre: varchar('nombre').notNull(),
   apellido: varchar('apellido').notNull(),
@@ -79,7 +79,7 @@ export const propietarios = pgTable('propietarios', {
 });
 
 export const propietariosRelations = relations(propietarios, ({ one, many }) => ({
-  usuario_id: one(usuarios, { fields: [propietarios.usuario_id], references: [usuarios.id] }),
+  usuario: one(usuarios, { fields: [propietarios.usuario_id], references: [usuarios.id] }),
   mascotas_propietarios: many(mascotas_propietarios),
 }));
 
@@ -104,7 +104,7 @@ export const razasRelations = relations(razas, ({ one, many }) => ({
 }));
 
 export const mascotas = pgTable('mascotas', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   nombre: varchar('nombre').notNull(),
   foto_url: varchar('foto_url'),
   fecha_nacimiento: timestamp('fecha_nacimiento').notNull(),
@@ -188,7 +188,7 @@ export const motivosCitaRelations = relations(motivos_cita, ({ many }) => ({
 }));
 
 export const citas = pgTable('citas', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
   veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
   clinica_id: uuid('clinica_id').notNull().references(() => clinicas.id),
@@ -217,7 +217,7 @@ export const diagnosticosAtencionRelations = relations(diagnosticos_atencion, ({
 }));
 
 export const atenciones = pgTable('atenciones', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   cita_id: uuid('cita_id').unique().references(() => citas.id),
   mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
   veterinario_id: uuid('veterinario_id').notNull().references(() => veterinarios.id),
@@ -237,7 +237,7 @@ export const atencionesRelations = relations(atenciones, ({ one, many }) => ({
 }));
 
 export const atenciones_diagnosticos = pgTable('atenciones_diagnosticos', {
-  atencion_id: integer('atencion_id').notNull().references(() => atenciones.id),
+  atencion_id: uuid('atencion_id').notNull().references(() => atenciones.id),
   diagnostico_id: integer('diagnostico_id').notNull().references(() => diagnosticos_atencion.id),
 });
 
@@ -247,7 +247,7 @@ export const atencionesDiagnosticosRelations = relations(atenciones_diagnosticos
 }));
 
 export const catalogo_productos = pgTable('catalogo_productos', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   certificado_senasa: varchar('certificado_senasa').notNull().unique(),
   nombre_comercial: varchar('nombre_comercial').notNull(),
   laboratorio: varchar('laboratorio').notNull(),
@@ -260,7 +260,7 @@ export const catalogoProductosRelations = relations(catalogo_productos, ({ many 
 }));
 
 export const vacunas = pgTable('vacunas', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
   veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
   atencion_id: uuid('atencion_id').references(() => atenciones.id),
@@ -277,7 +277,7 @@ export const vacunasRelations = relations(vacunas, ({ one }) => ({
 }));
 
 export const tratamientos = pgTable('tratamientos', {
-  id: uuid('id').primaryKey(),
+  id: uuid('id').defaultRandom().primaryKey(),
   atencion_id: uuid('atencion_id').notNull().references(() => atenciones.id),
   tipo_id: integer('tipo_tratamiento_id').notNull().references(() => tipos_tratamiento.id),
   producto_id: uuid('producto_id').notNull().references(() => catalogo_productos.id),
