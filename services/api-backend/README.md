@@ -27,6 +27,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/auth/register/veterinario` | Público | Registra una cuenta de usuario y su perfil de Veterinario. |
+| `POST` | `/api/auth/register/veterinario/unirse` | Público | Registra una cuenta de usuario y une el veterinario a una clínica. |
 | `POST` | `/api/auth/register/propietario` | Público | Registra una cuenta de usuario y su perfil de Propietario. |
 | `POST` | `/api/auth/login` | Público | Autentica al usuario, genera el JWT y establece la cookie `token`. Retorna los datos del usuario. |
 | `POST` | `/api/auth/logout` | Público | Limpia la cookie `token` cerrando la sesión del usuario. |
@@ -49,6 +50,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/clinicas` | `Veterinario`, `Admin` | Lista todas las clínicas registradas. |
 | `GET` | `/api/clinicas/:id` | Autenticado | Retorna los detalles de una clínica. |
+| `POST` | `/api/clinicas/:id/admision` | `Veterinario` | Envía el token o código QR del pasaporte de la mascota para cambiar el estado en clinicas_mascotas a 'Activo'. |
 | `POST` | `/api/clinicas` | `Admin` | Crea una nueva sucursal o clínica veterinaria. |
 | `PATCH` | `/api/clinicas/:id` | `Admin` | Actualiza la información de una clínica (dirección, teléfono, etc). |
 
@@ -81,8 +83,8 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/mascotas` | `Veterinario`, `Admin` | Lista todas las mascotas en el sistema. |
 | `GET` | `/api/mascotas/:id` | Autenticado | Retorna la ficha médica/perfil de una mascota específica. |
-| `POST` | `/api/mascotas` | `Veterinario`, `Admin` | Registra una nueva mascota y la asocia a un propietario. |
-| `PATCH` | `/api/mascotas/:id` | `Veterinario` (propio), `Admin` | Modifica los datos de la mascota (nombre, peso estimado, foto, castración). |
+| `POST` | `/api/mascotas` | `Veterinario`, `Propietario`, `Admin` | Registra una nueva mascota y la asocia a un propietario. |
+| `PATCH` | `/api/mascotas/:id` | `Veterinario` (paciente), `Propietario` (propio), `Admin` | Modifica los datos de la mascota (nombre, peso estimado, foto, castración). |
 | `DELETE` | `/api/mascotas/:id` | `Admin` | Elimina una mascota del sistema. |
 
 ---
@@ -117,3 +119,12 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | `GET` | `/api/catalogo/diagnosticos` | Autenticado | Lista los diagnósticos clínicos estándar predefinidos en el sistema. |
 | `GET` | `/api/catalogo/especies` | Autenticado | Obtiene las especies disponibles (ej. Canino, Felino). |
 | `GET` | `/api/catalogo/razas` | Autenticado | Obtiene las razas correspondientes a una especie. |
+
+---
+
+### 🦾 Los Casos de Uso del "Copiloto de IA" (Macro-Módulo 3)
+
+| Método | Ruta | Rol Requerido | Descripción |
+| :--- | :--- | :--- | :--- |
+| `POST` | `/api/atenciones/escribano-voz` | `Veterinario` | Recibe el archivo de audio grabado por el veterinario en el box, lo sube a AWS S3 y dispara la petición a Gemini 2.5 Flash para que devuelva el JSON estructurado antes de impactar la base de datos. |
+| `POST` | `/api/ia/triaje` | `Veterinario` | Endpoint para el Triaje Sintomático Asistido. Recibe el texto en lenguaje natural del tutor (ej: "Toby vomita..."), lo procesa y devuelve el grado de urgencia médica y el descargo de responsabilidad (Disclaimer). |

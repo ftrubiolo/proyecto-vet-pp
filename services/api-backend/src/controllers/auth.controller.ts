@@ -1,13 +1,92 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
-import { usuarios, roles, veterinarios, propietarios } from '../db/schema';
+import { usuarios, roles, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export const registrarVeterinario = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { usuario, veterinario, clinica } = request.body as {
+        usuario: {
+            email: string;
+            password: string;
+            rol: string;
+        };
+        veterinario: {
+            nombre: string;
+            apellido: string;
+            foto?: string;
+            numero_matricula: string;
+            telefono: string;
+        };
+        clinica: {
+            nombre: string;
+            direccion: string;
+            telefono: string;
+        };
+    };
+
+    try {
+        // Verificar si el correo existe
+        if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
+
+        // Hash de contraseña
+        const passwordHash = await bcrypt.hash(usuario.password, 10);
+
+        // Obtener ID del rol
+        const rolResult = await db.query.roles.findFirst({ where: eq(roles.nombre, usuario.rol) });
+        if (!rolResult) return reply.code(400).send({ message: "Rol no encontrado" });
+        const rolId = rolResult.id;
+
+        // Crear usuario, transaccion por si alguno falla
+        const result = await db.transaction(async (tx) => {
+            const [newUser] = await tx.insert(usuarios).values({
+                email: usuario.email,
+                password_hash: passwordHash,
+                rol_id: rolId,
+            }).returning({
+                id: usuarios.id,
+                email: usuarios.email
+            });
+
+            const [newVeterinario] = await tx.insert(veterinarios).values({
+                usuario_id: newUser.id,
+                nombre: veterinario.nombre,
+                apellido: veterinario.apellido,
+                foto_url: veterinario.foto,
+                numero_matricula: veterinario.numero_matricula,
+                telefono: veterinario.telefono,
+            }).returning({
+                id: veterinarios.id
+            });
+
+            const [newClinica] = await tx.insert(clinicas).values({
+                nombre_comercial: clinica.nombre,
+                direccion: clinica.direccion,
+                telefono: clinica.telefono,
+            }).returning({
+                id: clinicas.id
+            });
+
+            await tx.insert(veterinarios_clinicas).values({
+                veterinario_id: newVeterinario.id,
+                clinica_id: newClinica.id,
+            });
+
+            return { user: newUser, veterinario: newVeterinario, clinica: newClinica };
+        });
+
+        reply.code(201).send({
+            message: "Veterinario registrado exitosamente",
+            ...result
+        });
+
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        reply.code(500).send({ message });
+    }
 };
 
 export const registrarPropietario = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -26,42 +105,46 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
 
     try {
         // Verificar si el correo existe
-        if (await Validation.existingUser(email, reply)) { reply.code(400).send({ message: "El correo ya existe" }); return; }
+        if (await Validation.existingUser(email)) return reply.code(400).send({ message: "El correo ya existe" });
 
         // Hash de contraseña
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Obtener ID del rol
-        const rolId = (await db.select({ id: roles.id }).from(roles).where(eq(roles.nombre, rol)).limit(1))[0].id;
-        if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
+        const rolResult = await db.query.roles.findFirst({ where: eq(roles.nombre, rol) });
+        if (!rolResult) return reply.code(400).send({ message: "Rol no encontrado" });
+        const rolId = rolResult.id;
 
-        // Crear usuario
-        const user = (await db.insert(usuarios).values({
-            email,
-            password_hash: passwordHash,
-            rol_id: rolId,
-        }).returning({
-            id: usuarios.id,
-            email: usuarios.email
-        }))[0];
+        // Crear usuario, transaccion por si alguno falla
+        const result = await db.transaction(async (tx) => {
+            const [newUser] = await tx.insert(usuarios).values({
+                email,
+                password_hash: passwordHash,
+                rol_id: rolId,
+            }).returning({
+                id: usuarios.id,
+                email: usuarios.email
+            });
 
-        const profile = (await db.insert(propietarios).values({
-            usuario_id: user.id,
-            nombre: name,
-            apellido: lastname,
-            es_empresa: isCompany,
-            razon_social: companyName,
-            foto_url: foto,
-            telefono: telefono,
-            direccion: direccion,
-        }).returning({
-            id: propietarios.id
-        }))[0];
+            const [newProfile] = await tx.insert(propietarios).values({
+                usuario_id: newUser.id,
+                nombre: name,
+                apellido: lastname,
+                es_empresa: isCompany,
+                razon_social: companyName,
+                foto_url: foto,
+                telefono: telefono,
+                direccion: direccion,
+            }).returning({
+                id: propietarios.id
+            });
+
+            return { user: newUser, profile: newProfile };
+        });
 
         reply.code(201).send({
             message: "Propietario registrado exitosamente",
-            user,
-            profile,
+            ...result
         });
 
     } catch (error) {
@@ -82,7 +165,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         if (!user) return reply.code(404).send({ message: "Usuario no encontrado" });
 
         // Verificar contraseña
-        const isValid = bcrypt.compareSync(password, user.password_hash);
+        const isValid = await bcrypt.compare(password, user.password_hash);
         if (!isValid) return reply.code(401).send({ message: "Contraseña incorrecta" });
 
         // Generar Token
@@ -120,7 +203,7 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply): Prom
 };
 
 class Validation {
-    static async existingUser(email: string, reply: FastifyReply): Promise<boolean> {
+    static async existingUser(email: string): Promise<boolean> {
         const existingUser = await db.query.usuarios.findFirst({ where: eq(usuarios.email, email) });
         if (existingUser) return true;
         return false;
