@@ -4,13 +4,13 @@ import { eq } from 'drizzle-orm';
 import { usuarios, roles, propietarios } from '../db/schema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Validation } from '../utils/validation';
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
-        const result = await db.query.propietarios.findMany({
+        const rawPropietarios = await db.query.propietarios.findMany({
             columns: {
                 id: true,
-                usuario_id: true,
                 nombre: true,
                 apellido: true,
                 es_empresa: true,
@@ -33,8 +33,22 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
                         },
                     },
                 },
+                mascotas_propietarios: {
+                    columns: {
+                        activo: true,
+                    },
+                },
             },
         });
+
+        const result = rawPropietarios.map(p => {
+            const { mascotas_propietarios, ...rest } = p;
+            return {
+                ...rest,
+                cantidad_mascotas: mascotas_propietarios.filter(mp => mp.activo).length
+            };
+        });
+
         reply.code(200).send(result);
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Error desconocido';
@@ -84,6 +98,18 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 export const update = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
         const { id } = request.params as { id: string };
+        const propietarioRecord = await db.query.propietarios.findFirst({
+            where: eq(propietarios.id, id)
+        });
+
+        if (!propietarioRecord) {
+            return reply.code(404).send({ message: "Propietario no encontrado" });
+        }
+
+        if (!Validation.hasAccess(request.user, propietarioRecord.usuario_id)) {
+            return reply.code(403).send({ message: "No tienes permiso para realizar esta acción." });
+        }
+
         const { nombre, apellido, es_empresa, razon_social, foto_url, telefono, direccion } = request.body as {
             nombre: string;
             apellido: string;

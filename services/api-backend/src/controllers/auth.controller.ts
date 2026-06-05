@@ -1,9 +1,11 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
-import { usuarios, roles, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
+import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { RoleService } from '../services/role.service';
+import { Validation } from '../utils/validation';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -36,9 +38,8 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         const passwordHash = await bcrypt.hash(usuario.password, 10);
 
         // Obtener ID del rol
-        const rolResult = await db.query.roles.findFirst({ where: eq(roles.nombre, usuario.rol) });
-        if (!rolResult) return reply.code(400).send({ message: "Rol no encontrado" });
-        const rolId = rolResult.id;
+        const rolId = await RoleService.getIdByName(usuario.rol);
+        if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
@@ -111,9 +112,8 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Obtener ID del rol
-        const rolResult = await db.query.roles.findFirst({ where: eq(roles.nombre, rol) });
-        if (!rolResult) return reply.code(400).send({ message: "Rol no encontrado" });
-        const rolId = rolResult.id;
+        const rolId = await RoleService.getIdByName(rol);
+        if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
@@ -168,25 +168,33 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         const isValid = await bcrypt.compare(password, user.password_hash);
         if (!isValid) return reply.code(401).send({ message: "Contraseña incorrecta" });
 
+        const rolNombre = await RoleService.getNameById(user.rol_id);
+        if (!rolNombre) return reply.code(404).send({ message: "Rol no encontrado" });
+
         // Generar Token
-        const token = jwt.sign({ id: user.id, email: user.email, rol_id: user.rol_id }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign({ id: user.id, email: user.email, rol: rolNombre }, JWT_SECRET, { expiresIn: '1d' });
 
         // Sanitizar el objeto usuario (remover password_hash por seguridad)
-        const { password_hash, fecha_creacion, ...safeUser } = user;
+        const { password_hash, fecha_creacion, rol_id, ...safeUser } = user;
+
+        const responseUser = {
+            ...safeUser,
+            rol: rolNombre
+        };
 
         // Establecer Cookie y responder
         return reply
             .code(200)
             .setCookie('token', token, {
                 httpOnly: true,
-                secure: true,
-                sameSite: 'strict',
+                secure: process.env.NODE_ENV === 'production',
+                sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
                 maxAge: 60 * 60 * 24,
                 path: '/',
             })
             .send({
                 message: "Usuario logueado exitosamente",
-                user: safeUser
+                user: responseUser
             });
 
     } catch (error) {
@@ -202,10 +210,3 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply): Prom
         .send({ message: 'Sesión cerrada exitosamente' });
 };
 
-class Validation {
-    static async existingUser(email: string): Promise<boolean> {
-        const existingUser = await db.query.usuarios.findFirst({ where: eq(usuarios.email, email) });
-        if (existingUser) return true;
-        return false;
-    }
-}

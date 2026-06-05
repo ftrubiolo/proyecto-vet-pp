@@ -70,7 +70,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/propietarios` | `Veterinario`, `Admin` | Obtiene el listado completo de clientes/propietarios. |
+| `GET` | `/api/propietarios` | `Admin` | Obtiene el listado completo de propietarios. |
 | `GET` | `/api/propietarios/:id` | Autenticado | Retorna los detalles de un propietario, incluyendo su cuenta de usuario y mascotas asociadas. |
 | `PATCH` | `/api/propietarios/:id` | `Propietario` (propio), `Admin` | Actualiza datos del perfil (teléfono, dirección, es_empresa, etc). |
 | `DELETE` | `/api/propietarios/:id` | `Admin` | Elimina la ficha de propietario del sistema. |

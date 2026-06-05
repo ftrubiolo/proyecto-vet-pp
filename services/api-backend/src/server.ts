@@ -13,7 +13,10 @@ const start = async () => {
     });
 
     await app.register(cors, {
-      origin: "*",
+      origin: true,
+      credentials: true,
+      methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+      allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
     });
 
     await app.register(apiRoutes, { prefix: '/api' });

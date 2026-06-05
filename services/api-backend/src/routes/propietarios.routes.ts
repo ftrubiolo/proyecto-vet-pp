@@ -1,11 +1,14 @@
 import { FastifyInstance } from 'fastify';
 import * as controller from '../controllers/propietarios.controller';
+import { checkRole, verifyToken } from '../middlewares/auth.middleware';
 
 
 export default async function propietariosRoutes(fastify: FastifyInstance) {
-  fastify.get('/', controller.getAll);
+  fastify.addHook('preHandler', verifyToken);
+
+  fastify.get('/', { preHandler: [checkRole(['Admin'])] }, controller.getAll);
   fastify.get('/:id', controller.getOne);
-  fastify.patch('/:id', controller.update);
-  fastify.delete('/:id', controller.remove);
+  fastify.patch('/:id', { preHandler: [checkRole(['Admin', 'Propietario'])] }, controller.update);
+  fastify.delete('/:id', { preHandler: [checkRole(['Admin'])] }, controller.remove);
 }
 

@@ -33,7 +33,7 @@ const registrarVeterinarioSchema = {
         properties: {
           nombre: { type: 'string' },
           apellido: { type: 'string' },
-          foto_url: { type: 'string' },
+          foto: { type: 'string' },
           numero_matricula: { type: 'string' },
           telefono: { type: 'string' }
         }
