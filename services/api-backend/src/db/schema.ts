@@ -303,3 +303,19 @@ export const tipos_tratamiento = pgTable('tipos_tratamiento', {
 export const tiposTratamientoRelations = relations(tipos_tratamiento, ({ many }) => ({
   tratamientos: many(tratamientos),
 }));
+
+export const veterinarios_matriculados_cordoba = pgTable('veterinarios_matriculados_cordoba', {
+  id: serial('id').primaryKey(),
+  nombre_completo: varchar('nombre_completo').notNull(),
+  numero_matricula: varchar('numero_matricula').notNull().unique(),
+  dni: varchar('dni').notNull().unique(),
+  categoria_id: varchar('categoria_id').notNull().references(() => categorias_matriculas.id),
+  es_valido: boolean('es_valido').default(true).notNull(),
+  actualizado_el: timestamp('actualizado_el').notNull().defaultNow(),
+});
+
+export const categorias_matriculas = pgTable('categorias_matriculas', {
+  id: varchar('id', { length: 2 }).primaryKey(),
+  categoria: varchar('categoria').notNull(),
+  cobertura: text('cobertura').notNull(),
+});
