@@ -3,6 +3,26 @@ import os
 import csv
 import re
 
+# ==============================================================================
+# Script de extracción de datos del padrón del Colegio Médico Veterinario
+# de la Provincia de Córdoba (CMVPC).
+# 
+# Propósito:
+#   Parsea el documento oficial en formato PDF que contiene la lista de 
+#   veterinarios matriculados en Córdoba, extrayendo los nombres completos, 
+#   números de matrícula, DNI y categorías de habilitación (A, B, etc.).
+# 
+# Requisitos:
+#   - pdfplumber (Instalación: `pip install pdfplumber`)
+# 
+# Uso:
+#   python extract_vets.py <ruta_al_pdf> [ruta_de_salida_json]
+# 
+# Ejemplo:
+#   python extract_vets.py veterinarios.pdf veterinarios_limpios.json
+# ==============================================================================
+
+
 # Intenta importar pdfplumber. Si no está, avisa al usuario cómo instalarlo.
 try:
     # pyrefly: ignore [missing-import]

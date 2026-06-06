@@ -1,16 +1,15 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 
-// 1. Definimos la forma de los datos que guardamos en el Token
 export interface TokenPayload {
-    id: number;
-    vetId?: number;
-    proId?: number;
+    id: string;
+    vetId?: string;
+    proId?: string;
     email: string;
     rol: string; // 'Veterinario', 'Propietario', 'Admin'
 }
 
-// 2. Extendemos el Request de Fastify para que acepte nuestra propiedad 'user'
+// Extendemos el Request de Fastify para que acepte nuestra propiedad 'user'
 declare module 'fastify' {
     interface FastifyRequest {
         user?: TokenPayload;
@@ -19,9 +18,11 @@ declare module 'fastify' {
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-//
-// Middleware (preHandler hook) para verificar si el usuario tiene un token válido
-//
+/**
+ * Middleware (preHandler hook) para verificar si el usuario tiene un token válido
+ * @param request - Request de Fastify
+ * @param reply - Reply de Fastify
+ */
 export const verifyToken = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     let token = request.cookies.token;
     if (!token) return reply.code(401).send({ error: "Acceso denegado. No se proporcionó un token." });
@@ -37,9 +38,10 @@ export const verifyToken = async (request: FastifyRequest, reply: FastifyReply):
     }
 };
 
-//
-// Middleware (preHandler hook) para autorizar según el rol del usuario
-//
+/** 
+ * Middleware (preHandler hook) para autorizar según el rol del usuario
+ * @param rolesPermitidos - Roles permitidos ej: ['Veterinario', 'Admin']
+ **/
 export const checkRole = (rolesPermitidos: string[]) => {
     return async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
         const token = request.cookies.token;

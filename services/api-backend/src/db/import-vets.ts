@@ -37,9 +37,9 @@ async function main() {
   // 1. Asegurar categorías en la base de datos
   console.log('Verificando categorías de matrículas...');
   const defaultCategories = [
-    { id: 'A', categoria: 'Activo A', cobertura: 'Habilitado para toda la provincia, clínica y cirugía general.' },
-    { id: 'B', categoria: 'Activo B', cobertura: 'Habilitación restringida o en trámite.' },
-    { id: 'C', categoria: 'Activo C', cobertura: 'Licencia especial o pasiva.' },
+    { id: 'A', categoria: 'Activo A', cobertura: 'Veterinarios en el ejercicio general e independiente de la profesión (clínicas privadas, consultorías y comercio veterinario general).' },
+    { id: 'B', categoria: 'Activo B', cobertura: 'Veterinarios con cargos electivos o de relación de dependencia exclusiva en organismos públicos nacionales (Ej. SENASA, universidades nacionales). El pago de su matrícula es optativo.' },
+    { id: 'C', categoria: 'Activo C', cobertura: 'Profesionales con matrícula activa pero bajo modalidades restrictivas específicas (roles corporativos internos, tareas puramente administrativas no clínicas o regímenes especiales).' },
   ];
 
   for (const cat of defaultCategories) {
