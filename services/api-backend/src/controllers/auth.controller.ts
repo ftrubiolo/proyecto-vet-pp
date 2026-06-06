@@ -34,6 +34,11 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         // Verificar si el correo existe
         if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
 
+        // Validar matrícula contra el registro de Córdoba
+        if (!(await Validation.isValidLicense(veterinario.numero_matricula))) {
+            return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
+        }
+
         // Hash de contraseña
         const passwordHash = await bcrypt.hash(usuario.password, 10);
 
@@ -145,6 +150,114 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
         reply.code(201).send({
             message: "Propietario registrado exitosamente",
             ...result
+        });
+
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        reply.code(500).send({ message });
+    }
+};
+
+interface InvitationPayload {
+    clinicaId: string;
+    invitedBy?: string;
+    type?: string;
+}
+
+export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { token, usuario, veterinario } = request.body as {
+        token: string;
+        usuario: {
+            email: string;
+            password: string;
+            rol: string;
+        };
+        veterinario: {
+            nombre: string;
+            apellido: string;
+            foto?: string;
+            numero_matricula: string;
+            telefono: string;
+        };
+    };
+
+    try {
+        // 1. Verificar y decodificar el token de invitación
+        let payload: InvitationPayload;
+        try {
+            payload = jwt.verify(token, JWT_SECRET) as InvitationPayload;
+        } catch (err) {
+            return reply.code(400).send({ message: "El token de invitación es inválido o ha expirado" });
+        }
+
+        if (payload.type !== 'clinic_invitation' || !payload.clinicaId) {
+            return reply.code(400).send({ message: "El token de invitación no es válido para unirse a una clínica" });
+        }
+
+        const clinicaId = payload.clinicaId;
+
+        // 2. Verificar que la clínica exista
+        const clinic = await db.query.clinicas.findFirst({
+            where: eq(clinicas.id, clinicaId)
+        });
+        if (!clinic) {
+            return reply.code(400).send({ message: "La clínica especificada en la invitación no existe" });
+        }
+
+        // 3. Verificar si el correo ya existe
+        if (await Validation.existingUser(usuario.email)) {
+            return reply.code(400).send({ message: "El correo ya existe" });
+        }
+
+        // 4. Validar matrícula contra el registro de Córdoba
+        if (!(await Validation.isValidLicense(veterinario.numero_matricula))) {
+            return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
+        }
+
+        // 5. Hash de contraseña
+        const passwordHash = await bcrypt.hash(usuario.password, 10);
+
+        // 6. Obtener ID del rol (forzado a 'Veterinario' o el provisto si es válido, pero el rol debe ser Veterinario para este flujo)
+        const rolId = await RoleService.getIdByName(usuario.rol);
+        if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
+
+        // 7. Crear usuario y asociarlo a la clínica dentro de una transacción
+        const result = await db.transaction(async (tx) => {
+            const [newUser] = await tx.insert(usuarios).values({
+                email: usuario.email,
+                password_hash: passwordHash,
+                rol_id: rolId,
+            }).returning({
+                id: usuarios.id,
+                email: usuarios.email
+            });
+
+            const [newVeterinario] = await tx.insert(veterinarios).values({
+                usuario_id: newUser.id,
+                nombre: veterinario.nombre,
+                apellido: veterinario.apellido,
+                foto_url: veterinario.foto,
+                numero_matricula: veterinario.numero_matricula,
+                telefono: veterinario.telefono,
+            }).returning({
+                id: veterinarios.id
+            });
+
+            await tx.insert(veterinarios_clinicas).values({
+                veterinario_id: newVeterinario.id,
+                clinica_id: clinicaId,
+            });
+
+            return { user: newUser, veterinario: newVeterinario };
+        });
+
+        reply.code(201).send({
+            message: "Veterinario registrado y unido a la clínica exitosamente",
+            ...result,
+            clinica: {
+                id: clinicaId,
+                nombre: clinic.nombre_comercial
+            }
         });
 
     } catch (error) {

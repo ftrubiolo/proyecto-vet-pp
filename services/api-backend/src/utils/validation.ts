@@ -1,24 +1,44 @@
 import { TokenPayload } from '../middlewares/auth.middleware';
 import { UserService } from '../services/user.service';
+import { VetService } from '../services/vet.service';
 
+
+/**
+ * Clase de utilidad para validaciones de negocio (existencia de emails, licencias oficiales) 
+ * y comprobaciones de autorización (dueño del recurso, administrador).
+ */
 export class Validation {
   // ==========================================
   // 1. Validaciones de Base de Datos
   // ==========================================
-  
+
   /**
-   * Verifica si un email ya está registrado en la base de datos (delegado a UserService).
+   * Verifica si existe un usuario con el email proporcionado (delegado a UserService).
+   * @param email - Email a verificar
+   * @returns true si el email existe, false en caso contrario
    */
   static async existingUser(email: string): Promise<boolean> {
     return UserService.existsByEmail(email);
   }
+
+  /**
+   * Verifica si una licencia/matrícula es válida (delegado a VetService).
+   * @param licenseNumber - Número de matrícula/licencia a verificar
+   * @returns true si la licencia es válida, false en caso contrario
+   */
+  static async isValidLicense(licenseNumber: string): Promise<boolean> {
+    return VetService.isValidLicense(licenseNumber);
+  }
+
 
   // ==========================================
   // 2. Validaciones de Autorización / Permisos
   // ==========================================
 
   /**
-   * Comprueba si el usuario tiene rol de Administrador.
+   * Comprueba si el usuario autenticado tiene rol de Administrador.
+   * @param user - Usuario autenticado
+   * @returns true si el usuario es administrador, false en caso contrario
    */
   static isAdmin(user?: TokenPayload): boolean {
     return user?.rol === 'Admin';
@@ -26,6 +46,9 @@ export class Validation {
 
   /**
    * Comprueba si el usuario autenticado es dueño del recurso.
+   * @param user - Usuario autenticado
+   * @param resourceOwnerId - ID del dueño del recurso
+   * @returns true si el usuario es dueño del recurso, false en caso contrario
    */
   static isSelf(user?: TokenPayload, resourceOwnerId?: string): boolean {
     return !!user && String(user.id) === resourceOwnerId;
@@ -34,6 +57,9 @@ export class Validation {
   /**
    * Comprueba si el usuario tiene permiso para operar en el recurso
    * (es Administrador o es el dueño del recurso).
+   * @param user - Usuario autenticado
+   * @param resourceOwnerId - ID del dueño del recurso
+   * @returns true si el usuario tiene permiso para operar en el recurso, false en caso contrario
    */
   static hasAccess(user?: TokenPayload, resourceOwnerId?: string): boolean {
     return this.isAdmin(user) || this.isSelf(user, resourceOwnerId);

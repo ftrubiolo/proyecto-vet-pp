@@ -62,6 +62,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/veterinarios` | Autenticado | Lista todos los veterinarios. |
 | `GET` | `/api/veterinarios/:id` | Autenticado | Retorna la ficha detallada de un veterinario. |
+| `POST` | `/api/veterinarios/invitar` | `Veterinario`, `Admin` | Genera un token de invitación JWT para que otro veterinario se una a una clínica. |
 | `PATCH` | `/api/veterinarios/:id` | `Veterinario` (propio), `Admin` | Actualiza datos del perfil (foto, teléfono, matrícula). |
 
 ---

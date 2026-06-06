@@ -5,6 +5,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
   // Rutas de autenticación
   fastify.post('/register/veterinario', { schema: registrarVeterinarioSchema }, authController.registrarVeterinario);
   fastify.post('/register/propietario', { schema: registrarPropietarioSchema }, authController.registrarPropietario);
+  fastify.post('/register/veterinario/unirse', { schema: registrarVeterinarioUnirseSchema }, authController.registrarVeterinarioUnirse);
   fastify.post('/login', { schema: loginSchema }, authController.login);
   fastify.post('/logout', authController.logout);
 }
@@ -77,6 +78,40 @@ const loginSchema = {
     properties: {
       email: { type: 'string', format: 'email' },
       password: { type: 'string' }
+    }
+  }
+};
+
+const registrarVeterinarioUnirseSchema = {
+  body: {
+    type: 'object',
+    required: [
+      "token",
+      "usuario",
+      "veterinario"
+    ],
+    properties: {
+      "token": { type: 'string' },
+      "usuario": {
+        type: 'object',
+        required: ['email', 'password', 'rol'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', minLength: 6 },
+          rol: { type: 'string' }
+        }
+      },
+      "veterinario": {
+        type: 'object',
+        required: ['nombre', 'apellido', 'numero_matricula', 'telefono'],
+        properties: {
+          nombre: { type: 'string' },
+          apellido: { type: 'string' },
+          foto: { type: 'string' },
+          numero_matricula: { type: 'string' },
+          telefono: { type: 'string' }
+        }
+      }
     }
   }
 };
