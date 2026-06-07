@@ -22,12 +22,12 @@ export class Validation {
   }
 
   /**
-   * Verifica si una licencia/matrícula es válida (delegado a VetService).
-   * @param licenseNumber - Número de matrícula/licencia a verificar
-   * @returns true si la licencia es válida, false en caso contrario
+   * Verifica si una matrícula es válida (delegado a VetService).
+   * @param matricula - Número de matrícula a verificar
+   * @returns true si la matrícula es válida, false en caso contrario
    */
-  static async isValidLicense(licenseNumber: string): Promise<boolean> {
-    return VetService.isValidLicense(licenseNumber);
+  static async isValidMatricula(matricula: string): Promise<boolean> {
+    return VetService.isValidMatricula(matricula);
   }
 
 
