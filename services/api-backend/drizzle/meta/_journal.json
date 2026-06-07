@@ -29,6 +29,20 @@
       "when": 1780699176187,
       "tag": "0003_sour_changeling",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1780772010668,
+      "tag": "0004_curly_the_hunter",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1780772842108,
+      "tag": "0005_lovely_riptide",
+      "breakpoints": true
     }
   ]
 }

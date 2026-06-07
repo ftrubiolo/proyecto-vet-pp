@@ -3,7 +3,7 @@ import { relations } from 'drizzle-orm';
 
 export const roles = pgTable('roles', {
   id: serial('id').primaryKey(),
-  nombre: varchar('nombre').notNull().unique(),
+  rol: varchar('rol').notNull().unique(),
   descripcion: text('descripcion'),
 });
 
@@ -85,7 +85,7 @@ export const propietariosRelations = relations(propietarios, ({ one, many }) => 
 
 export const especies = pgTable('especies', {
   id: serial('id').primaryKey(),
-  nombre: varchar('nombre').notNull().unique(),
+  especie: varchar('especie').notNull().unique(),
 });
 
 export const especiesRelations = relations(especies, ({ many }) => ({
@@ -95,7 +95,7 @@ export const especiesRelations = relations(especies, ({ many }) => ({
 export const razas = pgTable('razas', {
   id: serial('id').primaryKey(),
   especie_id: integer('especie_id').notNull().references(() => especies.id),
-  nombre: varchar('nombre').notNull(),
+  raza: varchar('raza').notNull(),
 });
 
 export const razasRelations = relations(razas, ({ one, many }) => ({
@@ -137,7 +137,7 @@ export const mascotasPropietariosRelations = relations(mascotas_propietarios, ({
 
 export const tipos_relacion = pgTable('tipos_relacion', {
   id: serial('id').primaryKey(),
-  nombre: varchar('nombre').notNull().unique(),
+  tipo: varchar('tipo').notNull().unique(),
   descripcion: text('descripcion'),
 });
 
@@ -208,7 +208,7 @@ export const citasRelations = relations(citas, ({ one, many }) => ({
 
 export const diagnosticos_atencion = pgTable('diagnosticos_atencion', {
   id: serial('id').primaryKey(),
-  nombre: varchar('nombre').notNull().unique(),
+  diagnostico: varchar('diagnostico').notNull().unique(),
   categoria: varchar('categoria'),
 });
 
@@ -247,7 +247,7 @@ export const atencionesDiagnosticosRelations = relations(atenciones_diagnosticos
 }));
 
 export const catalogo_productos = pgTable('catalogo_productos', {
-  id: uuid('id').defaultRandom().primaryKey(),
+  id: serial('id').primaryKey(),
   certificado_senasa: varchar('certificado_senasa').notNull().unique(),
   nombre_comercial: varchar('nombre_comercial').notNull(),
   laboratorio: varchar('laboratorio').notNull(),
@@ -264,7 +264,7 @@ export const vacunas = pgTable('vacunas', {
   mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
   veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
   atencion_id: uuid('atencion_id').references(() => atenciones.id),
-  producto_id: uuid('producto_id').notNull().references(() => catalogo_productos.id),
+  producto_id: integer('producto_id').notNull().references(() => catalogo_productos.id),
   numero_lote: varchar('numero_lote'),
   fecha_aplicacion: timestamp('fecha_aplicacion').notNull(),
   fecha_proxima_dosis: timestamp('fecha_proxima_dosis'),
@@ -280,7 +280,7 @@ export const tratamientos = pgTable('tratamientos', {
   id: uuid('id').defaultRandom().primaryKey(),
   atencion_id: uuid('atencion_id').notNull().references(() => atenciones.id),
   tipo_id: integer('tipo_tratamiento_id').notNull().references(() => tipos_tratamiento.id),
-  producto_id: uuid('producto_id').notNull().references(() => catalogo_productos.id),
+  producto_id: integer('producto_id').notNull().references(() => catalogo_productos.id),
   dosis: varchar('dosis').notNull(),
   frecuencia: varchar('frecuencia').notNull(),
   fecha_inicio: timestamp('fecha_inicio').notNull(),
