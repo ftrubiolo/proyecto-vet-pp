@@ -2,6 +2,8 @@ import 'dotenv/config';
 import fastify from 'fastify';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
+import fastifySwagger from '@fastify/swagger';
+import fastifySwaggerUi from '@fastify/swagger-ui';
 import apiRoutes from './routes';
 
 const app = fastify({ logger: true });
@@ -17,6 +19,24 @@ const start = async () => {
       credentials: true,
       methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
       allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    });
+
+    await app.register(fastifySwagger, {
+      openapi: {
+        info: {
+          title: 'VetVault API Documentation',
+          description: 'Documentación interactiva de la API de VetVault',
+          version: '1.0.0',
+        },
+      },
+    });
+
+    await app.register(fastifySwaggerUi, {
+      routePrefix: '/documentation',
+      uiConfig: {
+        docExpansion: 'list',
+        deepLinking: false,
+      },
     });
 
     await app.register(apiRoutes, { prefix: '/api' });

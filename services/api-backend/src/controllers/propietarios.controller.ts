@@ -28,7 +28,7 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
                     with: {
                         rol: {
                             columns: {
-                                nombre: true,
+                                rol: true,
                             },
                         },
                     },
@@ -81,7 +81,7 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
                     with: {
                         rol: {
                             columns: {
-                                nombre: true,
+                                rol: true,
                             },
                         },
                     },

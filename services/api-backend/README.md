@@ -48,7 +48,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/clinicas` | `Veterinario`, `Admin` | Lista todas las clínicas registradas. |
+| `GET` | `/api/clinicas` | `Veterinario` | Lista todas las clínicas registradas. |
 | `GET` | `/api/clinicas/:id` | Autenticado | Retorna los detalles de una clínica. |
 | `POST` | `/api/clinicas/:id/admision` | `Veterinario` | Envía el token o código QR del pasaporte de la mascota para cambiar el estado en clinicas_mascotas a 'Activo'. |
 | `POST` | `/api/clinicas` | `Admin` | Crea una nueva sucursal o clínica veterinaria. |
@@ -62,8 +62,8 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/veterinarios` | Autenticado | Lista todos los veterinarios. |
 | `GET` | `/api/veterinarios/:id` | Autenticado | Retorna la ficha detallada de un veterinario. |
-| `POST` | `/api/veterinarios/invitar` | `Veterinario`, `Admin` | Genera un token de invitación JWT para que otro veterinario se una a una clínica. |
-| `PATCH` | `/api/veterinarios/:id` | `Veterinario` (propio), `Admin` | Actualiza datos del perfil (foto, teléfono, matrícula). |
+| `POST` | `/api/veterinarios/invitar` | `Veterinario` | Genera un token de invitación JWT para que otro veterinario se una a una clínica. |
+| `PATCH` | `/api/veterinarios/:id` | `Veterinario` (propio) | Actualiza datos del perfil (foto, teléfono, matrícula). |
 
 ---
 
@@ -73,7 +73,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `GET` | `/api/propietarios` | `Admin` | Obtiene el listado completo de propietarios. |
 | `GET` | `/api/propietarios/:id` | Autenticado | Retorna los detalles de un propietario, incluyendo su cuenta de usuario y mascotas asociadas. |
-| `PATCH` | `/api/propietarios/:id` | `Propietario` (propio), `Admin` | Actualiza datos del perfil (teléfono, dirección, es_empresa, etc). |
+| `PATCH` | `/api/propietarios/:id` | `Propietario` (propio) | Actualiza datos del perfil (teléfono, dirección, es_empresa, etc). |
 | `DELETE` | `/api/propietarios/:id` | `Admin` | Elimina la ficha de propietario del sistema. |
 
 ---
@@ -82,10 +82,10 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/mascotas` | `Veterinario`, `Admin` | Lista todas las mascotas en el sistema. |
+| `GET` | `/api/mascotas` | `Veterinario` | Lista todas las mascotas en el sistema. |
 | `GET` | `/api/mascotas/:id` | Autenticado | Retorna la ficha médica/perfil de una mascota específica. |
-| `POST` | `/api/mascotas` | `Veterinario`, `Propietario`, `Admin` | Registra una nueva mascota y la asocia a un propietario. |
-| `PATCH` | `/api/mascotas/:id` | `Veterinario` (paciente), `Propietario` (propio), `Admin` | Modifica los datos de la mascota (nombre, peso estimado, foto, castración). |
+| `POST` | `/api/mascotas` | `Veterinario`, `Propietario` | Registra una nueva mascota y la asocia a un propietario. |
+| `PATCH` | `/api/mascotas/:id` | `Veterinario` (paciente), `Propietario` (propio) | Modifica los datos de la mascota (nombre, peso estimado, foto, castración). |
 | `DELETE` | `/api/mascotas/:id` | `Admin` | Elimina una mascota del sistema. |
 
 ---
@@ -105,7 +105,7 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/atenciones` | `Veterinario`, `Admin` | Lista el historial completo de atenciones realizadas en el sistema. |
+| `GET` | `/api/atenciones` | `Veterinario` | Lista el historial completo de atenciones realizadas en el sistema. |
 | `GET` | `/api/mascotas/:mascotaId/atenciones` | Autenticado | Obtiene la historia clínica cronológica completa de una mascota específica. |
 | `GET` | `/api/atenciones/:id` | Autenticado | Obtiene el detalle completo de una consulta (diagnósticos, vacunas colocadas y tratamientos indicados). |
 | `POST` | `/api/atenciones` | `Veterinario` | Registra una nueva consulta médica, permitiendo asociar diagnósticos, tratamientos y vacunas aplicadas en la sesión. |
@@ -116,10 +116,16 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 
 | Método | Ruta | Rol Requerido | Descripción |
 | :--- | :--- | :--- | :--- |
-| `GET` | `/api/catalogo/productos` | Autenticado | Lista los productos, medicamentos y vacunas disponibles (Catálogo SENASA). |
 | `GET` | `/api/catalogo/diagnosticos` | Autenticado | Lista los diagnósticos clínicos estándar predefinidos en el sistema. |
-| `GET` | `/api/catalogo/especies` | Autenticado | Obtiene las especies disponibles (ej. Canino, Felino). |
-| `GET` | `/api/catalogo/razas` | Autenticado | Obtiene las razas correspondientes a una especie. |
+| `GET` | `/api/catalogo/tipos-tratamiento` | Autenticado | Lista los tipos de tratamiento predefinidos (ej. Medicamento, Cirugía, Dieta). |
+| `GET` | `/api/catalogo/productos` | Autenticado | Lista todos los productos, medicamentos y vacunas disponibles (Catálogo SENASA). |
+| `GET` | `/api/catalogo/productos/vacunas` | Autenticado | Lista únicamente las vacunas disponibles en el catálogo. |
+| `GET` | `/api/catalogo/productos/medicamentos` | Autenticado | Lista únicamente los medicamentos y otros productos no-vacunas. |
+| `GET` | `/api/catalogo/especies` | Autenticado | Obtiene las especies (Canino, Felino) con sus razas correspondientes anidadas. |
+| `GET` | `/api/catalogo/citas/motivos` | Autenticado | Lista los motivos de citas predefinidos (ej. Consulta General, Urgencia). |
+| `GET` | `/api/catalogo/citas/estados` | Autenticado | Lista los estados posibles de una cita (ej. Agendada, Confirmada, Cancelada). |
+| `GET` | `/api/catalogo/pacientes/estados` | Autenticado | Lista los estados del paciente en una clínica (ej. Pre-registrado, Activo). |
+| `GET` | `/api/catalogo/mascotas/tipos-relacion` | Autenticado | Lista los tipos de relación entre mascota y tutor (ej. Tutor Principal, Co-propietario). |
 
 ---
 

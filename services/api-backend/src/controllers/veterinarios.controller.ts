@@ -39,12 +39,12 @@ export const generarInvitacion = async (request: FastifyRequest, reply: FastifyR
 
     // 2. Si no es Admin, verificar que el veterinario pertenezca activamente a la clínica
     if (user.rol !== 'Admin') {
-      const vet = await VetService.getByUserId(user.id);
+      const vet = await VetService.getByUsuarioId(user.id);
       if (!vet) {
         return reply.code(400).send({ message: "Perfil de veterinario no encontrado para el usuario actual" });
       }
 
-      const association = await VetService.getAssociationWithClinic(vet.id, clinicaId);
+      const association = await VetService.getAssociationWithClinica(vet.id, clinicaId);
       if (!association) {
         return reply.code(403).send({ message: "No tienes permisos para invitar personal a esta clínica" });
       }

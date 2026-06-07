@@ -4,8 +4,12 @@ import { eq } from 'drizzle-orm';
 import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { RoleService } from '../services/role.service';
+import { RolService } from '../services/rol.service';
 import { Validation } from '../utils/validation';
+import { UserService } from '../services/user.service';
+import { VetService } from '../services/vet.service';
+import { ClinicaService } from '../services/clinica.service';
+import { PropietarioService } from '../services/prop.service';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -35,7 +39,7 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
 
         // Validar matrícula contra el registro de Córdoba
-        if (!(await Validation.isValidLicense(veterinario.numero_matricula))) {
+        if (!(await Validation.isValidMatricula(veterinario.numero_matricula))) {
             return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
         }
 
@@ -43,43 +47,33 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         const passwordHash = await bcrypt.hash(usuario.password, 10);
 
         // Obtener ID del rol
-        const rolId = await RoleService.getIdByName(usuario.rol);
+        const rolId = await RolService.getIdByRol('Veterinario');
         if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
-            const [newUser] = await tx.insert(usuarios).values({
+            const newUser = await UserService.create({
                 email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }).returning({
-                id: usuarios.id,
-                email: usuarios.email
-            });
+            }, tx);
 
-            const [newVeterinario] = await tx.insert(veterinarios).values({
+            const newVeterinario = await VetService.create({
                 usuario_id: newUser.id,
                 nombre: veterinario.nombre,
                 apellido: veterinario.apellido,
                 foto_url: veterinario.foto,
                 numero_matricula: veterinario.numero_matricula,
                 telefono: veterinario.telefono,
-            }).returning({
-                id: veterinarios.id
-            });
+            }, tx);
 
-            const [newClinica] = await tx.insert(clinicas).values({
+            const newClinica = await ClinicaService.create({
                 nombre_comercial: clinica.nombre,
                 direccion: clinica.direccion,
                 telefono: clinica.telefono,
-            }).returning({
-                id: clinicas.id
-            });
+            }, tx);
 
-            await tx.insert(veterinarios_clinicas).values({
-                veterinario_id: newVeterinario.id,
-                clinica_id: newClinica.id,
-            });
+            await VetService.associateWithClinica(newVeterinario.id, newClinica.id, tx);
 
             return { user: newUser, veterinario: newVeterinario, clinica: newClinica };
         });
@@ -117,21 +111,18 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
         const passwordHash = await bcrypt.hash(password, 10);
 
         // Obtener ID del rol
-        const rolId = await RoleService.getIdByName(rol);
+        const rolId = await RolService.getIdByRol('Propietario');
         if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
-            const [newUser] = await tx.insert(usuarios).values({
+            const newUser = await UserService.create({
                 email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }).returning({
-                id: usuarios.id,
-                email: usuarios.email
-            });
+            }, tx);
 
-            const [newProfile] = await tx.insert(propietarios).values({
+            const newPropietario = await PropietarioService.create({
                 usuario_id: newUser.id,
                 nombre: name,
                 apellido: lastname,
@@ -140,11 +131,9 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
                 foto_url: foto,
                 telefono: telefono,
                 direccion: direccion,
-            }).returning({
-                id: propietarios.id
-            });
+            }, tx);
 
-            return { user: newUser, profile: newProfile };
+            return { user: newUser, profile: newPropietario };
         });
 
         reply.code(201).send({
@@ -210,43 +199,35 @@ export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply:
         }
 
         // 4. Validar matrícula contra el registro de Córdoba
-        if (!(await Validation.isValidLicense(veterinario.numero_matricula))) {
+        if (!(await Validation.isValidMatricula(veterinario.numero_matricula))) {
             return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
         }
 
         // 5. Hash de contraseña
         const passwordHash = await bcrypt.hash(usuario.password, 10);
 
-        // 6. Obtener ID del rol (forzado a 'Veterinario' o el provisto si es válido, pero el rol debe ser Veterinario para este flujo)
-        const rolId = await RoleService.getIdByName(usuario.rol);
+        // 6. Obtener ID del rol
+        const rolId = await RolService.getIdByRol('Veterinario');
         if (!rolId) return reply.code(400).send({ message: "Rol no encontrado" });
 
         // 7. Crear usuario y asociarlo a la clínica dentro de una transacción
         const result = await db.transaction(async (tx) => {
-            const [newUser] = await tx.insert(usuarios).values({
+            const newUser = await UserService.create({
                 email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }).returning({
-                id: usuarios.id,
-                email: usuarios.email
-            });
+            }, tx);
 
-            const [newVeterinario] = await tx.insert(veterinarios).values({
+            const newVeterinario = await VetService.create({
                 usuario_id: newUser.id,
                 nombre: veterinario.nombre,
                 apellido: veterinario.apellido,
                 foto_url: veterinario.foto,
                 numero_matricula: veterinario.numero_matricula,
                 telefono: veterinario.telefono,
-            }).returning({
-                id: veterinarios.id
-            });
+            }, tx);
 
-            await tx.insert(veterinarios_clinicas).values({
-                veterinario_id: newVeterinario.id,
-                clinica_id: clinicaId,
-            });
+            await VetService.associateWithClinica(newVeterinario.id, clinicaId, tx);
 
             return { user: newUser, veterinario: newVeterinario };
         });
@@ -281,7 +262,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         const isValid = await bcrypt.compare(password, user.password_hash);
         if (!isValid) return reply.code(401).send({ message: "Contraseña incorrecta" });
 
-        const rolNombre = await RoleService.getNameById(user.rol_id);
+        const rolNombre = await RolService.getRolById(user.rol_id);
         if (!rolNombre) return reply.code(404).send({ message: "Rol no encontrado" });
 
         // Generar Token
