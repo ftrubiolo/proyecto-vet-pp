@@ -1,0 +1,1651 @@
+{
+  "id": "75305241-ad47-480c-a6dd-1fe7da3c4a76",
+  "prevId": "a79c6c86-65d8-41ae-a238-560a3423461b",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.atenciones": {
+      "name": "atenciones",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "cita_id": {
+          "name": "cita_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mascota_id": {
+          "name": "mascota_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "veterinario_id": {
+          "name": "veterinario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "notas_clinicas": {
+          "name": "notas_clinicas",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "peso_actual": {
+          "name": "peso_actual",
+          "type": "numeric(5, 2)",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fecha_atencion": {
+          "name": "fecha_atencion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "atenciones_cita_id_citas_id_fk": {
+          "name": "atenciones_cita_id_citas_id_fk",
+          "tableFrom": "atenciones",
+          "tableTo": "citas",
+          "columnsFrom": [
+            "cita_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "atenciones_mascota_id_mascotas_id_fk": {
+          "name": "atenciones_mascota_id_mascotas_id_fk",
+          "tableFrom": "atenciones",
+          "tableTo": "mascotas",
+          "columnsFrom": [
+            "mascota_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "atenciones_veterinario_id_veterinarios_id_fk": {
+          "name": "atenciones_veterinario_id_veterinarios_id_fk",
+          "tableFrom": "atenciones",
+          "tableTo": "veterinarios",
+          "columnsFrom": [
+            "veterinario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "atenciones_clinica_id_clinicas_id_fk": {
+          "name": "atenciones_clinica_id_clinicas_id_fk",
+          "tableFrom": "atenciones",
+          "tableTo": "clinicas",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "atenciones_cita_id_unique": {
+          "name": "atenciones_cita_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "cita_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.atenciones_diagnosticos": {
+      "name": "atenciones_diagnosticos",
+      "schema": "",
+      "columns": {
+        "atencion_id": {
+          "name": "atencion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diagnostico_id": {
+          "name": "diagnostico_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "atenciones_diagnosticos_atencion_id_atenciones_id_fk": {
+          "name": "atenciones_diagnosticos_atencion_id_atenciones_id_fk",
+          "tableFrom": "atenciones_diagnosticos",
+          "tableTo": "atenciones",
+          "columnsFrom": [
+            "atencion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "atenciones_diagnosticos_diagnostico_id_diagnosticos_atencion_id_fk": {
+          "name": "atenciones_diagnosticos_diagnostico_id_diagnosticos_atencion_id_fk",
+          "tableFrom": "atenciones_diagnosticos",
+          "tableTo": "diagnosticos_atencion",
+          "columnsFrom": [
+            "diagnostico_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.catalogo_productos": {
+      "name": "catalogo_productos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "certificado_senasa": {
+          "name": "certificado_senasa",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre_comercial": {
+          "name": "nombre_comercial",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "laboratorio": {
+          "name": "laboratorio",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "es_vacuna": {
+          "name": "es_vacuna",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "catalogo_productos_certificado_senasa_unique": {
+          "name": "catalogo_productos_certificado_senasa_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "certificado_senasa"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.categorias_matriculas": {
+      "name": "categorias_matriculas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "varchar(2)",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "categoria": {
+          "name": "categoria",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "cobertura": {
+          "name": "cobertura",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.citas": {
+      "name": "citas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "mascota_id": {
+          "name": "mascota_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "veterinario_id": {
+          "name": "veterinario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_hora": {
+          "name": "fecha_hora",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "motivo_id": {
+          "name": "motivo_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "estado_cita_id": {
+          "name": "estado_cita_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "citas_mascota_id_mascotas_id_fk": {
+          "name": "citas_mascota_id_mascotas_id_fk",
+          "tableFrom": "citas",
+          "tableTo": "mascotas",
+          "columnsFrom": [
+            "mascota_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "citas_veterinario_id_veterinarios_id_fk": {
+          "name": "citas_veterinario_id_veterinarios_id_fk",
+          "tableFrom": "citas",
+          "tableTo": "veterinarios",
+          "columnsFrom": [
+            "veterinario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "citas_clinica_id_clinicas_id_fk": {
+          "name": "citas_clinica_id_clinicas_id_fk",
+          "tableFrom": "citas",
+          "tableTo": "clinicas",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "citas_motivo_id_motivos_cita_id_fk": {
+          "name": "citas_motivo_id_motivos_cita_id_fk",
+          "tableFrom": "citas",
+          "tableTo": "motivos_cita",
+          "columnsFrom": [
+            "motivo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "citas_estado_cita_id_estados_cita_id_fk": {
+          "name": "citas_estado_cita_id_estados_cita_id_fk",
+          "tableFrom": "citas",
+          "tableTo": "estados_cita",
+          "columnsFrom": [
+            "estado_cita_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.clinicas": {
+      "name": "clinicas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nombre_comercial": {
+          "name": "nombre_comercial",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.clinicas_mascotas": {
+      "name": "clinicas_mascotas",
+      "schema": "",
+      "columns": {
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "mascota_id": {
+          "name": "mascota_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estado_paciente_id": {
+          "name": "estado_paciente_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fecha_admision": {
+          "name": "fecha_admision",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_egreso": {
+          "name": "fecha_egreso",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "clinicas_mascotas_clinica_id_clinicas_id_fk": {
+          "name": "clinicas_mascotas_clinica_id_clinicas_id_fk",
+          "tableFrom": "clinicas_mascotas",
+          "tableTo": "clinicas",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "clinicas_mascotas_mascota_id_mascotas_id_fk": {
+          "name": "clinicas_mascotas_mascota_id_mascotas_id_fk",
+          "tableFrom": "clinicas_mascotas",
+          "tableTo": "mascotas",
+          "columnsFrom": [
+            "mascota_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "clinicas_mascotas_estado_paciente_id_estados_paciente_id_fk": {
+          "name": "clinicas_mascotas_estado_paciente_id_estados_paciente_id_fk",
+          "tableFrom": "clinicas_mascotas",
+          "tableTo": "estados_paciente",
+          "columnsFrom": [
+            "estado_paciente_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.diagnosticos_atencion": {
+      "name": "diagnosticos_atencion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "diagnostico": {
+          "name": "diagnostico",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "categoria": {
+          "name": "categoria",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "diagnosticos_atencion_diagnostico_unique": {
+          "name": "diagnosticos_atencion_diagnostico_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "diagnostico"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.especies": {
+      "name": "especies",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "especie": {
+          "name": "especie",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "especies_especie_unique": {
+          "name": "especies_especie_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "especie"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.estados_cita": {
+      "name": "estados_cita",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "estados_cita_estado_unique": {
+          "name": "estados_cita_estado_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "estado"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.estados_paciente": {
+      "name": "estados_paciente",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "estado": {
+          "name": "estado",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "estados_paciente_estado_unique": {
+          "name": "estados_paciente_estado_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "estado"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mascotas": {
+      "name": "mascotas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto_url": {
+          "name": "foto_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fecha_nacimiento": {
+          "name": "fecha_nacimiento",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "raza_id": {
+          "name": "raza_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "sexo": {
+          "name": "sexo",
+          "type": "char(1)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "es_castrado": {
+          "name": "es_castrado",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "numero_microchip": {
+          "name": "numero_microchip",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mascotas_raza_id_razas_id_fk": {
+          "name": "mascotas_raza_id_razas_id_fk",
+          "tableFrom": "mascotas",
+          "tableTo": "razas",
+          "columnsFrom": [
+            "raza_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.mascotas_propietarios": {
+      "name": "mascotas_propietarios",
+      "schema": "",
+      "columns": {
+        "mascota_id": {
+          "name": "mascota_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "propietario_id": {
+          "name": "propietario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "tipo_relacion_id": {
+          "name": "tipo_relacion_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "activo": {
+          "name": "activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "fecha_asociacion": {
+          "name": "fecha_asociacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "fecha_desasociacion": {
+          "name": "fecha_desasociacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "mascotas_propietarios_mascota_id_mascotas_id_fk": {
+          "name": "mascotas_propietarios_mascota_id_mascotas_id_fk",
+          "tableFrom": "mascotas_propietarios",
+          "tableTo": "mascotas",
+          "columnsFrom": [
+            "mascota_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "mascotas_propietarios_propietario_id_propietarios_id_fk": {
+          "name": "mascotas_propietarios_propietario_id_propietarios_id_fk",
+          "tableFrom": "mascotas_propietarios",
+          "tableTo": "propietarios",
+          "columnsFrom": [
+            "propietario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "mascotas_propietarios_tipo_relacion_id_tipos_relacion_id_fk": {
+          "name": "mascotas_propietarios_tipo_relacion_id_tipos_relacion_id_fk",
+          "tableFrom": "mascotas_propietarios",
+          "tableTo": "tipos_relacion",
+          "columnsFrom": [
+            "tipo_relacion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.motivos_cita": {
+      "name": "motivos_cita",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "motivo": {
+          "name": "motivo",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "motivos_cita_motivo_unique": {
+          "name": "motivos_cita_motivo_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "motivo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.propietarios": {
+      "name": "propietarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apellido": {
+          "name": "apellido",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "es_empresa": {
+          "name": "es_empresa",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "razon_social": {
+          "name": "razon_social",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "foto_url": {
+          "name": "foto_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "direccion": {
+          "name": "direccion",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "propietarios_usuario_id_usuarios_id_fk": {
+          "name": "propietarios_usuario_id_usuarios_id_fk",
+          "tableFrom": "propietarios",
+          "tableTo": "usuarios",
+          "columnsFrom": [
+            "usuario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "propietarios_usuario_id_unique": {
+          "name": "propietarios_usuario_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "usuario_id"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.razas": {
+      "name": "razas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "especie_id": {
+          "name": "especie_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "raza": {
+          "name": "raza",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "razas_especie_id_especies_id_fk": {
+          "name": "razas_especie_id_especies_id_fk",
+          "tableFrom": "razas",
+          "tableTo": "especies",
+          "columnsFrom": [
+            "especie_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roles": {
+      "name": "roles",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "rol": {
+          "name": "rol",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "roles_rol_unique": {
+          "name": "roles_rol_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "rol"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tipos_relacion": {
+      "name": "tipos_relacion",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "tipos_relacion_tipo_unique": {
+          "name": "tipos_relacion_tipo_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tipo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tipos_tratamiento": {
+      "name": "tipos_tratamiento",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "tipo": {
+          "name": "tipo",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "descripcion": {
+          "name": "descripcion",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "tipos_tratamiento_tipo_unique": {
+          "name": "tipos_tratamiento_tipo_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "tipo"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.tratamientos": {
+      "name": "tratamientos",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "atencion_id": {
+          "name": "atencion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "tipo_tratamiento_id": {
+          "name": "tipo_tratamiento_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "producto_id": {
+          "name": "producto_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dosis": {
+          "name": "dosis",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "frecuencia": {
+          "name": "frecuencia",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_inicio": {
+          "name": "fecha_inicio",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_fin": {
+          "name": "fecha_fin",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "indicaciones_adicionales": {
+          "name": "indicaciones_adicionales",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "tratamientos_atencion_id_atenciones_id_fk": {
+          "name": "tratamientos_atencion_id_atenciones_id_fk",
+          "tableFrom": "tratamientos",
+          "tableTo": "atenciones",
+          "columnsFrom": [
+            "atencion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tratamientos_tipo_tratamiento_id_tipos_tratamiento_id_fk": {
+          "name": "tratamientos_tipo_tratamiento_id_tipos_tratamiento_id_fk",
+          "tableFrom": "tratamientos",
+          "tableTo": "tipos_tratamiento",
+          "columnsFrom": [
+            "tipo_tratamiento_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "tratamientos_producto_id_catalogo_productos_id_fk": {
+          "name": "tratamientos_producto_id_catalogo_productos_id_fk",
+          "tableFrom": "tratamientos",
+          "tableTo": "catalogo_productos",
+          "columnsFrom": [
+            "producto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.usuarios": {
+      "name": "usuarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "rol_id": {
+          "name": "rol_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_creacion": {
+          "name": "fecha_creacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "usuarios_rol_id_roles_id_fk": {
+          "name": "usuarios_rol_id_roles_id_fk",
+          "tableFrom": "usuarios",
+          "tableTo": "roles",
+          "columnsFrom": [
+            "rol_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "usuarios_email_unique": {
+          "name": "usuarios_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.vacunas": {
+      "name": "vacunas",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "mascota_id": {
+          "name": "mascota_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "veterinario_id": {
+          "name": "veterinario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "atencion_id": {
+          "name": "atencion_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "producto_id": {
+          "name": "producto_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero_lote": {
+          "name": "numero_lote",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "fecha_aplicacion": {
+          "name": "fecha_aplicacion",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "fecha_proxima_dosis": {
+          "name": "fecha_proxima_dosis",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "vacunas_mascota_id_mascotas_id_fk": {
+          "name": "vacunas_mascota_id_mascotas_id_fk",
+          "tableFrom": "vacunas",
+          "tableTo": "mascotas",
+          "columnsFrom": [
+            "mascota_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "vacunas_veterinario_id_veterinarios_id_fk": {
+          "name": "vacunas_veterinario_id_veterinarios_id_fk",
+          "tableFrom": "vacunas",
+          "tableTo": "veterinarios",
+          "columnsFrom": [
+            "veterinario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "vacunas_atencion_id_atenciones_id_fk": {
+          "name": "vacunas_atencion_id_atenciones_id_fk",
+          "tableFrom": "vacunas",
+          "tableTo": "atenciones",
+          "columnsFrom": [
+            "atencion_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "vacunas_producto_id_catalogo_productos_id_fk": {
+          "name": "vacunas_producto_id_catalogo_productos_id_fk",
+          "tableFrom": "vacunas",
+          "tableTo": "catalogo_productos",
+          "columnsFrom": [
+            "producto_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.veterinarios": {
+      "name": "veterinarios",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "usuario_id": {
+          "name": "usuario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apellido": {
+          "name": "apellido",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "foto_url": {
+          "name": "foto_url",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "numero_matricula": {
+          "name": "numero_matricula",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "telefono": {
+          "name": "telefono",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "veterinarios_usuario_id_usuarios_id_fk": {
+          "name": "veterinarios_usuario_id_usuarios_id_fk",
+          "tableFrom": "veterinarios",
+          "tableTo": "usuarios",
+          "columnsFrom": [
+            "usuario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "veterinarios_usuario_id_unique": {
+          "name": "veterinarios_usuario_id_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "usuario_id"
+          ]
+        },
+        "veterinarios_numero_matricula_unique": {
+          "name": "veterinarios_numero_matricula_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "numero_matricula"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.veterinarios_clinicas": {
+      "name": "veterinarios_clinicas",
+      "schema": "",
+      "columns": {
+        "veterinario_id": {
+          "name": "veterinario_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "clinica_id": {
+          "name": "clinica_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "estado_activo": {
+          "name": "estado_activo",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "veterinarios_clinicas_veterinario_id_veterinarios_id_fk": {
+          "name": "veterinarios_clinicas_veterinario_id_veterinarios_id_fk",
+          "tableFrom": "veterinarios_clinicas",
+          "tableTo": "veterinarios",
+          "columnsFrom": [
+            "veterinario_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "veterinarios_clinicas_clinica_id_clinicas_id_fk": {
+          "name": "veterinarios_clinicas_clinica_id_clinicas_id_fk",
+          "tableFrom": "veterinarios_clinicas",
+          "tableTo": "clinicas",
+          "columnsFrom": [
+            "clinica_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.veterinarios_matriculados_cordoba": {
+      "name": "veterinarios_matriculados_cordoba",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "nombre_completo": {
+          "name": "nombre_completo",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero_matricula": {
+          "name": "numero_matricula",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "categoria_id": {
+          "name": "categoria_id",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "es_valido": {
+          "name": "es_valido",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "actualizado_el": {
+          "name": "actualizado_el",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "veterinarios_matriculados_cordoba_categoria_id_categorias_matriculas_id_fk": {
+          "name": "veterinarios_matriculados_cordoba_categoria_id_categorias_matriculas_id_fk",
+          "tableFrom": "veterinarios_matriculados_cordoba",
+          "tableTo": "categorias_matriculas",
+          "columnsFrom": [
+            "categoria_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "veterinarios_matriculados_cordoba_numero_matricula_unique": {
+          "name": "veterinarios_matriculados_cordoba_numero_matricula_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "numero_matricula"
+          ]
+        },
+        "veterinarios_matriculados_cordoba_dni_unique": {
+          "name": "veterinarios_matriculados_cordoba_dni_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "dni"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {},
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

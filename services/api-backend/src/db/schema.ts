@@ -128,6 +128,7 @@ export const mascotas_propietarios = pgTable('mascotas_propietarios', {
   tipo_relacion_id: integer('tipo_relacion_id').references(() => tipos_relacion.id),
   activo: boolean('activo').default(true).notNull(),
   fecha_asociacion: timestamp('fecha_asociacion').defaultNow().notNull(),
+  fecha_desasociacion: timestamp('fecha_desasociacion'),
 });
 
 export const mascotasPropietariosRelations = relations(mascotas_propietarios, ({ one }) => ({
@@ -150,6 +151,7 @@ export const clinicas_mascotas = pgTable('clinicas_mascotas', {
   mascota_id: uuid('mascota_id').references(() => mascotas.id),
   estado_paciente_id: integer('estado_paciente_id').references(() => estados_paciente.id),
   fecha_admision: timestamp('fecha_admision').notNull(),
+  fecha_egreso: timestamp('fecha_egreso'),
 });
 
 export const clinicasMascotasRelations = relations(clinicas_mascotas, ({ one }) => ({
