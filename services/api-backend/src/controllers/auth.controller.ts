@@ -1,6 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
-import { eq } from 'drizzle-orm';
 import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
@@ -186,22 +185,14 @@ export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply:
         const clinicaId = payload.clinicaId;
 
         // 2. Verificar que la clínica exista
-        const clinic = await db.query.clinicas.findFirst({
-            where: eq(clinicas.id, clinicaId)
-        });
-        if (!clinic) {
-            return reply.code(400).send({ message: "La clínica especificada en la invitación no existe" });
-        }
+        const clinic = await ClinicaService.getById(clinicaId);
+        if (!clinic) return reply.code(400).send({ message: "La clínica especificada en la invitación no existe" });
 
         // 3. Verificar si el correo ya existe
-        if (await Validation.existingUser(usuario.email)) {
-            return reply.code(400).send({ message: "El correo ya existe" });
-        }
+        if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
 
         // 4. Validar matrícula contra el registro de Córdoba
-        if (!(await Validation.isValidMatricula(veterinario.numero_matricula))) {
-            return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
-        }
+        if (!(await Validation.isValidMatricula(veterinario.numero_matricula))) return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
 
         // 5. Hash de contraseña
         const passwordHash = await bcrypt.hash(usuario.password, 10);
@@ -254,26 +245,21 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
     };
 
     try {
-        // Buscar usuario
-        const user = await db.query.usuarios.findFirst({ where: eq(usuarios.email, email), });
-        if (!user) return reply.code(404).send({ message: "Usuario no encontrado" });
+        // Buscar usuario con credenciales de autenticación
+        const authUser = await UserService.getAuthCredentialsByEmail(email);
+        if (!authUser) return reply.code(404).send({ message: "Email o contraseña incorrectos" });
 
         // Verificar contraseña
-        const isValid = await bcrypt.compare(password, user.password_hash);
-        if (!isValid) return reply.code(401).send({ message: "Contraseña incorrecta" });
-
-        const rolNombre = await RolService.getRolById(user.rol_id);
-        if (!rolNombre) return reply.code(404).send({ message: "Rol no encontrado" });
+        const isValid = await bcrypt.compare(password, authUser.passwordHash);
+        if (!isValid) return reply.code(401).send({ message: "Email o contraseña incorrectos" });
 
         // Generar Token
-        const token = jwt.sign({ id: user.id, email: user.email, rol: rolNombre }, JWT_SECRET, { expiresIn: '1d' });
-
-        // Sanitizar el objeto usuario (remover password_hash por seguridad)
-        const { password_hash, fecha_creacion, rol_id, ...safeUser } = user;
+        const token = jwt.sign({ id: authUser.id, email: authUser.email, rol: authUser.rol }, JWT_SECRET, { expiresIn: '1d' });
 
         const responseUser = {
-            ...safeUser,
-            rol: rolNombre
+            id: authUser.id,
+            email: authUser.email,
+            rol: authUser.rol,
         };
 
         // Establecer Cookie y responder
@@ -303,4 +289,3 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply): Prom
         .code(200)
         .send({ message: 'Sesión cerrada exitosamente' });
 };
-

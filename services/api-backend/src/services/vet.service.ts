@@ -1,16 +1,57 @@
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba } from "../db/schema";
+import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba, usuarios } from "../db/schema";
 
 export type VeterinarioClinica = typeof veterinarios_clinicas.$inferSelect;
-export type Veterinario = typeof veterinarios.$inferSelect;
+export interface Veterinario {
+    id: string;
+    usuario_id: string;
+    nombre: string;
+    apellido: string;
+    email: string;
+    foto_url?: string | null;
+    telefono?: string | null;
+    clinicas: string[];
+    fecha_creacion: Date;
+}
 export type NewVeterinario = typeof veterinarios.$inferInsert;
+export type VeterinarioDb = typeof veterinarios.$inferSelect
 type DBClient = typeof db | any;
 
 /**
  * Servicio para la gestión de perfiles de veterinarios, habilitación de matrículas y asociaciones con clínicas.
  */
 export class VetService {
+    static async getAll(): Promise<Veterinario[]> {
+        const result = await db.query.veterinarios.findMany({
+            with: {
+                usuario: {
+                    columns: {
+                        email: true,
+                        fecha_creacion: true,
+                    }
+                },
+                veterinarios_clinicas: {
+                    columns: {
+                        clinica_id: true,
+                    }
+                }
+            }
+        });
+        if (!result) return [];
+        return result.map((vc) => ({
+            id: vc.id,
+            usuario_id: vc.usuario_id,
+            nombre: vc.nombre,
+            apellido: vc.apellido,
+            email: vc.usuario.email,
+            foto_url: vc.foto_url,
+            telefono: vc.telefono,
+            clinicas: vc.veterinarios_clinicas.map((vc) => vc.clinica_id as string),
+            fecha_creacion: vc.usuario.fecha_creacion,
+        }));
+    }
+
     /**
      * Obtiene el veterinario por ID de perfil.
      * @param id - ID del perfil de veterinario
@@ -19,9 +60,32 @@ export class VetService {
     static async getById(id: string): Promise<Veterinario | null> {
         const result = await db.query.veterinarios.findFirst({
             where: eq(veterinarios.id, id),
+            with: {
+                usuario: {
+                    columns: {
+                        email: true,
+                        fecha_creacion: true,
+                    }
+                },
+                veterinarios_clinicas: {
+                    columns: {
+                        clinica_id: true,
+                    }
+                }
+            }
         });
         if (!result) return null;
-        return result;
+        return {
+            id: result.id,
+            usuario_id: result.usuario_id,
+            nombre: result.nombre,
+            apellido: result.apellido,
+            email: result.usuario.email,
+            foto_url: result.foto_url,
+            telefono: result.telefono,
+            clinicas: result.veterinarios_clinicas.map((vc) => vc.clinica_id as string),
+            fecha_creacion: result.usuario.fecha_creacion,
+        };
     }
 
     /**
@@ -32,21 +96,45 @@ export class VetService {
     static async getByUsuarioId(usuarioId: string): Promise<Veterinario | null> {
         const result = await db.query.veterinarios.findFirst({
             where: eq(veterinarios.usuario_id, usuarioId),
+            with: {
+                usuario: {
+                    columns: {
+                        email: true,
+                        fecha_creacion: true,
+                    }
+                },
+                veterinarios_clinicas: {
+                    columns: {
+                        clinica_id: true,
+                    }
+                }
+            }
         });
         if (!result) return null;
-        return result;
+        return {
+            id: result.id,
+            usuario_id: result.usuario_id,
+            nombre: result.nombre,
+            apellido: result.apellido,
+            email: result.usuario.email,
+            foto_url: result.foto_url,
+            telefono: result.telefono,
+            clinicas: result.veterinarios_clinicas.map((vc) => vc.clinica_id as string),
+            fecha_creacion: result.usuario.fecha_creacion,
+        };
     }
 
     /**
      * Crea un nuevo veterinario.
      * @param data - Datos del nuevo veterinario (insert type)
      * @param tx - Transacción de base de datos (opcional)
-     * @returns El veterinario creado -> {@link Veterinario}
+     * @returns El veterinario creado -> {@link VeterinarioDb}
      */
-    static async create(data: NewVeterinario, tx?: DBClient): Promise<Veterinario> {
+    static async create(data: NewVeterinario, tx?: DBClient): Promise<VeterinarioDb> {
         const client = tx || db;
         const [newVeterinario] = await client.insert(veterinarios).values(data).returning();
-        return newVeterinario;
+
+        return newVeterinario as VeterinarioDb;
     }
 
     /**

@@ -60,16 +60,4 @@ export class PropietarioService {
             .returning();
         return updated || null;
     }
-
-    /**
-     * Elimina (marca como inactivo) un propietario.
-     * @param usuarioId - ID del usuario del propietario
-     * @param tx - Cliente de base de datos o transacción (opcional)
-     */
-    static async deleteByUsuarioId(usuarioId: string, tx?: DBClient): Promise<void> {
-        const client = tx || db;
-        await client.update(propietarios)
-            .set({ es_activo: false })
-            .where(eq(propietarios.usuario_id, usuarioId));
-    }
 }

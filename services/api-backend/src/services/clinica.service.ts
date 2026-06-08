@@ -33,6 +33,19 @@ export class ClinicaService {
     }
 
     /**
+     * Verifica si una clínica existe.
+     * @param id - ID de la clínica
+     * @returns True si la clínica existe, false en caso contrario
+     */
+    static async exists(id: string): Promise<boolean> {
+        const result = await db.query.clinicas.findFirst({
+            where: eq(clinicas.id, id),
+            columns: { id: true }
+        });
+        return !!result;
+    }
+
+    /**
      * Crea una nueva clínica.
      * @param data - Datos de la clínica (insert type)
      * @param tx - Transacción de base de datos (opcional)

@@ -13,6 +13,41 @@ API REST para la gestión de clínicas veterinarias, veterinarios, propietarios,
 
 ---
 
+## 📂 Arquitectura y Estructura del Proyecto
+
+El backend de VetVault está diseñado bajo una **arquitectura en capas (N-Tier / MVC simplificada)** para separar responsabilidades, facilitar las pruebas y mejorar la mantenibilidad del código:
+
+### 🏢 Arquitectura de Capas
+1. **Capa de Entrada y Rutas ([src/routes/](file:///home/rei/VetVault/proyecto-vet-pp/services/api-backend/src/routes))**: Recibe las solicitudes HTTP. Registra los endpoints mediante Fastify y aplica los middlewares correspondientes (ej. validaciones de JWT o roles en hooks `preHandler` como `auth.middleware.ts`).
+2. **Capa de Controladores ([src/controllers/](file:///home/rei/VetVault/proyecto-vet-pp/services/api-backend/src/controllers))**: Actúa como puente entre la capa de entrada y de negocio. Extrae y valida parámetros de la solicitud (body, params, query, cookies), delega la ejecución de la lógica al servicio correspondiente, y maneja las respuestas HTTP y sus códigos de estado.
+3. **Capa de Servicios ([src/services/](file:///home/rei/VetVault/proyecto-vet-pp/services/api-backend/src/services))**: Concentra la lógica del negocio. Realiza consultas a través de Drizzle ORM, coordina transacciones, aplica reglas de negocio del dominio y realiza integraciones externas (por ejemplo, con AWS S3 o APIs de IA).
+4. **Capa de Datos ([src/db/](file:///home/rei/VetVault/proyecto-vet-pp/services/api-backend/src/db))**: Configura la conexión a la base de datos PostgreSQL, expone la instancia del cliente Drizzle ORM (`db`) y contiene las declaraciones de esquemas y tipos (`schema.ts`).
+
+---
+
+### 📁 Estructura de Carpetas
+
+A continuación se detalla la estructura principal de directorios y archivos dentro de `services/api-backend`:
+
+```
+services/api-backend/
+├── drizzle/                # Archivos de migración generados por Drizzle ORM (*.sql)
+├── scripts/                # Scripts auxiliares para la gestión de datos
+├── src/                    # Código fuente del backend
+│   ├── controllers/        # Controladores de la API (manejo de req y reply)
+│   ├── db/                 # Configuración de base de datos, esquemas de Drizzle y scripts de seeding
+│   ├── middlewares/        # Middlewares / hooks de Fastify (autenticación y roles)
+│   ├── routes/             # Definición de rutas y mapeo de endpoints
+│   ├── services/           # Lógica de negocio y consultas con el ORM
+│   ├── utils/              # Clases y funciones auxiliares (ej. validaciones de acceso)
+│   └── server.ts           # Punto de entrada de la aplicación (servidor Fastify)
+├── tsconfig.json           # Configuración de compilación de TypeScript
+├── package.json            # Dependencias del backend y scripts de ejecución
+└── drizzle.config.ts       # Configuración global para Drizzle Kit
+```
+
+---
+
 ## 🔒 Autenticación y Seguridad
 La mayoría de los endpoints requieren que el usuario esté autenticado. 
 - Los tokens JWT se envían y validan automáticamente a través de la cookie `token` (HTTP-Only).

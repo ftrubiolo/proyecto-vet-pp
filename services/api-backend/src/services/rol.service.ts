@@ -11,7 +11,7 @@ export class RolService {
    * @param id - ID del rol
    * @returns Rol o null si no se encuentra
    */
-  static async getRolById(id: number): Promise<string | null> {
+  static async getById(id: number): Promise<string | null> {
     const rolResult = await db.query.roles.findFirst({
       where: eq(roles.id, id),
       columns: { rol: true },

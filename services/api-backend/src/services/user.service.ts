@@ -1,8 +1,15 @@
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
-import { usuarios } from '../db/schema';
+import { usuarios, roles } from '../db/schema';
+import bcrypt from 'bcrypt';
+import { RolService } from './rol.service';
 
-export type Usuario = typeof usuarios.$inferSelect;
+export interface Usuario {
+  id: string;
+  email: string;
+  rol: string;
+  fecha_creacion: Date;
+}
 export type NewUsuario = typeof usuarios.$inferInsert;
 type DBClient = typeof db | any;
 
@@ -32,6 +39,170 @@ export class UserService {
   static async create(data: NewUsuario, tx?: DBClient): Promise<Usuario> {
     const client = tx || db;
     const [newUser] = await client.insert(usuarios).values(data).returning();
-    return newUser;
+
+    const rolRecord = await client.query.roles.findFirst({
+      where: eq(roles.id, newUser.rol_id),
+    });
+
+    return {
+      id: newUser.id,
+      email: newUser.email,
+      rol: rolRecord ? rolRecord.rol : '',
+      fecha_creacion: newUser.fecha_creacion,
+    };
   }
+
+  /**
+   * Actualiza un usuario.
+   * @param id - ID del usuario a actualizar
+   * @param data - Datos del usuario a actualizar
+   * @param tx - Cliente de base de datos o transacción (opcional)
+   * @returns El usuario actualizado
+   */
+  static async update(id: string, data: { email?: string; password?: string }, tx?: DBClient): Promise<Usuario> {
+    const client = tx || db;
+
+    const updateData: { email?: string; password_hash?: string } = {};
+    if (data.email) updateData.email = data.email;
+    if (data.password) updateData.password_hash = await bcrypt.hash(data.password, 10);
+
+    const [updatedUser] = await client.update(usuarios)
+      .set(updateData)
+      .where(eq(usuarios.id, id))
+      .returning();
+    if (!updatedUser) throw new Error('Usuario no encontrado');
+
+    const rolRecord = await RolService.getById(updatedUser.rol_id);
+    if (!rolRecord) throw new Error('Rol no encontrado');
+
+    return {
+      id: updatedUser.id,
+      email: updatedUser.email,
+      rol: rolRecord,
+      fecha_creacion: updatedUser.fecha_creacion,
+    };
+  }
+
+  /**
+   * Obtiene un usuario por su email.
+   * @param email - Email del usuario
+   * @returns Usuario encontrado o null si no existe
+   */
+  static async getByEmail(email: string): Promise<Usuario | null> {
+    const user = await db.query.usuarios.findFirst({
+      columns: {
+        id: true,
+        email: true,
+        fecha_creacion: true,
+      },
+      with: {
+        rol: {
+          columns: {
+            rol: true,
+          },
+        },
+      },
+      where: eq(usuarios.email, email),
+    });
+    if (!user) return null;
+    return {
+      id: user.id,
+      email: user.email,
+      rol: user.rol.rol,
+      fecha_creacion: user.fecha_creacion,
+    };
+  }
+
+  /**
+   * Obtiene las credenciales de autenticación de un usuario por su email.
+   * @param email - Email del usuario
+   * @returns Credenciales del usuario o null si no existe
+   */
+  static async getAuthCredentialsByEmail(email: string): Promise<{
+    id: string;
+    email: string;
+    passwordHash: string;
+    rol: string;
+  } | null> {
+    const user = await db.query.usuarios.findFirst({
+      columns: {
+        id: true,
+        email: true,
+        password_hash: true,
+      },
+      with: {
+        rol: {
+          columns: {
+            rol: true,
+          },
+        },
+      },
+      where: eq(usuarios.email, email),
+    });
+    if (!user) return null;
+    return {
+      id: user.id,
+      email: user.email,
+      passwordHash: user.password_hash,
+      rol: user.rol.rol,
+    };
+  }
+
+  /**
+   * Obtiene un usuario por su ID.
+   * @param id - ID del usuario
+   * @returns Usuario encontrado o null si no existe
+   */
+  static async getById(id: string): Promise<Usuario | null> {
+    const user = await db.query.usuarios.findFirst({
+      columns: {
+        id: true,
+        email: true,
+        fecha_creacion: true,
+      },
+      with: {
+        rol: {
+          columns: {
+            rol: true,
+          },
+        },
+      },
+      where: eq(usuarios.id, id),
+    });
+    if (!user) return null;
+    return {
+      id: user.id,
+      email: user.email,
+      rol: user.rol.rol,
+      fecha_creacion: user.fecha_creacion,
+    };
+  }
+
+  /**
+   * Obtiene todos los usuarios.
+   * @returns Lista de usuarios
+   */
+  static async getAll(): Promise<Usuario[]> {
+    const users = await db.query.usuarios.findMany({
+      columns: {
+        id: true,
+        email: true,
+        fecha_creacion: true,
+      },
+      with: {
+        rol: {
+          columns: {
+            rol: true,
+          },
+        },
+      },
+    });
+    return users.map((user) => ({
+      id: user.id,
+      email: user.email,
+      rol: user.rol.rol,
+      fecha_creacion: user.fecha_creacion,
+    }));
+  };
 }
+

@@ -7,7 +7,17 @@ import jwt from 'jsonwebtoken';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
-export const obtenerPerfil = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+  try {
+    const veters = await VetService.getAll();
+    return reply.code(200).send(veters);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return reply.code(500).send({ message });
+  }
+}
+
+export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
   const { id } = request.params as { id: string };
   try {
     const vet = await VetService.getById(id);
@@ -24,9 +34,7 @@ export const obtenerPerfil = async (request: FastifyRequest, reply: FastifyReply
 export const generarInvitacion = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
   const { clinicaId } = request.body as { clinicaId: string };
   const user = request.user;
-  if (!user) {
-    return reply.code(401).send({ message: "No autorizado" });
-  }
+  if (!user) return reply.code(401).send({ message: "No autorizado" });
 
   try {
     // 1. Verificar si la clínica existe
