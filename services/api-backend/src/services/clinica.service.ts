@@ -2,9 +2,7 @@ import { db } from '../db';
 import { eq } from 'drizzle-orm';
 import { clinicas } from '../db/schema';
 
-export type Clinica = typeof clinicas.$inferSelect;
-export type NewClinica = typeof clinicas.$inferInsert;
-type DBClient = typeof db | any;
+import type { ClinicaDb, NewClinica, DBClient } from '../types/db.types';
 
 /**
  * Servicio para la gestión de clínicas veterinarias.
@@ -12,9 +10,9 @@ type DBClient = typeof db | any;
 export class ClinicaService {
     /**
      * Obtiene todas las clínicas.
-     * @returns Array de clínicas -> {@link Clinica}
+     * @returns Array de clínicas -> {@link ClinicaDb}
      */
-    static async getAll(): Promise<Clinica[]> {
+    static async getAll(): Promise<ClinicaDb[]> {
         const result = await db.query.clinicas.findMany();
         return result;
     }
@@ -22,9 +20,9 @@ export class ClinicaService {
     /**
      * Obtiene una clínica por ID.
      * @param id - ID de la clínica
-     * @returns Clínica encontrada -> {@link Clinica} o null si no existe
+     * @returns Clínica encontrada -> {@link ClinicaDb} o null si no existe
      */
-    static async getById(id: string): Promise<Clinica | null> {
+    static async getById(id: string): Promise<ClinicaDb | null> {
         const result = await db.query.clinicas.findFirst({
             where: eq(clinicas.id, id),
         });
@@ -49,9 +47,9 @@ export class ClinicaService {
      * Crea una nueva clínica.
      * @param data - Datos de la clínica (insert type)
      * @param tx - Transacción de base de datos (opcional)
-     * @returns Clínica creada -> {@link Clinica}
+     * @returns Clínica creada -> {@link ClinicaDb}
      */
-    static async create(data: NewClinica, tx?: DBClient): Promise<Clinica> {
+    static async create(data: NewClinica, tx?: DBClient): Promise<ClinicaDb> {
         const client = tx || db;
         const [newClinica] = await client.insert(clinicas).values(data).returning();
         return newClinica;

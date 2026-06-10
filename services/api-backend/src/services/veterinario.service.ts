@@ -1,6 +1,7 @@
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
 import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba, usuarios } from "../db/schema";
+import { UpdateVeterinario } from "../types/db.types";
 
 export type VeterinarioClinica = typeof veterinarios_clinicas.$inferSelect;
 export interface Veterinario {
@@ -22,6 +23,11 @@ type DBClient = typeof db | any;
  * Servicio para la gestión de perfiles de veterinarios, habilitación de matrículas y asociaciones con clínicas.
  */
 export class VetService {
+
+    /**
+     * Obtiene todos los veterinarios con sus datos de usuario y clínicas.
+     * @returns Array de veterinarios -> {@link Veterinario}
+     */
     static async getAll(): Promise<Veterinario[]> {
         const result = await db.query.veterinarios.findMany({
             with: {
@@ -135,6 +141,22 @@ export class VetService {
         const [newVeterinario] = await client.insert(veterinarios).values(data).returning();
 
         return newVeterinario as VeterinarioDb;
+    }
+
+    /**
+     * Actualiza un veterinario.
+     * @param id - ID del veterinario
+     * @param data - Datos del veterinario
+     * @param tx - Transacción de base de datos (opcional)
+     * @returns El veterinario actualizado -> {@link VeterinarioDb} o null si no existe
+     */
+    static async update(id: string, data: UpdateVeterinario, tx?: DBClient): Promise<VeterinarioDb | null> {
+        const client = tx || db;
+        const [updated] = await client.update(veterinarios)
+            .set(data)
+            .where(eq(veterinarios.id, id))
+            .returning();
+        return updated || null;
     }
 
     /**

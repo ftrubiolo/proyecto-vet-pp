@@ -1,6 +1,6 @@
-import { TokenPayload } from '../middlewares/auth.middleware';
+import { TokenPayload } from '../types/auth.types';
 import { UserService } from '../services/user.service';
-import { VetService } from '../services/vet.service';
+import { VetService } from '../services/veterinario.service';
 
 
 /**

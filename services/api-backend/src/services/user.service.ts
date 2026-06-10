@@ -4,14 +4,17 @@ import { usuarios, roles } from '../db/schema';
 import bcrypt from 'bcrypt';
 import { RolService } from './rol.service';
 
+import type { UsuarioDb, NewUsuario, DBClient } from '../types/db.types';
+import { UpdateUsuarioInput } from '../types/auth.types';
+
+export type UsuarioAuth = Pick<UsuarioDb, 'id' | 'email' | 'password_hash'> & { rol: string };
+
 export interface Usuario {
   id: string;
   email: string;
   rol: string;
   fecha_creacion: Date;
 }
-export type NewUsuario = typeof usuarios.$inferInsert;
-type DBClient = typeof db | any;
 
 /**
  * Servicio para gestionar la lógica de negocio, creación y verificación de cuentas de usuario.
@@ -59,7 +62,7 @@ export class UserService {
    * @param tx - Cliente de base de datos o transacción (opcional)
    * @returns El usuario actualizado
    */
-  static async update(id: string, data: { email?: string; password?: string }, tx?: DBClient): Promise<Usuario> {
+  static async update(id: string, data: UpdateUsuarioInput, tx?: DBClient): Promise<Usuario | null> {
     const client = tx || db;
 
     const updateData: { email?: string; password_hash?: string } = {};
@@ -70,7 +73,7 @@ export class UserService {
       .set(updateData)
       .where(eq(usuarios.id, id))
       .returning();
-    if (!updatedUser) throw new Error('Usuario no encontrado');
+    if (!updatedUser) return null;
 
     const rolRecord = await RolService.getById(updatedUser.rol_id);
     if (!rolRecord) throw new Error('Rol no encontrado');
@@ -118,12 +121,7 @@ export class UserService {
    * @param email - Email del usuario
    * @returns Credenciales del usuario o null si no existe
    */
-  static async getAuthCredentialsByEmail(email: string): Promise<{
-    id: string;
-    email: string;
-    passwordHash: string;
-    rol: string;
-  } | null> {
+  static async getAuthCredentialsByEmail(email: string): Promise<UsuarioAuth | null> {
     const user = await db.query.usuarios.findFirst({
       columns: {
         id: true,
@@ -143,7 +141,7 @@ export class UserService {
     return {
       id: user.id,
       email: user.email,
-      passwordHash: user.password_hash,
+      password_hash: user.password_hash,
       rol: user.rol.rol,
     };
   }
