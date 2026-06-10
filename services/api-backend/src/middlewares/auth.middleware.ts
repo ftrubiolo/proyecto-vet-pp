@@ -1,14 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 
-export interface TokenPayload {
-    id: string;
-    vetId?: string;
-    proId?: string;
-    email: string;
-    rol: string; // 'Veterinario', 'Propietario', 'Admin'
-}
-
+import { TokenPayload } from '../types/auth.types';
 // Extendemos el Request de Fastify para que acepte nuestra propiedad 'user'
 declare module 'fastify' {
     interface FastifyRequest {
