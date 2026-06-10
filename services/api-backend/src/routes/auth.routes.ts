@@ -25,7 +25,6 @@ const registrarVeterinarioSchema = {
         properties: {
           email: { type: 'string', format: 'email' },
           password: { type: 'string', minLength: 6 },
-          rol: { type: 'string' }
         }
       },
       "veterinario": {
@@ -55,18 +54,29 @@ const registrarVeterinarioSchema = {
 const registrarPropietarioSchema = {
   body: {
     type: 'object',
-    required: ['email', 'password', 'rol', 'name', 'lastname', 'isCompany', 'telefono'],
+    required: ['usuario', 'propietario'],
     properties: {
-      email: { type: 'string', format: 'email' },
-      password: { type: 'string', minLength: 6 },
-      rol: { type: 'string' },
-      name: { type: 'string' },
-      lastname: { type: 'string' },
-      isCompany: { type: 'boolean' },
-      companyName: { type: 'string' },
-      foto: { type: 'string' },
-      telefono: { type: 'string' },
-      direccion: { type: 'string' }
+      "usuario": {
+        type: 'object',
+        required: ['email', 'password'],
+        properties: {
+          email: { type: 'string', format: 'email' },
+          password: { type: 'string', minLength: 6 },
+        }
+      },
+      "propietario": {
+        type: 'object',
+        required: ['nombre', 'apellido', 'esEmpresa', 'telefono'],
+        properties: {
+          nombre: { type: 'string' },
+          apellido: { type: 'string' },
+          esEmpresa: { type: 'boolean' },
+          razonSocial: { type: 'string' },
+          foto: { type: 'string' },
+          telefono: { type: 'string' },
+          direccion: { type: 'string' }
+        }
+      }
     }
   }
 };

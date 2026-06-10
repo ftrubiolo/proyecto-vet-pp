@@ -1,37 +1,19 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
-import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas } from '../db/schema';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { Password } from '../utils/password';
 import { RolService } from '../services/rol.service';
 import { Validation } from '../utils/validation';
 import { UserService } from '../services/user.service';
-import { VetService } from '../services/vet.service';
+import { VetService } from '../services/veterinario.service';
 import { ClinicaService } from '../services/clinica.service';
-import { PropietarioService } from '../services/prop.service';
+import { PropietarioService } from '../services/propietario.service';
+import { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput } from '../types/auth.types';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
 export const registrarVeterinario = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const { usuario, veterinario, clinica } = request.body as {
-        usuario: {
-            email: string;
-            password: string;
-            rol: string;
-        };
-        veterinario: {
-            nombre: string;
-            apellido: string;
-            foto?: string;
-            numero_matricula: string;
-            telefono: string;
-        };
-        clinica: {
-            nombre: string;
-            direccion: string;
-            telefono: string;
-        };
-    };
+    const { usuario, veterinario, clinica } = request.body as RegistroVeterinarioInput;
 
     try {
         // Verificar si el correo existe
@@ -43,7 +25,7 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         }
 
         // Hash de contraseña
-        const passwordHash = await bcrypt.hash(usuario.password, 10);
+        const passwordHash = await Password.hashPassword(usuario.password);
 
         // Obtener ID del rol
         const rolId = await RolService.getIdByRol('Veterinario');
@@ -89,25 +71,14 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
 };
 
 export const registrarPropietario = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const { email, password, rol, name, lastname, isCompany, companyName, foto, telefono, direccion } = request.body as {
-        email: string;
-        password: string;
-        rol: string;
-        name: string;
-        lastname: string;
-        isCompany: boolean;
-        companyName?: string;
-        foto?: string;
-        telefono: string;
-        direccion?: string;
-    };
+    const { usuario, propietario } = request.body as RegistroPropietarioInput;
 
     try {
         // Verificar si el correo existe
-        if (await Validation.existingUser(email)) return reply.code(400).send({ message: "El correo ya existe" });
+        if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
 
         // Hash de contraseña
-        const passwordHash = await bcrypt.hash(password, 10);
+        const passwordHash = await Password.hashPassword(usuario.password);
 
         // Obtener ID del rol
         const rolId = await RolService.getIdByRol('Propietario');
@@ -116,20 +87,20 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
             const newUser = await UserService.create({
-                email,
+                email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
             }, tx);
 
             const newPropietario = await PropietarioService.create({
                 usuario_id: newUser.id,
-                nombre: name,
-                apellido: lastname,
-                es_empresa: isCompany,
-                razon_social: companyName,
-                foto_url: foto,
-                telefono: telefono,
-                direccion: direccion,
+                nombre: propietario.nombre,
+                apellido: propietario.apellido,
+                es_empresa: propietario.esEmpresa,
+                razon_social: propietario.razonSocial,
+                foto_url: propietario.foto,
+                telefono: propietario.telefono,
+                direccion: propietario.direccion,
             }, tx);
 
             return { user: newUser, profile: newPropietario };
@@ -153,21 +124,7 @@ interface InvitationPayload {
 }
 
 export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const { token, usuario, veterinario } = request.body as {
-        token: string;
-        usuario: {
-            email: string;
-            password: string;
-            rol: string;
-        };
-        veterinario: {
-            nombre: string;
-            apellido: string;
-            foto?: string;
-            numero_matricula: string;
-            telefono: string;
-        };
-    };
+    const { token, usuario, veterinario } = request.body as RegistroVeterinarioUnirseInput;
 
     try {
         // 1. Verificar y decodificar el token de invitación
@@ -195,7 +152,7 @@ export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply:
         if (!(await Validation.isValidMatricula(veterinario.numero_matricula))) return reply.code(400).send({ message: "El número de matrícula no está habilitado o no es válido en el registro oficial" });
 
         // 5. Hash de contraseña
-        const passwordHash = await bcrypt.hash(usuario.password, 10);
+        const passwordHash = await Password.hashPassword(usuario.password);
 
         // 6. Obtener ID del rol
         const rolId = await RolService.getIdByRol('Veterinario');
@@ -250,17 +207,12 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         if (!authUser) return reply.code(404).send({ message: "Email o contraseña incorrectos" });
 
         // Verificar contraseña
-        const isValid = await bcrypt.compare(password, authUser.passwordHash);
+        const isValid = await Password.comparePassword(password, authUser.password_hash);
         if (!isValid) return reply.code(401).send({ message: "Email o contraseña incorrectos" });
+        const { password_hash: hash, ...user } = authUser;
 
         // Generar Token
-        const token = jwt.sign({ id: authUser.id, email: authUser.email, rol: authUser.rol }, JWT_SECRET, { expiresIn: '1d' });
-
-        const responseUser = {
-            id: authUser.id,
-            email: authUser.email,
-            rol: authUser.rol,
-        };
+        const token = jwt.sign({ id: user.id, email: user.email, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
 
         // Establecer Cookie y responder
         return reply
@@ -274,7 +226,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
             })
             .send({
                 message: "Usuario logueado exitosamente",
-                user: responseUser
+                user
             });
 
     } catch (error) {

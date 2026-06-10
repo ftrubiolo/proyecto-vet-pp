@@ -1,9 +1,9 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { db } from '../db';
-import { eq } from 'drizzle-orm';
-import { clinicas } from '../db/schema';
-import { VetService } from '../services/vet.service';
+import { NewVeterinario, VetService } from '../services/veterinario.service';
 import jwt from 'jsonwebtoken';
+import { Validation } from '../utils/validation';
+import { UpdateVeterinario } from '../types/db.types';
+import { ClinicaService } from '../services/clinica.service';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -21,9 +21,8 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
   const { id } = request.params as { id: string };
   try {
     const vet = await VetService.getById(id);
-    if (!vet) {
-      return reply.code(404).send({ message: "Veterinario no encontrado" });
-    }
+    if (!vet) return reply.code(404).send({ message: "Veterinario no encontrado" });
+
     return reply.code(200).send(vet);
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Error desconocido';
@@ -38,12 +37,8 @@ export const generarInvitacion = async (request: FastifyRequest, reply: FastifyR
 
   try {
     // 1. Verificar si la clínica existe
-    const clinic = await db.query.clinicas.findFirst({
-      where: eq(clinicas.id, clinicaId),
-    });
-    if (!clinic) {
-      return reply.code(404).send({ message: "Clínica no encontrada" });
-    }
+    const clinic = await ClinicaService.getById(clinicaId);
+    if (!clinic) return reply.code(404).send({ message: "Clínica no encontrada" });
 
     // 2. Si no es Admin, verificar que el veterinario pertenezca activamente a la clínica
     if (user.rol !== 'Admin') {
@@ -80,3 +75,23 @@ export const generarInvitacion = async (request: FastifyRequest, reply: FastifyR
     return reply.code(500).send({ message });
   }
 };
+
+export const update = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+  const { id } = request.params as { id: string };
+  const data = request.body as UpdateVeterinario;
+
+  const isValid = Validation.hasAccess(request.user, id);
+  if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
+
+  try {
+    const vet = await VetService.update(id, data);
+    if (!vet) return reply.code(404).send({ message: 'Veterinario no encontrado' });
+    return reply.code(200).send({
+      message: 'Veterinario actualizado exitosamente',
+      vet
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return reply.code(500).send({ message });
+  }
+}

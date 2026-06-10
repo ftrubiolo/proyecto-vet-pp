@@ -9,6 +9,5 @@ export default async function propietariosRoutes(fastify: FastifyInstance) {
   fastify.get('/', { preHandler: [checkRole(['Admin'])] }, controller.getAll);
   fastify.get('/:id', controller.getOne);
   fastify.patch('/:id', { preHandler: [checkRole(['Admin', 'Propietario'])] }, controller.update);
-  fastify.delete('/:id', { preHandler: [checkRole(['Admin'])] }, controller.remove);
 }
 

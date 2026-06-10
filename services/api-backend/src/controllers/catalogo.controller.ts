@@ -1,11 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CatalogoService } from '../services/catalogo.service';
 
-/**
- * Obtiene todas las especies
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllEspecies = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const especies = await CatalogoService.getAllEspecies();
@@ -15,11 +10,6 @@ export const getAllEspecies = async (request: FastifyRequest, reply: FastifyRepl
     }
 };
 
-/**
- * Obtiene todos los diagnosticos
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllDiagnosticos = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const diagnosticos = await CatalogoService.getAllDiagnosticos();
@@ -29,11 +19,6 @@ export const getAllDiagnosticos = async (request: FastifyRequest, reply: Fastify
     }
 };
 
-/**
- * Obtiene todos los tipos de tratamiento
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllTiposTratamiento = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const tiposTratamiento = await CatalogoService.getAllTiposTratamiento();
@@ -43,11 +28,6 @@ export const getAllTiposTratamiento = async (request: FastifyRequest, reply: Fas
     }
 };
 
-/**
- * Obtiene todos los productos
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllProductos = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const productos = await CatalogoService.getAllProductos();
@@ -57,11 +37,6 @@ export const getAllProductos = async (request: FastifyRequest, reply: FastifyRep
     }
 };
 
-/**
- * Obtiene todas las vacunas dentro de productos
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllVacunas = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const vacunas = await CatalogoService.getAllVacunas();
@@ -71,11 +46,6 @@ export const getAllVacunas = async (request: FastifyRequest, reply: FastifyReply
     }
 };
 
-/**
- * Obtiene todos los medicamentos dentro de productos
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllMedicamentos = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const medicamentos = await CatalogoService.getAllMedicamentos();
@@ -85,11 +55,6 @@ export const getAllMedicamentos = async (request: FastifyRequest, reply: Fastify
     }
 };
 
-/**
- * Obtiene todos los motivos de cita
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllMotivosCita = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const motivos = await CatalogoService.getAllMotivosCita();
@@ -99,11 +64,6 @@ export const getAllMotivosCita = async (request: FastifyRequest, reply: FastifyR
     }
 };
 
-/**
- * Obtiene todos los estados de cita
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllEstadosCita = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const estados = await CatalogoService.getAllEstadosCita();
@@ -113,11 +73,6 @@ export const getAllEstadosCita = async (request: FastifyRequest, reply: FastifyR
     }
 };
 
-/**
- * Obtiene todos los estados de paciente
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllEstadosPaciente = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const estados = await CatalogoService.getAllEstadosPaciente();
@@ -127,11 +82,6 @@ export const getAllEstadosPaciente = async (request: FastifyRequest, reply: Fast
     }
 };
 
-/**
- * Obtiene todos los tipos de relación mascota-propietario
- * @param request - Request de Fastify
- * @param reply - Reply de Fastify
- */
 export const getAllTiposRelacionMascota = async (request: FastifyRequest, reply: FastifyReply) => {
     try {
         const tiposRelacion = await CatalogoService.getAllTiposRelacion();

@@ -134,6 +134,7 @@ export const mascotas_propietarios = pgTable('mascotas_propietarios', {
 export const mascotasPropietariosRelations = relations(mascotas_propietarios, ({ one }) => ({
   mascota: one(mascotas, { fields: [mascotas_propietarios.mascota_id], references: [mascotas.id] }),
   propietario: one(propietarios, { fields: [mascotas_propietarios.propietario_id], references: [propietarios.id] }),
+  tipo_relacion: one(tipos_relacion, { fields: [mascotas_propietarios.tipo_relacion_id], references: [tipos_relacion.id] }),
 }));
 
 export const tipos_relacion = pgTable('tipos_relacion', {

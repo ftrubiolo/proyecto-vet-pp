@@ -11,7 +11,7 @@ export default async function usuariosRoutes(fastify: FastifyInstance) {
   fastify.get("/me", controller.getMe);
   fastify.get("/:id", { preHandler: checkRole(['Admin']) }, controller.getOne);
 
-  fastify.patch("/:id", { schema: updateSchema, preHandler: checkRole(['Admin']) }, controller.update);
+  fastify.patch("/:id", { schema: updateSchema }, controller.update);
   fastify.delete("/:id", { preHandler: checkRole(['Admin']) }, controller.remove);
 }
 
@@ -20,7 +20,7 @@ const updateSchema = {
     type: 'object',
     properties: {
       email: { type: 'string', format: 'email' },
-      password: { type: 'string' }
+      password: { type: 'string', minLength: 6 }
     }
   }
 };
