@@ -251,14 +251,35 @@ export const atencionesDiagnosticosRelations = relations(atenciones_diagnosticos
 
 export const catalogo_productos = pgTable('catalogo_productos', {
   id: serial('id').primaryKey(),
-  certificado_senasa: varchar('certificado_senasa').notNull().unique(),
+  numero_senasa: varchar('numero_senasa').notNull().unique(),
   nombre_comercial: varchar('nombre_comercial').notNull(),
-  laboratorio: varchar('laboratorio').notNull(),
-  es_vacuna: boolean('es_vacuna').default(false).notNull(),
+  nombre_firma: varchar('nombre_firma').notNull(),
 });
+
+export const categorias_productos = pgTable('categorias_productos', {
+  id: serial('id').primaryKey(),
+  id_senasa: integer('id_senasa').notNull().unique(),
+  categoria: varchar('categoria').notNull().unique(),
+  descripcion: text('descripcion'),
+});
+
+export const categoriasProductosRelations = relations(categorias_productos, ({ many }) => ({
+  productos_categorias: many(productos_categorias),
+}));
+
+export const productos_categorias = pgTable('productos_categorias', {
+  producto_id: integer('producto_id').notNull().references(() => catalogo_productos.id),
+  categoria_id: integer('categoria_id').notNull().references(() => categorias_productos.id_senasa),
+});
+
+export const productosCategoriasRelations = relations(productos_categorias, ({ one }) => ({
+  producto: one(catalogo_productos, { fields: [productos_categorias.producto_id], references: [catalogo_productos.id] }),
+  categoria: one(categorias_productos, { fields: [productos_categorias.categoria_id], references: [categorias_productos.id] }),
+}));
 
 export const catalogoProductosRelations = relations(catalogo_productos, ({ many }) => ({
   vacunas: many(vacunas),
+  productos_categorias: many(productos_categorias),
   tratamientos: many(tratamientos),
 }));
 
