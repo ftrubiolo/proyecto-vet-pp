@@ -17,7 +17,7 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
 export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id } = request.params as { id: string };
 
-    const isValid = Validation.hasAccess(request.user, id);
+    const isValid = Validation.isSelfPropietario(request.user, id);
     if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
 
     try {
@@ -31,13 +31,12 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 }
 
 export const getAllMascotas = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const { id } = request.user as { id: string };
-
-    // const isValid = Validation.hasAccess(request.user, id);
-    // if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
+    if (!request.user || !request.user.proId) {
+        return reply.code(401).send({ message: 'No autorizado o perfil de propietario no encontrado' });
+    }
 
     try {
-        const mascotas = await MascotaService.getAllMascotasByPropietarioId(id);
+        const mascotas = await MascotaService.getAllMascotasByPropietarioId(request.user.proId);
         return reply.code(200).send(mascotas);
     } catch (error) {
         const message = error instanceof Error ? error.message : 'Error desconocido';
@@ -49,7 +48,7 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
     const { id } = request.params as { id: string };
     const data = request.body as UpdatePropietario;
 
-    const isValid = Validation.hasAccess(request.user, id);
+    const isValid = Validation.isSelfPropietario(request.user, id);
     if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
 
     try {

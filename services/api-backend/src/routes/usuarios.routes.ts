@@ -12,7 +12,6 @@ export default async function usuariosRoutes(fastify: FastifyInstance) {
   fastify.get("/:id", { preHandler: checkRole(['Admin']) }, controller.getOne);
 
   fastify.patch("/:id", { schema: updateSchema }, controller.update);
-  fastify.delete("/:id", { preHandler: checkRole(['Admin']) }, controller.remove);
 }
 
 const updateSchema = {

@@ -19,6 +19,10 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
 
 export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
   const { id } = request.params as { id: string };
+
+  const isValid = Validation.isSelfVeterinario(request.user, id);
+  if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
+
   try {
     const vet = await VetService.getById(id);
     if (!vet) return reply.code(404).send({ message: "Veterinario no encontrado" });
@@ -80,7 +84,7 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
   const { id } = request.params as { id: string };
   const data = request.body as UpdateVeterinario;
 
-  const isValid = Validation.hasAccess(request.user, id);
+  const isValid = Validation.isSelfVeterinario(request.user, id);
   if (!isValid) return reply.code(403).send({ message: 'No tienes permiso para acceder a este recurso' });
 
   try {
