@@ -9,6 +9,7 @@ import { VetService } from '../services/veterinario.service';
 import { ClinicaService } from '../services/clinica.service';
 import { PropietarioService } from '../services/propietario.service';
 import { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput } from '../types/auth.types';
+import { NewClinica, NewPropietario, NewUsuario, NewVeterinario } from '../types/db.types';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -33,26 +34,23 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
-            const newUser = await UserService.create({
+            const usuarioData: NewUsuario = {
                 email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }, tx);
+            };
+            const newUser = await UserService.create(usuarioData, tx);
 
-            const newVeterinario = await VetService.create({
+            const veterinarioData: NewVeterinario = {
+                ...veterinario,
                 usuario_id: newUser.id,
-                nombre: veterinario.nombre,
-                apellido: veterinario.apellido,
-                foto_url: veterinario.foto,
-                numero_matricula: veterinario.numero_matricula,
-                telefono: veterinario.telefono,
-            }, tx);
+            }
+            const newVeterinario = await VetService.create(veterinarioData, tx);
 
-            const newClinica = await ClinicaService.create({
-                nombre_comercial: clinica.nombre,
-                direccion: clinica.direccion,
-                telefono: clinica.telefono,
-            }, tx);
+            const clinicaData: NewClinica = {
+                ...clinica
+            }
+            const newClinica = await ClinicaService.create(clinicaData, tx);
 
             await VetService.associateWithClinica(newVeterinario.id, newClinica.id, tx);
 
@@ -86,22 +84,18 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
-            const newUser = await UserService.create({
+            const usuarioData: NewUsuario = {
                 email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }, tx);
+            };
+            const newUser = await UserService.create(usuarioData, tx);
 
-            const newPropietario = await PropietarioService.create({
+            const propietarioData: NewPropietario = {
+                ...propietario,
                 usuario_id: newUser.id,
-                nombre: propietario.nombre,
-                apellido: propietario.apellido,
-                es_empresa: propietario.esEmpresa,
-                razon_social: propietario.razonSocial,
-                foto_url: propietario.foto,
-                telefono: propietario.telefono,
-                direccion: propietario.direccion,
-            }, tx);
+            }
+            const newPropietario = await PropietarioService.create(propietarioData, tx);
 
             return { user: newUser, profile: newPropietario };
         });
@@ -160,24 +154,22 @@ export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply:
 
         // 7. Crear usuario y asociarlo a la clínica dentro de una transacción
         const result = await db.transaction(async (tx) => {
-            const newUser = await UserService.create({
+            const usuarioData: NewUsuario = {
                 email: usuario.email,
                 password_hash: passwordHash,
                 rol_id: rolId,
-            }, tx);
+            };
+            const newUsuario = await UserService.create(usuarioData, tx);
 
-            const newVeterinario = await VetService.create({
-                usuario_id: newUser.id,
-                nombre: veterinario.nombre,
-                apellido: veterinario.apellido,
-                foto_url: veterinario.foto,
-                numero_matricula: veterinario.numero_matricula,
-                telefono: veterinario.telefono,
-            }, tx);
+            const veterinarioData: NewVeterinario = {
+                ...veterinario,
+                usuario_id: newUsuario.id,
+            };
+            const newVeterinario = await VetService.create(veterinarioData, tx);
 
             await VetService.associateWithClinica(newVeterinario.id, clinicaId, tx);
 
-            return { user: newUser, veterinario: newVeterinario };
+            return { user: newUsuario, veterinario: newVeterinario };
         });
 
         reply.code(201).send({

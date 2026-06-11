@@ -1,48 +1,47 @@
 import { db } from "../db";
 import { eq } from "drizzle-orm";
-import { mascotas, mascotas_propietarios } from "../db/schema";
+import { estados_cita, mascotas, mascotas_propietarios } from "../db/schema";
 
 import type { MascotaDb, NewMascota, DBClient } from '../types/db.types';
-
-export interface MascotaResumen {
-    id: string;
-    nombre: string;
-    foto_url?: string | null;
-    edad: number;
-    sexo: 'M' | 'H';
-    especie: string;
-    raza: string;
-    esterilizado: boolean;
-    activo: boolean;
-}
-
-export interface PropietarioResumen {
-    id: string;
-    nombre: string;
-    apellido: string;
-    tipo_relacion: string;
-    activo: boolean;
-}
-
-export interface PerfilMascota {
-    id: string;
-    nombre: string;
-    foto_url?: string | null;
-    edad: number;
-    fecha_nacimiento: Date;
-    sexo: 'M' | 'H';
-    especie: string;
-    raza: string;
-    esterilizado: boolean;
-    propietarios: PropietarioResumen[];
-}
+import { MascotaList, MascotaPerfil } from "../types/mascota.types";
 
 /**
  * Servicio para la gestión de mascotas (pacientes).
  */
 export class MascotaService {
+    /**
+     * Obtiene todas las mascotas.
+     * @returns Lista de mascotas.
+     */
+    static async getAll(): Promise<MascotaList[] | null> {
+        const result = await db.query.mascotas.findMany({
+            with: {
+                raza: {
+                    with: {
+                        especie: true,
+                    }
+                },
+            }
+        });
+        if (!result) return null;
+        return result.flatMap((m) => {
+            return [{
+                id: m.id,
+                nombre: m.nombre,
+                edad: MascotaService.calcularEdad(m.fecha_nacimiento),
+                sexo: m.sexo as 'M' | 'H',
+                especie: m.raza.especie.especie,
+                raza: m.raza.raza,
+            }];
+        });
+    }
 
-    static async getAllMascotasByPropietarioId(propietarioId: string): Promise<PerfilMascota[] | null> {
+    /**
+     * Obtiene todas las mascotas de un propietario.
+     * @param propietarioId - ID del propietario.
+     * @returns Lista de mascotas del propietario.
+     */
+    static async getAllMascotasByPropietarioId(propietarioId: string): Promise<MascotaPerfil[] | null> {
         const result = await db.query.mascotas_propietarios.findMany({
             where: eq(mascotas_propietarios.propietario_id, propietarioId),
             with: {
@@ -59,6 +58,8 @@ export class MascotaService {
                                     columns: {
                                         nombre: true,
                                         apellido: true,
+                                        es_empresa: true,
+                                        razon_social: true,
                                     }
                                 },
                                 tipo_relacion: {
@@ -87,7 +88,8 @@ export class MascotaService {
                 sexo: m.sexo as 'M' | 'H',
                 especie: m.raza.especie.especie,
                 raza: m.raza.raza,
-                esterilizado: m.es_castrado,
+                es_castrado: m.es_castrado,
+                numero_microchip: m.numero_microchip,
                 propietarios: m.mascotas_propietarios.flatMap((mp) => {
                     const p = mp.propietario;
                     if (!p) return [];
@@ -95,7 +97,9 @@ export class MascotaService {
                         id: mp.propietario_id as string,
                         nombre: p.nombre,
                         apellido: p.apellido,
-                        tipo_relacion: mp.tipo_relacion?.tipo || 'Desconocido',
+                        es_empresa: p.es_empresa,
+                        razon_social: p.razon_social,
+                        relacion: mp.tipo_relacion?.tipo || 'Desconocido',
                         activo: mp.activo,
                     }];
                 })
@@ -108,7 +112,7 @@ export class MascotaService {
      * @param id - ID de la mascota
      * @returns Mascota encontrada o null
      */
-    static async getById(id: string): Promise<PerfilMascota | null> {
+    static async getById(id: string): Promise<MascotaPerfil | null> {
         const result = await db.query.mascotas.findFirst({
             where: eq(mascotas.id, id),
             with: {
@@ -123,6 +127,8 @@ export class MascotaService {
                             columns: {
                                 nombre: true,
                                 apellido: true,
+                                es_empresa: true,
+                                razon_social: true,
                             }
                         },
                         tipo_relacion: {
@@ -144,7 +150,8 @@ export class MascotaService {
             sexo: result.sexo as 'M' | 'H',
             especie: result.raza.especie.especie,
             raza: result.raza.raza,
-            esterilizado: result.es_castrado,
+            es_castrado: result.es_castrado,
+            numero_microchip: result.numero_microchip,
             propietarios: result.mascotas_propietarios.flatMap((mp) => {
                 const p = mp.propietario;
                 if (!p) return [];
@@ -152,7 +159,9 @@ export class MascotaService {
                     id: mp.propietario_id as string,
                     nombre: p.nombre,
                     apellido: p.apellido,
-                    tipo_relacion: mp.tipo_relacion?.tipo || 'Desconocido',
+                    es_empresa: p.es_empresa,
+                    razon_social: p.razon_social,
+                    relacion: mp.tipo_relacion?.tipo || 'Desconocido',
                     activo: mp.activo,
                 }];
             })
@@ -169,6 +178,9 @@ export class MascotaService {
      */
     static async create(data: NewMascota, propietarioId?: string, tipoRelacionId?: number, tx?: DBClient): Promise<MascotaDb> {
         const client = tx || db;
+
+        const dateObject = new Date(data.fecha_nacimiento);
+        data.fecha_nacimiento = dateObject;
 
         return await client.transaction(async (transactionClient: any) => {
             const [newMascota] = await transactionClient

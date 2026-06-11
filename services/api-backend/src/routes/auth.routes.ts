@@ -42,7 +42,7 @@ const registrarVeterinarioSchema = {
         type: 'object',
         required: ['nombre', 'direccion', 'telefono'],
         properties: {
-          nombre: { type: 'string' },
+          nombre_comercial: { type: 'string' },
           direccion: { type: 'string' },
           telefono: { type: 'string' }
         }

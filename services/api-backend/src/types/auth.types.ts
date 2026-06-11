@@ -1,4 +1,3 @@
-
 export interface TokenPayload {
     id: string;
     vetId?: string;
@@ -20,7 +19,7 @@ export interface RegistroVeterinarioInput {
         foto?: string;
     }
     clinica: {
-        nombre: string;
+        nombre_comercial: string;
         direccion: string;
         telefono: string;
     }

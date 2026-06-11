@@ -1,5 +1,5 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { NewVeterinario, VetService } from '../services/veterinario.service';
+import { VetService } from '../services/veterinario.service';
 import jwt from 'jsonwebtoken';
 import { Validation } from '../utils/validation';
 import { UpdateVeterinario } from '../types/db.types';

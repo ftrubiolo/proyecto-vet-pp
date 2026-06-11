@@ -1,37 +1,10 @@
 import { db } from "../db";
 import { eq } from "drizzle-orm";
 import { mascotas_propietarios, propietarios } from "../db/schema";
-import { MascotaResumen, MascotaService } from "./mascota.service";
+import { MascotaService } from "./mascota.service";
 
+import { PropietarioList, PropietarioPerfil } from "../types/propietario.types";
 import type { PropietarioDb, NewPropietario, DBClient } from '../types/db.types';
-
-export interface Propietario {
-    id: string;
-    usuario_id: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    telefono?: string | null;
-    es_empresa: boolean;
-    razon_social?: string | null;
-    direccion?: string | null;
-    cantidad_mascotas: number;
-}
-
-export interface PerfilPropietario {
-    id: string;
-    usuario_id: string;
-    nombre: string;
-    apellido: string;
-    email: string;
-    telefono?: string | null;
-    es_empresa: boolean;
-    razon_social?: string | null;
-    foto_url?: string | null;
-    direccion?: string | null;
-    fecha_creacion: Date;
-    mascotas: MascotaResumen[];
-}
 
 /**
  * Servicio para la gestión de propietarios.
@@ -41,7 +14,7 @@ export class PropietarioService {
      * Obtiene todos los propietarios.
      * @returns Array de propietarios -> {@link Propietario}
      */
-    static async getAll(): Promise<Propietario[]> {
+    static async getAll(): Promise<PropietarioList[]> {
         const result = await db.query.propietarios.findMany({
             with: {
                 usuario: {
@@ -77,7 +50,7 @@ export class PropietarioService {
      * @param id - ID del propietario
      * @returns Propietario encontrado -> {@link Propietario} o null si no existe
      */
-    static async getById(id: string): Promise<PerfilPropietario | null> {
+    static async getById(id: string): Promise<PropietarioPerfil | null> {
         const result = await db.query.propietarios.findFirst({
             where: eq(propietarios.id, id),
             with: {
@@ -139,7 +112,7 @@ export class PropietarioService {
      * @param usuarioId - ID del usuario
      * @returns Propietario encontrado -> {@link Propietario} o null si no existe
      */
-    static async getByUsuarioId(usuarioId: string): Promise<PerfilPropietario | null> {
+    static async getByUsuarioId(usuarioId: string): Promise<PropietarioPerfil | null> {
         const result = await db.query.propietarios.findFirst({
             where: eq(propietarios.usuario_id, usuarioId),
             with: {
@@ -202,7 +175,7 @@ export class PropietarioService {
      * @param tx - Cliente de base de datos o transacción (opcional)
      * @returns El propietario creado
      */
-    static async create(data: NewPropietario, tx?: DBClient): Promise<Propietario> {
+    static async create(data: NewPropietario, tx?: DBClient): Promise<NewPropietario> {
         const client = tx || db;
         const [newPropietario] = await client.insert(propietarios).values(data).returning();
         return newPropietario;
@@ -215,7 +188,7 @@ export class PropietarioService {
      * @param tx - Cliente de base de datos o transacción (opcional)
      * @returns El propietario actualizado
      */
-    static async update(id: string, data: Partial<NewPropietario>, tx?: DBClient): Promise<Propietario | null> {
+    static async update(id: string, data: Partial<NewPropietario>, tx?: DBClient): Promise<PropietarioDb | null> {
         const client = tx || db;
         const [updated] = await client.update(propietarios)
             .set(data)

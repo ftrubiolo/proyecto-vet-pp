@@ -7,6 +7,7 @@ export default async function propietariosRoutes(fastify: FastifyInstance) {
   fastify.addHook('preHandler', verifyToken);
 
   fastify.get('/', { preHandler: [checkRole(['Admin'])] }, controller.getAll);
+  fastify.get('/mascotas', controller.getAllMascotas)
   fastify.get('/:id', controller.getOne);
   fastify.patch('/:id', { preHandler: [checkRole(['Admin', 'Propietario'])] }, controller.update);
 }

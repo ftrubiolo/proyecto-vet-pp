@@ -170,3 +170,19 @@ La mayoría de los endpoints requieren que el usuario esté autenticado.
 | :--- | :--- | :--- | :--- |
 | `POST` | `/api/atenciones/escribano-voz` | `Veterinario` | Recibe el archivo de audio grabado por el veterinario en el box, lo sube a AWS S3 y dispara la petición a Gemini 2.5 Flash para que devuelva el JSON estructurado antes de impactar la base de datos. |
 | `POST` | `/api/ia/triaje` | `Veterinario` | Endpoint para el Triaje Sintomático Asistido. Recibe el texto en lenguaje natural del tutor (ej: "Toby vomita..."), lo procesa y devuelve el grado de urgencia médica y el descargo de responsabilidad (Disclaimer). |
+
+---
+
+## API Senasa
+
+### Perfil a detalle por producto
+
+https://aps2.senasa.gov.ar/adt_api/api/productosFarmacos/search/publicSearchProducto?producto=https%3A%2F%2Faps2.senasa.gov.ar%2Fadt_api%2Fapi%2FproductosFarmacos%2F154984&projection=productoFarmacoDetallePublicoProjection
+
+### GetAll productos
+
+https://aps2.senasa.gov.ar/adt_api/api/productosFarmacos/search/publicSearchProductoFarmacoDTO?page=0&size=6908
+
+### GetAll enfermedades / categorias
+
+https://aps2.senasa.gov.ar/adt_api/api/enfermedades/search/publicSearchByTipoProducto?tipoProducto=https%3A%2F%2Faps2.senasa.gov.ar%2Fadt_api%2Fapi%2FtiposProductos%2F5
