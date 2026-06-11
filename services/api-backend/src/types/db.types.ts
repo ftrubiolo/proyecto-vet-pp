@@ -37,6 +37,7 @@ export type NewVeterinarioClinica = typeof veterinarios_clinicas.$inferInsert;
 export type MascotaDb = typeof mascotas.$inferSelect;
 export type NewMascota = typeof mascotas.$inferInsert;
 
+
 export type UpdateMascota = Partial<Pick<NewMascota,
     | 'nombre'
     | 'sexo'

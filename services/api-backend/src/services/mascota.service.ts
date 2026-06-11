@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { estados_cita, mascotas, mascotas_propietarios } from "../db/schema";
 
 import type { MascotaDb, NewMascota, DBClient } from '../types/db.types';
@@ -176,29 +176,17 @@ export class MascotaService {
      * @param tx - Cliente de base de datos o transacción (opcional)
      * @returns La mascota creada
      */
-    static async create(data: NewMascota, propietarioId?: string, tipoRelacionId?: number, tx?: DBClient): Promise<MascotaDb> {
+    static async create(data: NewMascota, tx?: DBClient): Promise<MascotaDb> {
         const client = tx || db;
 
         const dateObject = new Date(data.fecha_nacimiento);
         data.fecha_nacimiento = dateObject;
 
-        return await client.transaction(async (transactionClient: any) => {
-            const [newMascota] = await transactionClient
-                .insert(mascotas)
-                .values(data)
-                .returning();
-
-            if (propietarioId) {
-                await transactionClient.insert(mascotas_propietarios).values({
-                    mascota_id: newMascota.id,
-                    propietario_id: propietarioId,
-                    tipo_relacion_id: tipoRelacionId || null,
-                    activo: true,
-                });
-            }
-
-            return newMascota;
-        });
+        const [newMascota] = await client
+            .insert(mascotas)
+            .values(data)
+            .returning();
+        return newMascota;
     }
 
     /**
@@ -210,6 +198,7 @@ export class MascotaService {
      */
     static async update(id: string, data: Partial<NewMascota>, tx?: DBClient): Promise<MascotaDb | null> {
         const client = tx || db;
+
         const [updated] = await client
             .update(mascotas)
             .set(data)
@@ -227,6 +216,7 @@ export class MascotaService {
      */
     static async associateWithOwner(mascotaId: string, propietarioId: string, tipoRelacionId?: number, tx?: DBClient): Promise<void> {
         const client = tx || db;
+
         await client.insert(mascotas_propietarios).values({
             mascota_id: mascotaId,
             propietario_id: propietarioId,
@@ -248,5 +238,22 @@ export class MascotaService {
             edad--;
         }
         return edad;
+    }
+
+    /**
+     * Verifica si un propietario es dueño de una mascota.
+     * @param proId - ID del propietario
+     * @param mascotaId - ID de la mascota
+     * @returns Booleano indicando si es dueño
+     */
+    static async isOwner(proId: string, mascotaId: string): Promise<boolean> {
+        const result = await db.query.mascotas_propietarios.findFirst({
+            where: and(
+                eq(mascotas_propietarios.propietario_id, proId),
+                eq(mascotas_propietarios.mascota_id, mascotaId),
+                eq(mascotas_propietarios.activo, true)
+            )
+        });
+        return !!result;
     }
 }

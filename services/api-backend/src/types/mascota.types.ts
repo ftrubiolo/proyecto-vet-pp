@@ -1,5 +1,10 @@
-import { MascotaDb } from "./db.types";
+import { MascotaDb, NewMascota } from "./db.types";
 import { PropietarioResumen } from "./propietario.types";
+
+export interface CreateMascotaInput {
+    mascota: NewMascota;
+    propietario: { propietario_id: string; tipo_relacion_id: number }
+}
 
 export type MascotaBase = Pick<MascotaDb,
     | 'id'

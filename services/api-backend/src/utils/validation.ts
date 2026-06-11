@@ -1,6 +1,8 @@
 import { TokenPayload } from '../types/auth.types';
 import { UserService } from '../services/user.service';
 import { VetService } from '../services/veterinario.service';
+import { MascotaService } from '../services/mascota.service';
+import { ClinicaService } from '../services/clinica.service';
 
 
 /**
@@ -30,6 +32,27 @@ export class Validation {
     return VetService.isValidMatricula(matricula);
   }
 
+  /**
+   * Verifica si un usuario es dueño de una mascota.
+   * @param user - Usuario autenticado
+   * @param mascotaId - ID de la mascota
+   * @returns true si el usuario es dueño de la mascota, false en caso contrario
+   */
+  static async isOwner(user: TokenPayload, mascotaId: string): Promise<boolean> {
+    if (!user.proId) return false;
+    return await MascotaService.isOwner(user.proId, mascotaId);
+  }
+
+  /**
+   * Verifica si un veterinario atiende a una mascota.
+   * @param user - Usuario autenticado
+   * @param mascotaId - ID de la mascota
+   * @returns true si el veterinario atiende a la mascota, false en caso contrario
+   */
+  static async isPaciente(user: TokenPayload, mascotaId: string): Promise<boolean> {
+    if (!user.vetId) return false;
+    return await VetService.isPaciente(user.vetId, mascotaId);
+  }
 
   // ==========================================
   // 2. Validaciones de Autorización / Permisos
@@ -52,6 +75,32 @@ export class Validation {
    */
   static isSelf(user?: TokenPayload, resourceOwnerId?: string): boolean {
     return !!user && String(user.id) === resourceOwnerId;
+  }
+
+  /**
+   * Comprueba si el usuario autenticado es el propietario del recurso (compara con su proId).
+   * o si es Administrador.
+   * @param user - Usuario autenticado
+   * @param propietarioId - ID del propietario
+   * @returns true si es administrador o el propietario en sí, false en caso contrario
+   */
+  static isSelfPropietario(user?: TokenPayload, propietarioId?: string): boolean {
+    return this.isAdmin(user) || (!!user && user.proId === propietarioId);
+  }
+
+  /**
+   * Comprueba si el usuario autenticado es el veterinario del recurso (compara con su vetId).
+   * o si es Administrador.
+   * @param user - Usuario autenticado
+   * @param veterinarioId - ID del veterinario
+   * @returns true si es administrador o el veterinario en sí, false en caso contrario
+   */
+  static isSelfVeterinario(user?: TokenPayload, veterinarioId?: string): boolean {
+    return this.isAdmin(user) || (!!user && user.vetId === veterinarioId);
+  }
+
+  static async hasAccesMascota(user: TokenPayload, mascotaId: string): Promise<boolean> {
+    return this.isAdmin(user) || await this.isOwner(user, mascotaId) || await this.isPaciente(user, mascotaId);
   }
 
   /**
