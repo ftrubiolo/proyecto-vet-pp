@@ -8,7 +8,7 @@ import { UserService } from '../services/user.service';
 import { VetService } from '../services/veterinario.service';
 import { ClinicaService } from '../services/clinica.service';
 import { PropietarioService } from '../services/propietario.service';
-import { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput } from '../types/auth.types';
+import { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput, TokenPayload } from '../types/auth.types';
 import { NewClinica, NewPropietario, NewUsuario, NewVeterinario } from '../types/db.types';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
@@ -203,8 +203,32 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         if (!isValid) return reply.code(401).send({ message: "Email o contraseña incorrectos" });
         const { password_hash: hash, ...user } = authUser;
 
+        let vetId: string | undefined = undefined;
+        let proId: string | undefined = undefined;
+        switch (user.rol) {
+            case 'Veterinario':
+                const idv = await VetService.getIdByUsuarioId(user.id);
+                if (!idv) return reply.code(404).send({ message: "Veterinario no encontrado" });
+                vetId = idv;
+                break;
+            case 'Propietario':
+                const idp = await PropietarioService.getIdByUsuarioId(user.id);
+                if (!idp) return reply.code(404).send({ message: "Propietario no encontrado" });
+                proId = idp;
+                break;
+            default:
+                break;
+        }
+
         // Generar Token
-        const token = jwt.sign({ id: user.id, email: user.email, rol: user.rol }, JWT_SECRET, { expiresIn: '1d' });
+        const token = jwt.sign(
+            {
+                id: user.id,
+                email: user.email,
+                rol: user.rol,
+                ...(vetId && { vetId }),
+                ...(proId && { proId })
+            }, JWT_SECRET, { expiresIn: '1d' });
 
         // Establecer Cookie y responder
         return reply

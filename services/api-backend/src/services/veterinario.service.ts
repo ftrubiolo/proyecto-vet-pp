@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { eq, and } from "drizzle-orm";
-import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba, usuarios } from "../db/schema";
+import { eq, and, inArray } from "drizzle-orm";
+import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba, usuarios, clinicas_mascotas, mascotas } from "../db/schema";
 import { DBClient, NewVeterinario, UpdateVeterinario, VeterinarioClinicaDb, VeterinarioDb } from "../types/db.types";
 import { VeterinarioList, VeterinarioPerfil } from "../types/veterinario.types";
 
@@ -8,7 +8,15 @@ import { VeterinarioList, VeterinarioPerfil } from "../types/veterinario.types";
  * Servicio para la gestión de perfiles de veterinarios, habilitación de matrículas y asociaciones con clínicas.
  */
 export class VetService {
-
+    static async getIdByUsuarioId(usuarioId: string): Promise<string | null> {
+        const result = await db.query.veterinarios.findFirst({
+            where: eq(veterinarios.usuario_id, usuarioId),
+            columns: {
+                id: true,
+            }
+        });
+        return result?.id || null;
+    }
     /**
      * Obtiene todos los veterinarios con sus datos de usuario y clínicas.
      * @returns Array de veterinarios -> {@link Veterinario}
@@ -227,5 +235,33 @@ export class VetService {
     static async existsByUsuarioId(usuarioId: string): Promise<boolean> {
         const vet = await this.getByUsuarioId(usuarioId);
         return !!vet;
+    }
+
+    static async getClinicasByVeterinarioId(vetId: string): Promise<string[] | null> {
+        const result = await db.query.veterinarios_clinicas.findMany({
+            where: and(
+                eq(veterinarios_clinicas.veterinario_id, vetId),
+                eq(veterinarios_clinicas.estado_activo, true)
+            ),
+            columns: {
+                clinica_id: true,
+            }
+        });
+        if (!result) return null;
+        return result.map((vc) => vc.clinica_id as string);
+    }
+
+    static async isPaciente(vetId: string, mascotaId: string): Promise<boolean> {
+
+        const clinicasVeterinario = await this.getClinicasByVeterinarioId(vetId);
+        if (!clinicasVeterinario) return false;
+
+        const result = await db.query.clinicas_mascotas.findFirst({
+            where: and(
+                eq(clinicas_mascotas.mascota_id, mascotaId),
+                inArray(clinicas_mascotas.clinica_id, clinicasVeterinario),
+            )
+        });
+        return !!result;
     }
 }

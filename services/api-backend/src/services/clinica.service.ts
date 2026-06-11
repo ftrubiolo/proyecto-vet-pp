@@ -1,6 +1,6 @@
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
-import { clinicas } from '../db/schema';
+import { clinicas, clinicas_mascotas } from '../db/schema';
 
 import type { ClinicaDb, NewClinica, DBClient } from '../types/db.types';
 
@@ -54,4 +54,5 @@ export class ClinicaService {
         const [newClinica] = await client.insert(clinicas).values(data).returning();
         return newClinica;
     }
+
 }

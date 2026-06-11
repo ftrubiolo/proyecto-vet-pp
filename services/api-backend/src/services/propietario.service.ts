@@ -10,6 +10,15 @@ import type { PropietarioDb, NewPropietario, DBClient } from '../types/db.types'
  * Servicio para la gestión de propietarios.
  */
 export class PropietarioService {
+    static async getIdByUsuarioId(usuarioId: string): Promise<string | null> {
+        const result = await db.query.propietarios.findFirst({
+            where: eq(propietarios.usuario_id, usuarioId),
+            columns: {
+                id: true,
+            }
+        });
+        return result?.id || null;
+    }
     /**
      * Obtiene todos los propietarios.
      * @returns Array de propietarios -> {@link Propietario}
