@@ -404,9 +404,8 @@
   margin-bottom: var(--space-xs);
 }
 
-/* ─── Page Container ─── */
 .page {
-  animation: fadeInUp 0.35s ease forwards;
+  animation: fadeIn 0.35s ease forwards;
 }
 
 .page-header {

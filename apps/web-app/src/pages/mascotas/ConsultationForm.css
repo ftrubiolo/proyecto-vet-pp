@@ -1,0 +1,191 @@
+/* ─── Layout for active consultation ─── */
+.consultation-layout {
+  display: flex;
+  gap: var(--space-lg);
+  align-items: flex-start;
+  position: relative;
+}
+
+.consultation-main-col {
+  flex: 1;
+  min-width: 0; /* Prevents overflow issues */
+}
+
+.consultation-sidebar-col {
+  width: 420px;
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-md));
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-outer);
+  padding: var(--space-lg);
+  max-height: calc(100vh - var(--header-height) - var(--space-2xl));
+  overflow-y: auto;
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+@media (max-width: 1024px) {
+  .consultation-layout {
+    flex-direction: column;
+  }
+  
+  .consultation-sidebar-col {
+    width: 100%;
+    position: static;
+    max-height: none;
+  }
+}
+
+/* ─── Active Consultation Form Elements ─── */
+.consultation-form-title-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+  border-bottom: 1px solid var(--border);
+  padding-bottom: var(--space-xs);
+}
+
+.consultation-form-title-bar h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  color: var(--text-h);
+}
+
+.consultation-close-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  transition: background var(--transition);
+}
+
+.consultation-close-btn:hover {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.consultation-form-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.consultation-section-title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: var(--space-sm);
+  letter-spacing: 0.5px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 4px;
+}
+
+/* ─── Selected list styles ─── */
+.selected-badges-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: var(--space-xs);
+}
+
+.selected-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xxs);
+}
+
+.selected-badge-remove {
+  background: transparent;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.selected-badge-remove:hover {
+  opacity: 0.8;
+}
+
+/* ─── Autocomplete Suggestions list ─── */
+.autocomplete-item:hover {
+  background: var(--border) !important;
+}
+
+/* ─── Sub-forms inside consultation panel ─── */
+.consultation-subform {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  padding: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.prescribed-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+}
+
+.prescribed-item-card {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  padding: var(--space-sm) var(--space-md);
+}
+
+.prescribed-item-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.prescribed-item-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.prescribed-item-details {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.prescribed-item-delete {
+  background: transparent;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+}
+
+.prescribed-item-delete:hover {
+  background: #fef2f2;
+}
+
+.consultation-actions-footer {
+  display: flex;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+  border-top: 1px solid var(--border);
+  padding-top: var(--space-md);
+}

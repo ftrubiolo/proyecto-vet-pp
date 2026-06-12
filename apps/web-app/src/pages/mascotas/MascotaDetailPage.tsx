@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import {
   ArrowLeft,
   PawPrint,
@@ -8,16 +8,20 @@ import {
   ClipboardList,
   Calendar,
   Hash,
+  X,
 } from 'lucide-react';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuth } from '../../hooks/useAuth';
+import { api } from '../../api/client';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
 import { Tabs } from '../../components/ui/Tabs';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Input, Select } from '../../components/ui/Input';
 import './MascotaDetailPage.css';
+import './ConsultationForm.css';
 
 interface MascotaDetail {
   id: string;
@@ -40,56 +44,6 @@ interface MascotaDetail {
     activo: boolean;
   }[];
 }
-
-// Mock clinical history
-const mockAtenciones = [
-  {
-    id: '1',
-    fecha_atencion: '2026-05-15T10:00:00',
-    notas_clinicas: 'Control general. Peso: 12.5 kg. Buen estado de salud general. Se recomienda desparasitación.',
-    peso_actual: '12.50',
-    veterinario: { nombre: 'Dr. García', apellido: '' },
-    diagnosticos: ['Control preventivo'],
-  },
-  {
-    id: '2',
-    fecha_atencion: '2026-03-20T14:30:00',
-    notas_clinicas: 'Vacunación antirrábica. Se aplicó dosis de refuerzo. Sin reacciones adversas.',
-    peso_actual: '11.80',
-    veterinario: { nombre: 'Dra. López', apellido: '' },
-    diagnosticos: ['Vacunación de rutina'],
-  },
-];
-
-const mockVacunas = [
-  {
-    id: '1',
-    producto: { nombre_comercial: 'Nobivac Rabia' },
-    fecha_aplicacion: '2026-03-20T14:30:00',
-    fecha_proxima_dosis: '2027-03-20T00:00:00',
-    numero_lote: 'LOT-2024-001',
-  },
-  {
-    id: '2',
-    producto: { nombre_comercial: 'Nobivac DHPPi+L' },
-    fecha_aplicacion: '2025-12-10T09:00:00',
-    fecha_proxima_dosis: '2026-12-10T00:00:00',
-    numero_lote: 'LOT-2024-055',
-  },
-];
-
-const mockTratamientos = [
-  {
-    id: '1',
-    tipo_tratamiento: { tipo: 'Desparasitación' },
-    producto: { nombre_comercial: 'Drontal Plus' },
-    dosis: '1 comprimido',
-    frecuencia: 'Cada 3 meses',
-    fecha_inicio: '2026-05-15',
-    fecha_fin: null,
-    indicaciones_adicionales: 'Administrar con comida.',
-  },
-];
 
 const tabs = [
   { id: 'datos', label: 'Datos' },
@@ -121,13 +75,39 @@ function calcAge(dateStr: string): string {
 export function MascotaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('datos');
   const { user } = useAuth();
   const isOwner = user?.rol === 'Propietario';
 
+  const atenderCitaId = searchParams.get('atenderCitaId');
+  const clinicaId = searchParams.get('clinicaId');
+
+  // Fetch mascota general info
   const { data: mascota, isLoading, error } = useFetch<MascotaDetail>(
     id ? `/mascotas/${id}` : null
   );
+
+  // Fetch clinical records (atenciones)
+  const { data: atencionesData, isLoading: isHistorialLoading, refetch: refetchAtenciones } = useFetch<any[]>(
+    id ? `/atenciones/mascota/${id}` : null
+  );
+
+  // Fetch applied vaccines (vacunas)
+  const { data: vacunasData, isLoading: isVacunasLoading, refetch: refetchVacunas } = useFetch<any[]>(
+    id ? `/vacunas/mascota/${id}` : null
+  );
+
+  // Fetch treatments (tratamientos)
+  const { data: tratamientosData, isLoading: isTratamientosLoading, refetch: refetchTratamientos } = useFetch<any[]>(
+    id ? `/tratamientos/mascota/${id}` : null
+  );
+
+  const triggerRefetches = () => {
+    refetchAtenciones();
+    refetchVacunas();
+    refetchTratamientos();
+  };
 
   if (isLoading) {
     return (
@@ -151,8 +131,8 @@ export function MascotaDetailPage() {
     );
   }
 
-  return (
-    <div className="page">
+  const renderLeftPanel = () => (
+    <div className="consultation-main-col">
       <button className="mascota-detail-back" onClick={() => navigate('/mascotas')}>
         <ArrowLeft size={16} />
         Volver a mascotas
@@ -184,11 +164,38 @@ export function MascotaDetailPage() {
 
         <div className="mascota-tab-content">
           {activeTab === 'datos' && <DatosTab mascota={mascota} isOwner={isOwner} />}
-          {activeTab === 'historial' && <HistorialTab />}
-          {activeTab === 'vacunas' && <VacunasTab />}
-          {activeTab === 'tratamientos' && <TratamientosTab />}
+          {activeTab === 'historial' && <HistorialTab atenciones={atencionesData || []} isLoading={isHistorialLoading} />}
+          {activeTab === 'vacunas' && <VacunasTab vacunas={vacunasData || []} isLoading={isVacunasLoading} />}
+          {activeTab === 'tratamientos' && <TratamientosTab tratamientos={tratamientosData || []} isLoading={isTratamientosLoading} />}
         </div>
       </div>
+    </div>
+  );
+
+  const hasActiveConsultation = atenderCitaId && clinicaId && !isOwner;
+
+  return (
+    <div className="page">
+      {hasActiveConsultation ? (
+        <div className="consultation-layout">
+          {renderLeftPanel()}
+          <div className="consultation-sidebar-col">
+            <ActiveConsultationForm
+              citaId={atenderCitaId!}
+              clinicaId={clinicaId!}
+              mascotaId={mascota.id}
+              onClose={() => setSearchParams({})}
+              onSuccess={() => {
+                setSearchParams({});
+                triggerRefetches();
+                navigate('/citas');
+              }}
+            />
+          </div>
+        </div>
+      ) : (
+        renderLeftPanel()
+      )}
     </div>
   );
 }
@@ -308,8 +315,21 @@ function DatosTab({ mascota, isOwner }: { mascota: MascotaDetail; isOwner: boole
 }
 
 // ── Historial Tab ──
-function HistorialTab() {
-  if (mockAtenciones.length === 0) {
+interface HistorialTabProps {
+  atenciones: any[];
+  isLoading: boolean;
+}
+
+function HistorialTab({ atenciones, isLoading }: HistorialTabProps) {
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (atenciones.length === 0) {
     return (
       <Card>
         <EmptyState
@@ -323,33 +343,52 @@ function HistorialTab() {
 
   return (
     <div className="timeline">
-      {mockAtenciones.map((a) => (
-        <div key={a.id} className="timeline-item">
-          <div className="timeline-dot" />
-          <Card variant="inner" className="timeline-content">
-            <div className="timeline-date">
-              <Calendar size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
-              {formatDate(a.fecha_atencion)} · {a.veterinario.nombre}
-            </div>
-            <div className="timeline-title">
-              {a.diagnosticos.join(', ')}
-            </div>
-            <p className="timeline-text">{a.notas_clinicas}</p>
-            {a.peso_actual && (
-              <span style={{ marginTop: 8, display: 'inline-block' }}><Badge variant="neutral" className="text-sm">
-                Peso: {a.peso_actual} kg
-              </Badge></span>
-            )}
-          </Card>
-        </div>
-      ))}
+      {atenciones.map((a) => {
+        const diagnostics: string[] = a.atenciones_diagnosticos?.map((ad: any) => ad.diagnostico?.diagnostico) || [];
+        const vetName = a.veterinario ? `${a.veterinario.nombre} ${a.veterinario.apellido || ''}`.trim() : 'Veterinario';
+        return (
+          <div key={a.id} className="timeline-item">
+            <div className="timeline-dot" />
+            <Card variant="inner" className="timeline-content">
+              <div className="timeline-date">
+                <Calendar size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
+                {formatDate(a.fecha_atencion)} · {vetName}
+              </div>
+              <div className="timeline-title">
+                {diagnostics.length > 0 ? diagnostics.join(', ') : 'Consulta médica'}
+              </div>
+              <p className="timeline-text">{a.notes_clinicas || a.notas_clinicas || 'Sin notas adicionales.'}</p>
+              {a.peso_actual && (
+                <span style={{ marginTop: 8, display: 'inline-block' }}>
+                  <Badge variant="neutral" className="text-sm">
+                    Peso: {a.peso_actual} kg
+                  </Badge>
+                </span>
+              )}
+            </Card>
+          </div>
+        );
+      })}
     </div>
   );
 }
 
 // ── Vacunas Tab ──
-function VacunasTab() {
-  if (mockVacunas.length === 0) {
+interface VacunasTabProps {
+  vacunas: any[];
+  isLoading: boolean;
+}
+
+function VacunasTab({ vacunas, isLoading }: VacunasTabProps) {
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (vacunas.length === 0) {
     return (
       <Card>
         <EmptyState
@@ -363,40 +402,56 @@ function VacunasTab() {
 
   return (
     <div className="vaccine-list">
-      {mockVacunas.map((v) => (
-        <Card key={v.id} variant="inner">
-          <div className="vaccine-card">
-            <div className="vaccine-icon">
-              <Syringe size={18} />
-            </div>
-            <div className="vaccine-info">
-              <div className="vaccine-name">{v.producto.nombre_comercial}</div>
-              <div className="vaccine-detail">
-                Aplicada: {formatDate(v.fecha_aplicacion)}
-                {v.fecha_proxima_dosis && ` · Próxima: ${formatDate(v.fecha_proxima_dosis)}`}
+      {vacunas.map((v) => {
+        const prodName = v.producto?.nombre_comercial || 'Vacuna';
+        return (
+          <Card key={v.id} variant="inner">
+            <div className="vaccine-card">
+              <div className="vaccine-icon">
+                <Syringe size={18} />
               </div>
-              {v.numero_lote && (
+              <div className="vaccine-info">
+                <div className="vaccine-name">{prodName}</div>
                 <div className="vaccine-detail">
-                  <Hash size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 2 }} />
-                  Lote: {v.numero_lote}
+                  Aplicada: {formatDate(v.fecha_aplicacion)}
+                  {v.fecha_proxima_dosis && ` · Próxima: ${formatDate(v.fecha_proxima_dosis)}`}
                 </div>
+                {v.numero_lote && (
+                  <div className="vaccine-detail">
+                    <Hash size={10} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 2 }} />
+                    Lote: {v.numero_lote}
+                  </div>
+                )}
+              </div>
+              {v.fecha_proxima_dosis && new Date(v.fecha_proxima_dosis) > new Date() ? (
+                <Badge variant="success">Al día</Badge>
+              ) : (
+                <Badge variant="warning">Vencida</Badge>
               )}
             </div>
-            {v.fecha_proxima_dosis && new Date(v.fecha_proxima_dosis) > new Date() ? (
-              <Badge variant="success">Al día</Badge>
-            ) : (
-              <Badge variant="warning">Vencida</Badge>
-            )}
-          </div>
-        </Card>
-      ))}
+          </Card>
+        );
+      })}
     </div>
   );
 }
 
 // ── Tratamientos Tab ──
-function TratamientosTab() {
-  if (mockTratamientos.length === 0) {
+interface TratamientosTabProps {
+  tratamientos: any[];
+  isLoading: boolean;
+}
+
+function TratamientosTab({ tratamientos, isLoading }: TratamientosTabProps) {
+  if (isLoading) {
+    return (
+      <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
+        <Spinner />
+      </div>
+    );
+  }
+
+  if (tratamientos.length === 0) {
     return (
       <Card>
         <EmptyState
@@ -410,35 +465,472 @@ function TratamientosTab() {
 
   return (
     <div className="treatment-list">
-      {mockTratamientos.map((t) => (
-        <Card key={t.id} variant="inner">
-          <div className="treatment-card">
-            <div className="treatment-icon">
-              <Pill size={18} />
-            </div>
-            <div className="treatment-info">
-              <div className="treatment-name">
-                {t.tipo_tratamiento.tipo} — {t.producto.nombre_comercial}
+      {tratamientos.map((t) => {
+        const typeName = t.tipo_tratamiento?.tipo || 'Tratamiento';
+        const prodName = t.producto?.nombre_comercial || 'Medicamento';
+        return (
+          <Card key={t.id} variant="inner">
+            <div className="treatment-card">
+              <div className="treatment-icon">
+                <Pill size={18} />
               </div>
-              <div className="treatment-detail">
-                Dosis: {t.dosis} · Frecuencia: {t.frecuencia}
-              </div>
-              <div className="treatment-detail">
-                Desde: {formatDate(t.fecha_inicio)}
-                {t.fecha_fin ? ` hasta ${formatDate(t.fecha_fin)}` : ' (en curso)'}
-              </div>
-              {t.indicaciones_adicionales && (
-                <div className="treatment-detail" style={{ marginTop: 4, fontStyle: 'italic' }}>
-                  "{t.indicaciones_adicionales}"
+              <div className="treatment-info">
+                <div className="treatment-name">
+                  {typeName} — {prodName}
                 </div>
-              )}
+                <div className="treatment-detail">
+                  Dosis: {t.dosis} · Frecuencia: {t.frecuencia}
+                </div>
+                <div className="treatment-detail">
+                  Desde: {formatDate(t.fecha_inicio)}
+                  {t.fecha_fin ? ` hasta ${formatDate(t.fecha_fin)}` : ' (en curso)'}
+                </div>
+                {t.indicaciones_adicionales && (
+                  <div className="treatment-detail" style={{ marginTop: 4, fontStyle: 'italic' }}>
+                    "{t.indicaciones_adicionales}"
+                  </div>
+                )}
+              </div>
+              <Badge variant={t.fecha_fin ? 'neutral' : 'accent'}>
+                {t.fecha_fin ? 'Finalizado' : 'Activo'}
+              </Badge>
             </div>
-            <Badge variant={t.fecha_fin ? 'neutral' : 'accent'}>
-              {t.fecha_fin ? 'Finalizado' : 'Activo'}
+          </Card>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Autocomplete Selector Component ──
+interface AutocompleteProps {
+  label: string;
+  placeholder: string;
+  items: { id: any; name: string }[];
+  onSelect: (item: { id: any; name: string }) => void;
+}
+
+function Autocomplete({ label, placeholder, items, onSelect }: AutocompleteProps) {
+  const [query, setQuery] = useState('');
+  const [isOpen, setIsOpen] = useState(false);
+
+  const filtered = query.trim() === ''
+    ? []
+    : items.filter(item => item.name.toLowerCase().includes(query.toLowerCase())).slice(0, 8);
+
+  return (
+    <div className="autocomplete-container form-group" style={{ position: 'relative' }}>
+      <label className="form-label">{label}</label>
+      <input
+        type="text"
+        className="form-input"
+        placeholder={placeholder}
+        value={query}
+        onChange={(e) => {
+          setQuery(e.target.value);
+          setIsOpen(true);
+        }}
+        onFocus={() => setIsOpen(true)}
+        onBlur={() => {
+          // Give small timeout so onClick triggers before list closes
+          setTimeout(() => setIsOpen(false), 200);
+        }}
+      />
+      {isOpen && filtered.length > 0 && (
+        <ul className="autocomplete-results" style={{
+          position: 'absolute',
+          top: '100%',
+          left: 0,
+          right: 0,
+          background: 'var(--surface-solid)',
+          border: '1px solid var(--border)',
+          borderRadius: 'var(--radius-inner)',
+          zIndex: 1100,
+          listStyle: 'none',
+          padding: '4px 0',
+          marginTop: '4px',
+          boxShadow: 'var(--shadow)',
+          maxHeight: '200px',
+          overflowY: 'auto'
+        }}>
+          {filtered.map(item => (
+            <li
+              key={item.id}
+              onClick={() => {
+                onSelect(item);
+                setQuery('');
+              }}
+              style={{
+                padding: '8px 12px',
+                cursor: 'pointer',
+                fontSize: '0.875rem',
+                color: 'var(--text-h)',
+                borderBottom: '1px solid var(--border)'
+              }}
+              className="autocomplete-item"
+            >
+              {item.name}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// ── Active Consultation Form ──
+interface ActiveConsultationFormProps {
+  citaId: string;
+  clinicaId: string;
+  mascotaId: string;
+  onClose: () => void;
+  onSuccess: () => void;
+}
+
+function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, onSuccess }: ActiveConsultationFormProps) {
+  const [pesoActual, setPesoActual] = useState('');
+  const [notasClinicas, setNotasClinicas] = useState('');
+  const [selectedDiag, setSelectedDiag] = useState<{ id: number; name: string }[]>([]);
+  const [treatments, setTreatments] = useState<any[]>([]);
+  const [vacunasApplied, setVacunasApplied] = useState<any[]>([]);
+  const [isSaving, setIsSaving] = useState(false);
+
+  // States for treatments form
+  const [tTipoId, setTTipoId] = useState('');
+  const [tProducto, setTProducto] = useState<any>(null);
+  const [tDosis, setTDosis] = useState('');
+  const [tFrecuencia, setTFrecuencia] = useState('');
+  const [tFechaInicio, setTFechaInicio] = useState(new Date().toISOString().split('T')[0]);
+  const [tFechaFin, setTFechaFin] = useState('');
+  const [tIndicaciones, setTIndicaciones] = useState('');
+
+  // States for vaccines form
+  const [vProducto, setVProducto] = useState<any>(null);
+  const [vLote, setVLote] = useState('');
+  const [vFechaAplicacion, setVFechaAplicacion] = useState(new Date().toISOString().split('T')[0]);
+  const [vFechaProxima, setVFechaProxima] = useState('');
+
+  // Fetch lookup lists
+  const { data: diagnosticosRaw } = useFetch<any[]>('/catalogo/diagnosticos');
+  const { data: tiposTratamiento } = useFetch<any[]>('/catalogo/tipos-tratamiento');
+  const { data: productosRaw } = useFetch<any[]>('/catalogo/productos');
+  const { data: vacunasRaw } = useFetch<any[]>('/catalogo/productos/vacunas');
+
+  const lookupDiag = (diagnosticosRaw || []).map((d: any) => ({ id: d.id, name: d.diagnostico }));
+  const lookupProducts = (productosRaw || []).map((p: any) => ({ id: p.id, name: p.nombre_comercial }));
+  const lookupVacunas = (vacunasRaw || []).map((v: any) => ({ id: v.id, name: v.nombre_comercial }));
+
+  const handleAddDiagnosis = (item: { id: number; name: string }) => {
+    if (!selectedDiag.find(d => d.id === item.id)) {
+      setSelectedDiag([...selectedDiag, item]);
+    }
+  };
+
+  const handleRemoveDiagnosis = (id: number) => {
+    setSelectedDiag(selectedDiag.filter(d => d.id !== id));
+  };
+
+  const handleAddTreatment = () => {
+    if (!tTipoId || !tProducto || !tDosis || !tFrecuencia) {
+      alert('Por favor complete todos los datos requeridos del tratamiento.');
+      return;
+    }
+    const selectedTipo = (tiposTratamiento || []).find((tt: any) => String(tt.id) === tTipoId);
+    
+    setTreatments([...treatments, {
+      tipo_tratamiento_id: Number(tTipoId),
+      tipoName: selectedTipo?.tipo || 'Tratamiento',
+      producto_id: tProducto.id,
+      productoName: tProducto.name,
+      dosis: tDosis,
+      frecuencia: tFrecuencia,
+      fecha_inicio: tFechaInicio,
+      fecha_fin: tFechaFin || null,
+      indicaciones_adicionales: tIndicaciones || null,
+    }]);
+
+    // Reset sub-form
+    setTTipoId('');
+    setTProducto(null);
+    setTDosis('');
+    setTFrecuencia('');
+    setTIndicaciones('');
+  };
+
+  const handleRemoveTreatment = (index: number) => {
+    setTreatments(treatments.filter((_, i) => i !== index));
+  };
+
+  const handleAddVacuna = () => {
+    if (!vProducto) {
+      alert('Por favor seleccione una vacuna.');
+      return;
+    }
+    setVacunasApplied([...vacunasApplied, {
+      producto_id: vProducto.id,
+      productoName: vProducto.name,
+      numero_lote: vLote || null,
+      fecha_aplicacion: vFechaAplicacion,
+      fecha_proxima_dosis: vFechaProxima || null,
+    }]);
+
+    setVProducto(null);
+    setVLote('');
+  };
+
+  const handleRemoveVacuna = (index: number) => {
+    setVacunasApplied(vacunasApplied.filter((_, i) => i !== index));
+  };
+
+  const handleFinalize = async () => {
+    if (!notasClinicas.trim()) {
+      alert('Por favor ingrese las notas clínicas de la consulta.');
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      await api.post('/atenciones', {
+        cita_id: citaId,
+        mascota_id: mascotaId,
+        clinica_id: clinicaId,
+        notas_clinicas: notasClinicas,
+        peso_actual: pesoActual || null,
+        diagnosticos: selectedDiag.map(d => d.id),
+        tratamientos: treatments.map(t => ({
+          tipo_tratamiento_id: t.tipo_tratamiento_id,
+          producto_id: t.producto_id,
+          dosis: t.dosis,
+          frecuencia: t.frecuencia,
+          fecha_inicio: t.fecha_inicio,
+          fecha_fin: t.fecha_fin,
+          indicaciones_adicionales: t.indicaciones_adicionales,
+        })),
+        vacunas: vacunasApplied.map(v => ({
+          producto_id: v.producto_id,
+          numero_lote: v.numero_lote,
+          fecha_aplicacion: v.fecha_aplicacion,
+          fecha_proxima_dosis: v.fecha_proxima_dosis,
+        })),
+      });
+
+      alert('Consulta finalizada y registrada con éxito.');
+      onSuccess();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al guardar la consulta');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="consultation-form-section">
+      <div className="consultation-form-title-bar">
+        <h3>Atención Médica Activa</h3>
+        <button className="consultation-close-btn" onClick={onClose} title="Cerrar Consulta">
+          <X size={16} />
+        </button>
+      </div>
+
+      <Input
+        label="Peso del Paciente (kg)"
+        type="number"
+        step="0.01"
+        placeholder="Ej: 12.5"
+        value={pesoActual}
+        onChange={(e) => setPesoActual(e.target.value)}
+      />
+
+      <div className="form-group">
+        <label className="form-label">Notas Clínicas / Anamnesis *</label>
+        <textarea
+          className="form-input form-textarea"
+          placeholder="Describa los síntomas, exploración física y estado general..."
+          value={notasClinicas}
+          onChange={(e) => setNotasClinicas(e.target.value)}
+          required
+        />
+      </div>
+
+      {/* Diagnosticos autocomplete */}
+      <Autocomplete
+        label="Diagnosticar (Buscador)"
+        placeholder="Escriba para buscar diagnóstico..."
+        items={lookupDiag}
+        onSelect={handleAddDiagnosis}
+      />
+
+      {selectedDiag.length > 0 && (
+        <div className="selected-badges-list">
+          {selectedDiag.map(d => (
+            <Badge key={d.id} variant="accent" className="selected-badge">
+              {d.name}
+              <button className="selected-badge-remove" onClick={() => handleRemoveDiagnosis(d.id)}>
+                <X size={10} />
+              </button>
             </Badge>
-          </div>
-        </Card>
-      ))}
+          ))}
+        </div>
+      )}
+
+      {/* Recetar Tratamientos */}
+      <span className="consultation-section-title">Tratamientos a Prescribir</span>
+      
+      <div className="consultation-subform">
+        <Select
+          label="Tipo"
+          options={[
+            { value: '', label: 'Seleccionar tipo...' },
+            ...(tiposTratamiento || []).map((tt: any) => ({ value: String(tt.id), label: tt.tipo }))
+          ]}
+          value={tTipoId}
+          onChange={(e) => setTTipoId(e.target.value)}
+        />
+
+        <Autocomplete
+          label="Medicamento / Producto"
+          placeholder="Escriba para buscar medicamento..."
+          items={lookupProducts}
+          onSelect={(item) => setTProducto(item)}
+        />
+        {tProducto && (
+          <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
+            Seleccionado: {tProducto.name}
+          </span>
+        )}
+
+        <div className="form-row">
+          <Input
+            label="Dosis"
+            placeholder="Ej: 1 comp"
+            value={tDosis}
+            onChange={(e) => setTDosis(e.target.value)}
+          />
+          <Input
+            label="Frecuencia"
+            placeholder="Ej: Cada 12 hs"
+            value={tFrecuencia}
+            onChange={(e) => setTFrecuencia(e.target.value)}
+          />
+        </div>
+
+        <div className="form-row">
+          <Input
+            label="Desde"
+            type="date"
+            value={tFechaInicio}
+            onChange={(e) => setTFechaInicio(e.target.value)}
+          />
+          <Input
+            label="Hasta (Opcional)"
+            type="date"
+            value={tFechaFin}
+            onChange={(e) => setTFechaFin(e.target.value)}
+          />
+        </div>
+
+        <Input
+          label="Indicaciones adicionales"
+          placeholder="Ej: Suministrar con alimentos"
+          value={tIndicaciones}
+          onChange={(e) => setTIndicaciones(e.target.value)}
+        />
+
+        <Button size="sm" type="button" onClick={handleAddTreatment}>
+          Prescribir Tratamiento
+        </Button>
+      </div>
+
+      {treatments.length > 0 && (
+        <div className="prescribed-items-list">
+          {treatments.map((t, index) => (
+            <div key={index} className="prescribed-item-card">
+              <div className="prescribed-item-info">
+                <span className="prescribed-item-title">{t.tipoName} — {t.productoName}</span>
+                <span className="prescribed-item-details">Dosis: {t.dosis} · Frecuencia: {t.frecuencia}</span>
+                {t.fecha_fin && <span className="prescribed-item-details">Hasta: {t.fecha_fin}</span>}
+              </div>
+              <button className="prescribed-item-delete" type="button" onClick={() => handleRemoveTreatment(index)}>
+                <X size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Aplicar Vacunas */}
+      <span className="consultation-section-title">Vacunas Aplicadas</span>
+
+      <div className="consultation-subform">
+        <Autocomplete
+          label="Vacuna"
+          placeholder="Escriba para buscar vacuna..."
+          items={lookupVacunas}
+          onSelect={(item) => setVProducto(item)}
+        />
+        {vProducto && (
+          <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
+            Seleccionado: {vProducto.name}
+          </span>
+        )}
+
+        <Input
+          label="Número de Lote"
+          placeholder="Ej: LOTE-ABC-123"
+          value={vLote}
+          onChange={(e) => setVLote(e.target.value)}
+        />
+
+        <div className="form-row">
+          <Input
+            label="Aplicada hoy"
+            type="date"
+            value={vFechaAplicacion}
+            onChange={(e) => setVFechaAplicacion(e.target.value)}
+          />
+          <Input
+            label="Próxima dosis"
+            type="date"
+            value={vFechaProxima}
+            onChange={(e) => setVFechaProxima(e.target.value)}
+          />
+        </div>
+
+        <Button size="sm" type="button" onClick={handleAddVacuna}>
+          Aplicar Vacuna
+        </Button>
+      </div>
+
+      {vacunasApplied.length > 0 && (
+        <div className="prescribed-items-list">
+          {vacunasApplied.map((v, index) => (
+            <div key={index} className="prescribed-item-card">
+              <div className="prescribed-item-info">
+                <span className="prescribed-item-title">Vacuna: {v.productoName}</span>
+                <span className="prescribed-item-details">Lote: {v.numero_lote || '–'}</span>
+                {v.fecha_proxima_dosis && <span className="prescribed-item-details">Próxima: {v.fecha_proxima_dosis}</span>}
+              </div>
+              <button className="prescribed-item-delete" type="button" onClick={() => handleRemoveVacuna(index)}>
+                <X size={14} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="consultation-actions-footer">
+        <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
+        <Button type="button" onClick={handleFinalize} disabled={isSaving}>
+          {isSaving ? (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <Spinner size={16} />
+              <span>Guardando...</span>
+            </div>
+          ) : (
+            'Finalizar Consulta'
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

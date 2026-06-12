@@ -3,9 +3,9 @@ import { LayoutDashboard, PawPrint, CalendarDays, User, LogOut, Stethoscope } fr
 import { useAuth } from '../../hooks/useAuth';
 import './Sidebar.css';
 
-const navItems = [
+const navItems = (user: any) => [
   { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
-  { to: '/mascotas', icon: PawPrint, label: 'Mascotas' },
+  { to: '/mascotas', icon: PawPrint, label: user?.rol === 'Veterinario' ? 'Pacientes' : 'Mis Mascotas' },
   { to: '/citas', icon: CalendarDays, label: 'Citas' },
   { to: '/perfil', icon: User, label: 'Mi Perfil' },
 ];
@@ -28,7 +28,7 @@ export function Sidebar() {
 
       <nav className="sidebar-nav">
         <span className="sidebar-section-label">Menú Principal</span>
-        {navItems.map((item) => (
+        {navItems(user).map((item) => (
           <NavLink
             key={item.to}
             to={item.to}

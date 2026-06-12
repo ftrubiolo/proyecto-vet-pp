@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   CalendarDays,
   Plus,
@@ -7,6 +8,8 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useFetch } from '../../hooks/useFetch';
+import { api } from '../../api/client';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -17,64 +20,17 @@ import './CitasPage.css';
 
 type EstadoCita = 'Todas' | 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelada';
 
-interface Cita {
+interface CitaMapped {
   id: string;
   mascota: string;
+  mascotaId: string;
   veterinario: string;
   clinica: string;
+  clinicaId: string;
   motivo: string;
   fecha: Date;
   estado: string;
 }
-
-// ── Mock data ──
-const initialMockCitas: Cita[] = [
-  {
-    id: '1',
-    mascota: 'Luna',
-    veterinario: 'Dr. García',
-    clinica: 'Clínica VetVault',
-    motivo: 'Vacunación antirrábica',
-    fecha: new Date(Date.now() + 86400000 * 2),
-    estado: 'Pendiente',
-  },
-  {
-    id: '2',
-    mascota: 'Rocky',
-    veterinario: 'Dra. López',
-    clinica: 'Clínica VetVault',
-    motivo: 'Control general',
-    fecha: new Date(Date.now() + 86400000 * 5),
-    estado: 'Confirmada',
-  },
-  {
-    id: '3',
-    mascota: 'Milo',
-    veterinario: 'Dr. García',
-    clinica: 'Clínica VetVault',
-    motivo: 'Desparasitación',
-    fecha: new Date(Date.now() + 86400000 * 8),
-    estado: 'Pendiente',
-  },
-  {
-    id: '4',
-    mascota: 'Canela',
-    veterinario: 'Dra. Martínez',
-    clinica: 'Clínica VetVault',
-    motivo: 'Castración',
-    fecha: new Date(Date.now() - 86400000 * 3),
-    estado: 'Completada',
-  },
-  {
-    id: '5',
-    mascota: 'Max',
-    veterinario: 'Dr. García',
-    clinica: 'Clínica VetVault',
-    motivo: 'Consulta dermatológica',
-    fecha: new Date(Date.now() - 86400000 * 10),
-    estado: 'Cancelada',
-  },
-];
 
 const filters: EstadoCita[] = ['Todas', 'Pendiente', 'Confirmada', 'Completada', 'Cancelada'];
 const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
@@ -89,12 +45,35 @@ function getEstadoBadgeVariant(estado: string) {
   }
 }
 
+function getUIEstado(c: any): string {
+  if (c.atenciones && c.atenciones.length > 0) return 'Completada';
+  const estado = c.estado_cita?.estado;
+  if (estado === 'Agendada') return 'Pendiente';
+  return estado || 'Pendiente';
+}
+
 export function CitasPage() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const isVet = user?.rol === 'Veterinario';
   const [filter, setFilter] = useState<EstadoCita>('Todas');
-  const [citas, setCitas] = useState<Cita[]>(initialMockCitas);
   const [showCreate, setShowCreate] = useState(false);
+
+  // Fetch real appointments
+  const { data: rawCitas, isLoading, refetch } = useFetch<any[]>('/citas');
+
+  // Map backend format to UI model
+  const citas: CitaMapped[] = (rawCitas || []).map((c: any) => ({
+    id: c.id,
+    mascota: c.mascota?.nombre || 'Desconocida',
+    mascotaId: c.mascota_id,
+    veterinario: c.veterinario ? `${c.veterinario.nombre} ${c.veterinario.apellido}` : 'Sin asignar',
+    clinica: c.clinica?.nombre_comercial || 'VetVault',
+    clinicaId: c.clinica_id,
+    motivo: c.motivo_cita?.motivo || 'Consulta',
+    fecha: new Date(c.fecha_hora),
+    estado: getUIEstado(c),
+  }));
 
   const filtered = filter === 'Todas'
     ? citas
@@ -103,17 +82,43 @@ export function CitasPage() {
   // Sort by date descending (upcoming first)
   const sorted = [...filtered].sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
 
-  const handleStatusChange = (citaId: string, newStatus: string) => {
-    setCitas((prev) =>
-      prev.map((c) => (c.id === citaId ? { ...c, estado: newStatus } : c))
-    );
+  const handleStatusChange = async (citaId: string, newStatus: string) => {
+    if (newStatus === 'Completada') {
+      try {
+        const originalCita = rawCitas?.find(c => c.id === citaId);
+        if (originalCita) {
+          await api.post('/atenciones', {
+            cita_id: citaId,
+            mascota_id: originalCita.mascota_id,
+            clinica_id: originalCita.clinica_id,
+            notas_clinicas: 'Cita completada desde el panel de gestión de turnos.',
+            diagnosticos: [],
+            tratamientos: [],
+            vacunas: []
+          });
+          refetch();
+        }
+      } catch (err) {
+        alert(err instanceof Error ? err.message : 'Error al completar cita');
+      }
+      return;
+    }
+
+    let statusId = 1;
+    if (newStatus === 'Confirmada') statusId = 2;
+    if (newStatus === 'Cancelada') statusId = 3;
+    if (newStatus === 'No-Show') statusId = 4;
+
+    try {
+      await api.patch(`/citas/${citaId}`, { estado_cita_id: statusId });
+      refetch();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al cambiar estado');
+    }
   };
 
-  const handleCreate = (newCita: Omit<Cita, 'id'>) => {
-    setCitas((prev) => [
-      ...prev,
-      { ...newCita, id: String(Date.now()) },
-    ]);
+  const handleCreate = () => {
+    refetch();
     setShowCreate(false);
   };
 
@@ -144,7 +149,11 @@ export function CitasPage() {
         ))}
       </div>
 
-      {sorted.length === 0 ? (
+      {isLoading ? (
+        <Card style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
+          <p>Cargando citas...</p>
+        </Card>
+      ) : sorted.length === 0 ? (
         <Card>
           <EmptyState
             icon={<CalendarDays size={56} />}
@@ -208,9 +217,9 @@ export function CitasPage() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleStatusChange(cita.id, 'Completada')}
+                        onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}
                       >
-                        Completar
+                        Atender
                       </Button>
                     )}
                     <Button
@@ -242,27 +251,63 @@ export function CitasPage() {
 // ── Create Cita Modal ──
 interface CreateCitaModalProps {
   onClose: () => void;
-  onCreate: (cita: Omit<Cita, 'id'>) => void;
+  onCreate: () => void;
 }
 
 function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
-  const [mascota, setMascota] = useState('');
-  const [veterinario, setVeterinario] = useState('');
-  const [motivo, setMotivo] = useState('');
+  const [mascotaId, setMascotaId] = useState('');
+  const [veterinarioId, setVeterinarioId] = useState('');
+  const [clinicaId, setClinicaId] = useState('');
+  const [motivoId, setMotivoId] = useState('1'); // Default: Consulta General
   const [fecha, setFecha] = useState('');
   const [hora, setHora] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Fetch dropdown lists
+  const { data: mascotas } = useFetch<any[]>('/mascotas');
+  
+  // Only fetch clinics where the selected pet is a patient (Activo)
+  const { data: clinicas } = useFetch<any[]>(
+    mascotaId ? `/clinicas/mascota/${mascotaId}` : null
+  );
+
+  // Only fetch veterinarians associated with the selected clinic
+  const { data: veterinarios } = useFetch<any[]>(
+    clinicaId ? `/veterinarios/clinica/${clinicaId}` : null
+  );
+
+  // Pre-fill lists
+  const mascotaList = Array.isArray(mascotas) ? mascotas : [];
+  const vetList = Array.isArray(veterinarios) ? veterinarios : [];
+  const clinicaList = Array.isArray(clinicas) ? clinicas : [];
+
+  const handleMascotaChange = (id: string) => {
+    setMascotaId(id);
+    setClinicaId('');
+    setVeterinarioId('');
+  };
+
+  const handleClinicaChange = (id: string) => {
+    setClinicaId(id);
+    setVeterinarioId('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const fechaHora = new Date(`${fecha}T${hora}`);
-    onCreate({
-      mascota,
-      veterinario,
-      clinica: 'Clínica VetVault',
-      motivo,
-      fecha: fechaHora,
-      estado: 'Pendiente',
-    });
+
+    try {
+      await api.post('/citas', {
+        mascota_id: mascotaId,
+        veterinario_id: veterinarioId || null,
+        clinica_id: clinicaId,
+        fecha_hora: fechaHora.toISOString(),
+        motivo_id: Number(motivoId),
+        estado_cita_id: 1, // Agendada (Pendiente)
+      });
+      onCreate();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Error al agendar cita');
+    }
   };
 
   return (
@@ -278,35 +323,53 @@ function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
       }
     >
       <form id="create-cita-form" className="create-cita-form" onSubmit={handleSubmit}>
-        <Input
+        <Select
           label="Mascota"
-          placeholder="Nombre de la mascota"
-          value={mascota}
-          onChange={(e) => setMascota(e.target.value)}
+          options={[
+            { value: '', label: 'Seleccionar mascota...' },
+            ...mascotaList.map((m: any) => ({ value: m.id, label: m.nombre }))
+          ]}
+          value={mascotaId}
+          onChange={(e) => handleMascotaChange(e.target.value)}
           required
         />
-        <Input
+        
+        <Select
+          label="Clínica"
+          options={[
+            { value: '', label: mascotaId ? 'Seleccionar clínica...' : 'Seleccione una mascota primero...' },
+            ...clinicaList.map((c: any) => ({ value: c.id, label: c.nombre_comercial }))
+          ]}
+          value={clinicaId}
+          onChange={(e) => handleClinicaChange(e.target.value)}
+          disabled={!mascotaId}
+          required
+        />
+
+        <Select
           label="Veterinario"
-          placeholder="Nombre del veterinario"
-          value={veterinario}
-          onChange={(e) => setVeterinario(e.target.value)}
-          required
+          options={[
+            { value: '', label: clinicaId ? 'Cualquiera / Sin asignar' : 'Seleccione una clínica primero...' },
+            ...vetList.map((v: any) => ({ value: v.id, label: `${v.nombre} ${v.apellido}` }))
+          ]}
+          value={veterinarioId}
+          onChange={(e) => setVeterinarioId(e.target.value)}
+          disabled={!clinicaId}
         />
+
         <Select
           label="Motivo"
           options={[
-            { value: 'Vacunación', label: 'Vacunación' },
-            { value: 'Control general', label: 'Control general' },
-            { value: 'Desparasitación', label: 'Desparasitación' },
-            { value: 'Castración', label: 'Castración' },
-            { value: 'Consulta', label: 'Consulta' },
-            { value: 'Emergencia', label: 'Emergencia' },
-            { value: 'Otro', label: 'Otro' },
+            { value: '1', label: 'Consulta General' },
+            { value: '2', label: 'Vacunación' },
+            { value: '3', label: 'Cirugía' },
+            { value: '4', label: 'Urgencia' },
           ]}
-          value={motivo}
-          onChange={(e) => setMotivo(e.target.value)}
+          value={motivoId}
+          onChange={(e) => setMotivoId(e.target.value)}
           required
         />
+
         <div className="form-row">
           <Input
             label="Fecha"
