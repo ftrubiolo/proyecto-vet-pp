@@ -2,6 +2,8 @@ import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/user.service';
 import { Validation } from '../utils/validation';
 import { UpdateUsuarioInput } from '../types/auth.types';
+import { VetService } from '../services/veterinario.service';
+import { PropietarioService } from '../services/propietario.service';
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
@@ -29,10 +31,38 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) return reply.code(401).send({ error: 'No se proporcionó un token.' });
     try {
-        const user = await UserService.getById(request.user.id);
-        if (!user) return reply.code(404).send({ error: 'Usuario no encontrado' });
+        const userInfo = await UserService.getById(request.user.id);
+        if (!userInfo) return reply.code(404).send({ error: 'Usuario no encontrado' });
+        const { fecha_creacion, ...user } = userInfo;
 
-        return reply.code(200).send(user);
+        let additionalInfo: any = {};
+        if (user.rol === 'Veterinario') {
+            const vet = await VetService.getByUsuarioId(user.id);
+            if (vet) {
+                additionalInfo = {
+                    vetId: vet.id,
+                    nombre: vet.nombre,
+                    apellido: vet.apellido,
+                    clinicas: vet.clinicas
+                };
+            }
+        } else if (user.rol === 'Propietario') {
+            const prop = await PropietarioService.getByUsuarioId(user.id);
+            if (prop) {
+                additionalInfo = {
+                    proId: prop.id,
+                    nombre: prop.nombre,
+                    apellido: prop.apellido
+                };
+            }
+        }
+
+        return reply.code(200).send({
+            user: {
+                ...user,
+                ...additionalInfo
+            }
+        });
     } catch (error) {
         reply.code(500).send({ message: 'Error al obtener el usuario' });
     }

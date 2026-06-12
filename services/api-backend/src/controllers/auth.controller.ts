@@ -230,6 +230,28 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
                 ...(proId && { proId })
             }, JWT_SECRET, { expiresIn: '1d' });
 
+        let additionalInfo: any = {};
+        if (user.rol === 'Veterinario') {
+            const vet = await VetService.getByUsuarioId(user.id);
+            if (vet) {
+                additionalInfo = {
+                    vetId: vet.id,
+                    nombre: vet.nombre,
+                    apellido: vet.apellido,
+                    clinicas: vet.clinicas
+                };
+            }
+        } else if (user.rol === 'Propietario') {
+            const prop = await PropietarioService.getByUsuarioId(user.id);
+            if (prop) {
+                additionalInfo = {
+                    proId: prop.id,
+                    nombre: prop.nombre,
+                    apellido: prop.apellido
+                };
+            }
+        }
+
         // Establecer Cookie y responder
         return reply
             .code(200)
@@ -242,7 +264,10 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
             })
             .send({
                 message: "Usuario logueado exitosamente",
-                user
+                user: {
+                    ...user,
+                    ...additionalInfo
+                }
             });
 
     } catch (error) {
@@ -253,7 +278,12 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
 
 export const logout = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     return reply
-        .clearCookie('token', { path: '/' })
+        .clearCookie('token', {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'strict' : 'lax',
+            path: '/',
+        })
         .code(200)
         .send({ message: 'Sesión cerrada exitosamente' });
 };
