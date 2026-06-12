@@ -10,6 +10,10 @@ export type MascotaBase = Pick<MascotaDb,
     | 'id'
     | 'nombre'
     | 'sexo'
+    | 'fecha_nacimiento'
+    | 'foto_url'
+    | 'es_castrado'
+    | 'numero_microchip'
 > & {
     raza: string;
     especie: string;
@@ -21,10 +25,6 @@ export type MascotaList = MascotaBase & {
 }
 
 export type MascotaPerfil = MascotaBase & {
-    fecha_nacimiento: MascotaDb['fecha_nacimiento'];
-    foto_url: MascotaDb['foto_url'];
-    numero_microchip: MascotaDb['numero_microchip'];
-    es_castrado: MascotaDb['es_castrado'];
     propietarios: PropietarioResumen[];
 };
 

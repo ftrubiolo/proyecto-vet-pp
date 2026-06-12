@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { and, eq } from "drizzle-orm";
-import { estados_cita, mascotas, mascotas_propietarios } from "../db/schema";
+import { and, eq, inArray } from "drizzle-orm";
+import { estados_cita, mascotas, mascotas_propietarios, clinicas_mascotas, veterinarios_clinicas } from "../db/schema";
 
 import type { MascotaDb, NewMascota, DBClient } from '../types/db.types';
 import { MascotaList, MascotaPerfil } from "../types/mascota.types";
@@ -28,10 +28,14 @@ export class MascotaService {
             return [{
                 id: m.id,
                 nombre: m.nombre,
+                foto_url: m.foto_url,
+                fecha_nacimiento: m.fecha_nacimiento,
                 edad: MascotaService.calcularEdad(m.fecha_nacimiento),
                 sexo: m.sexo as 'M' | 'H',
                 especie: m.raza.especie.especie,
                 raza: m.raza.raza,
+                es_castrado: m.es_castrado,
+                numero_microchip: m.numero_microchip,
             }];
         });
     }
@@ -255,5 +259,70 @@ export class MascotaService {
             )
         });
         return !!result;
+    }
+
+    /**
+     * Obtiene todas las mascotas que son pacientes de las clínicas asociadas a un veterinario.
+     * @param vetId - ID del veterinario.
+     * @returns Lista de mascotas (pacientes) del veterinario.
+     */
+    static async getAllMascotasByVeterinarioId(vetId: string): Promise<MascotaList[] | null> {
+        const clinicaIds = await db.query.veterinarios_clinicas.findMany({
+            where: and(
+                eq(veterinarios_clinicas.veterinario_id, vetId),
+                eq(veterinarios_clinicas.estado_activo, true)
+            ),
+            columns: {
+                clinica_id: true
+            }
+        });
+
+        if (!clinicaIds || clinicaIds.length === 0) return [];
+
+        const ids = clinicaIds.map(c => c.clinica_id as string);
+
+        const result = await db.query.clinicas_mascotas.findMany({
+            where: and(
+                inArray(clinicas_mascotas.clinica_id, ids),
+                eq(clinicas_mascotas.estado_paciente_id, 2) // Activo
+            ),
+            with: {
+                mascota: {
+                    with: {
+                        raza: {
+                            with: {
+                                especie: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        if (!result) return [];
+
+        const seen = new Set<string>();
+        const mapped: MascotaList[] = [];
+
+        for (const relation of result) {
+            const m = relation.mascota;
+            if (!m || seen.has(m.id)) continue;
+            seen.add(m.id);
+
+            mapped.push({
+                id: m.id,
+                nombre: m.nombre,
+                foto_url: m.foto_url,
+                fecha_nacimiento: m.fecha_nacimiento,
+                edad: MascotaService.calcularEdad(m.fecha_nacimiento),
+                sexo: m.sexo as 'M' | 'H',
+                especie: m.raza.especie.especie,
+                raza: m.raza.raza,
+                es_castrado: m.es_castrado,
+                numero_microchip: m.numero_microchip,
+            });
+        }
+
+        return mapped;
     }
 }

@@ -8,6 +8,11 @@ import { VeterinarioList, VeterinarioPerfil } from "../types/veterinario.types";
  * Servicio para la gestión de perfiles de veterinarios, habilitación de matrículas y asociaciones con clínicas.
  */
 export class VetService {
+    /**
+     * Obtiene el ID del veterinario por ID de usuario.
+     * @param usuarioId - ID del usuario
+     * @returns ID del veterinario o null si no existe
+     */
     static async getIdByUsuarioId(usuarioId: string): Promise<string | null> {
         const result = await db.query.veterinarios.findFirst({
             where: eq(veterinarios.usuario_id, usuarioId),
@@ -237,6 +242,11 @@ export class VetService {
         return !!vet;
     }
 
+    /**
+     * Obtiene los IDs de las clínicas asociadas a un veterinario.
+     * @param vetId - ID del veterinario
+     * @returns Array de IDs de clínicas o null si no existe
+     */
     static async getClinicasByVeterinarioId(vetId: string): Promise<string[] | null> {
         const result = await db.query.veterinarios_clinicas.findMany({
             where: and(
@@ -251,8 +261,13 @@ export class VetService {
         return result.map((vc) => vc.clinica_id as string);
     }
 
+    /**
+     * Verifica si una mascota está asociada a alguna clínica del veterinario.
+     * @param vetId - ID del veterinario
+     * @param mascotaId - ID de la mascota
+     * @returns true si la mascota está asociada, false en caso contrario
+     */
     static async isPaciente(vetId: string, mascotaId: string): Promise<boolean> {
-
         const clinicasVeterinario = await this.getClinicasByVeterinarioId(vetId);
         if (!clinicasVeterinario) return false;
 

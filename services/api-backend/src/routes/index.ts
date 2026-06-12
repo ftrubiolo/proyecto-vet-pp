@@ -5,6 +5,7 @@ import propietariosRoutes from './propietarios.routes';
 import usuariosRoutes from './usuarios.routes';
 import catalogoRoutes from './catalogo.routes';
 import mascotasRoutes from './mascotas.routes';
+import clinicasRoutes from './clinicas.routes';
 
 /**
  * Registra y centraliza todas las rutas del API Backend de VetVault con sus respectivos prefijos.
@@ -25,4 +26,5 @@ export default async function apiRoutes(fastify: FastifyInstance) {
   await fastify.register(usuariosRoutes, { prefix: '/usuarios' });
   await fastify.register(catalogoRoutes, { prefix: '/catalogo' });
   await fastify.register(mascotasRoutes, { prefix: '/mascotas' });
+  await fastify.register(clinicasRoutes, { prefix: '/clinicas' });
 }

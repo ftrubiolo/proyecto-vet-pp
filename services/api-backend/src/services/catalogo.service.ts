@@ -3,8 +3,12 @@ import { eq, and, isNull } from 'drizzle-orm';
 import { catalogo_productos, especies, razas, diagnosticos_atencion, tipos_tratamiento, estados_cita, estados_paciente, tipos_relacion, motivos_cita, productos_categorias } from '../db/schema';
 
 export interface EspecieConRaza {
+    id: number;
     especie: string;
-    raza: string;
+    razas: {
+        id: number,
+        raza: string
+    }[];
 }
 
 export type DiagnosticoDb = typeof diagnosticos_atencion.$inferSelect;
@@ -24,13 +28,20 @@ export class CatalogoService {
      * @returns Lista de especies con sus razas
      */
     static async getAllEspecies(): Promise<EspecieConRaza[]> {
-        return await db
-            .select({
-                especie: especies.especie,
-                raza: razas.raza
-            })
-            .from(especies)
-            .innerJoin(razas, eq(especies.id, razas.especie_id));
+        return await db.query.especies.findMany({
+            columns: {
+                id: true,
+                especie: true,
+            },
+            with: {
+                razas: {
+                    columns: {
+                        id: true,
+                        raza: true
+                    }
+                }
+            }
+        })
     }
 
     /**
