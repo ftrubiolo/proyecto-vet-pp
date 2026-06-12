@@ -236,11 +236,6 @@ All actions must feature micro-animations to encourage interaction:
 }
 ```
 
-### C. Sidebar Navigation Rules
-The side navigation bar relies on absolute height mapping and custom visual triggers:
-- Highlight active states with `background: var(--accent-light)` and `color: var(--accent)`.
-- Apply hover transitions with `transform: translateX(4px)` to give menu selections a sense of physical weight and response.
-
 ---
 
 ## 6. Language & Localization (Visible Text)

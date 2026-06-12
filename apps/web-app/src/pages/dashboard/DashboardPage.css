@@ -1,0 +1,147 @@
+.dashboard-welcome {
+  margin-bottom: var(--space-lg);
+}
+
+.dashboard-welcome h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 var(--space-xxs);
+}
+
+.dashboard-welcome p {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin: 0;
+}
+
+.dashboard-section {
+  margin-bottom: var(--space-xl);
+}
+
+.dashboard-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-md);
+}
+
+.dashboard-section-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.dashboard-quick-pets {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--space-md);
+}
+
+.dashboard-pet-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  cursor: pointer;
+  transition: transform var(--transition);
+}
+
+.dashboard-pet-card:hover {
+  transform: translateY(-2px);
+}
+
+.dashboard-pet-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--accent-light, rgba(14, 165, 233, 0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, var(--accent-blue));
+  flex-shrink: 0;
+}
+
+.dashboard-pet-info {
+  min-width: 0;
+}
+
+.dashboard-pet-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.dashboard-pet-breed {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-appointment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.dashboard-appointment-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.dashboard-appointment-date {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 48px;
+  padding: var(--space-xs);
+  border-radius: var(--radius-sm);
+  background: var(--accent-light, rgba(14, 165, 233, 0.06));
+}
+
+.dashboard-appointment-day {
+  font-family: var(--heading);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--accent, var(--accent-blue));
+  line-height: 1;
+}
+
+.dashboard-appointment-month {
+  font-size: 0.625rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-appointment-details {
+  flex: 1;
+  min-width: 0;
+}
+
+.dashboard-appointment-title {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.dashboard-appointment-sub {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.dashboard-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 768px) {
+  .dashboard-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}

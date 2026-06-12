@@ -1,0 +1,238 @@
+.mascota-detail-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+.mascota-detail-back {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: var(--text-muted);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--transition);
+  background: none;
+  border: none;
+  font-family: var(--sans);
+  padding: 0;
+  margin-bottom: var(--space-md);
+}
+
+.mascota-detail-back:hover {
+  color: var(--accent, var(--accent-blue));
+}
+
+.mascota-detail-profile {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-xs);
+}
+
+.mascota-detail-avatar {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--accent-light, rgba(14, 165, 233, 0.1));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent, var(--accent-blue));
+  flex-shrink: 0;
+}
+
+.mascota-detail-info h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin: 0 0 var(--space-xxs);
+}
+
+.mascota-detail-breed {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+.mascota-detail-badges {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+  flex-wrap: wrap;
+}
+
+.mascota-tab-content {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* ─── Datos Tab ─── */
+.mascota-datos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: var(--space-md);
+}
+
+.mascota-dato-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.mascota-dato-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.mascota-dato-value {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+/* ─── Timeline (Historial) ─── */
+.timeline {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.timeline-item {
+  position: relative;
+  padding-left: var(--space-xl);
+}
+
+.timeline-item::before {
+  content: '';
+  position: absolute;
+  left: 8px;
+  top: 28px;
+  bottom: -20px;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-item:last-child::before {
+  display: none;
+}
+
+.timeline-dot {
+  position: absolute;
+  left: 2px;
+  top: 6px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--accent, var(--accent-blue));
+  border: 2px solid var(--bg);
+  box-shadow: 0 0 0 2px var(--accent-light, rgba(14, 165, 233, 0.2));
+}
+
+.timeline-content {
+  padding: var(--space-md);
+}
+
+.timeline-date {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xs);
+}
+
+.timeline-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin-bottom: var(--space-xxs);
+}
+
+.timeline-text {
+  font-size: 0.8125rem;
+  color: var(--text);
+  line-height: 1.5;
+}
+
+/* ─── Vaccine Card ─── */
+.vaccine-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.vaccine-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+.vaccine-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(34, 197, 94, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-green);
+  flex-shrink: 0;
+}
+
+.vaccine-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.vaccine-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.vaccine-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ─── Treatment Card ─── */
+.treatment-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.treatment-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-md);
+}
+
+.treatment-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: rgba(14, 165, 233, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-blue);
+  flex-shrink: 0;
+}
+
+.treatment-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.treatment-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.treatment-detail {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
