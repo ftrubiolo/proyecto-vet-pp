@@ -5,7 +5,7 @@ import { checkRole, verifyToken } from "../middlewares/auth.middleware"
 export default async function mascotasRoutes(fastify: FastifyInstance) {
     fastify.addHook('preHandler', verifyToken);
 
-    fastify.get('/', { preHandler: [checkRole(['Admin', 'Veterinario'])] }, controller.getAll);
+    fastify.get('/', { preHandler: [checkRole(['Admin', 'Veterinario', 'Propietario'])] }, controller.getAll);
     fastify.post('/', { schema: createSchema }, controller.create);
     fastify.get('/:id', controller.getOne);
     fastify.patch('/:id', { schema: updateSchema }, controller.update);

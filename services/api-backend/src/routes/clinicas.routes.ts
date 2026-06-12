@@ -7,6 +7,7 @@ export default async function clinicasRoutes(fastify: FastifyInstance) {
     fastify.addHook("preHandler", verifyToken)
 
     fastify.get("/", controller.getAll)
+    fastify.get("/mascota/:mascotaId", controller.getByMascota)
     fastify.get("/:id", controller.getOne)
     fastify.post('/:id/admision', controller.admision)
     fastify.post('/', controller.create)

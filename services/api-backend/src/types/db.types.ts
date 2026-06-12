@@ -1,4 +1,4 @@
-import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas, mascotas, mascotas_propietarios } from "../db/schema";
+import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas, mascotas, mascotas_propietarios, citas, tratamientos, atenciones, atenciones_diagnosticos, vacunas } from "../db/schema";
 import { db } from "../db";
 
 export type DBClient = typeof db | any;
@@ -50,3 +50,18 @@ export type UpdateMascota = Partial<Pick<NewMascota,
 
 export type MascotaPropietarioDb = typeof mascotas_propietarios.$inferSelect;
 export type NewMascotaPropietario = typeof mascotas_propietarios.$inferInsert;
+
+export type CitaDb = typeof citas.$inferSelect;
+export type NewCita = typeof citas.$inferInsert;
+export type UpdateCita = Partial<NewCita>;
+
+export type AtencionDb = typeof atenciones.$inferSelect;
+export type NewAtencion = typeof atenciones.$inferInsert;
+
+export type TratamientoDb = typeof tratamientos.$inferSelect;
+export type NewTratamiento = typeof tratamientos.$inferInsert;
+export type UpdateTratamiento = Partial<NewTratamiento>;
+
+export type VacunaDb = typeof vacunas.$inferSelect;
+export type NewVacuna = typeof vacunas.$inferInsert;
+export type UpdateVacuna = Partial<NewVacuna>;

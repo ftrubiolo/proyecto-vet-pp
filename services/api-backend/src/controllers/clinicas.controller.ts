@@ -2,8 +2,9 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { ClinicaService } from '../services/clinica.service';
 import { db } from '../db';
 import { and, eq } from 'drizzle-orm';
-import { clinicas_mascotas, mascotas } from '../db/schema';
+import { clinicas, clinicas_mascotas, mascotas } from '../db/schema';
 import { VetService } from '../services/veterinario.service';
+import { Validation } from '../utils/validation';
 
 export async function getAll(request: FastifyRequest, reply: FastifyReply) {
     try {
@@ -111,3 +112,35 @@ export async function admision(request: FastifyRequest, reply: FastifyReply) {
         return reply.code(500).send({ message });
     }
 }
+
+export const getByMascota = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { mascotaId } = request.params as { mascotaId: string };
+    if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
+
+    try {
+        const hasAccess = await Validation.hasAccesMascota(request.user, mascotaId);
+        if (!hasAccess) {
+            return reply.code(403).send({ message: 'No tienes acceso a esta mascota' });
+        }
+
+        const results = await db
+            .select({
+                id: clinicas.id,
+                nombre_comercial: clinicas.nombre_comercial,
+                direccion: clinicas.direccion,
+                telefono: clinicas.telefono
+            })
+            .from(clinicas_mascotas)
+            .innerJoin(clinicas, eq(clinicas_mascotas.clinica_id, clinicas.id))
+            .where(
+                and(
+                    eq(clinicas_mascotas.mascota_id, mascotaId),
+                    eq(clinicas_mascotas.estado_paciente_id, 2) // Activo
+                )
+            );
+        return reply.code(200).send(results);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return reply.code(500).send({ message });
+    }
+};

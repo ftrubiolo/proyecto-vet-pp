@@ -53,6 +53,30 @@ export class VetService {
     }
 
     /**
+     * Obtiene los veterinarios asociados a una clínica.
+     * @param clinicaId - ID de la clínica
+     * @returns Array de veterinarios.
+     */
+    static async getByClinicaId(clinicaId: string): Promise<any[]> {
+        return await db
+            .select({
+                id: veterinarios.id,
+                nombre: veterinarios.nombre,
+                apellido: veterinarios.apellido,
+                telefono: veterinarios.telefono,
+                foto_url: veterinarios.foto_url
+            })
+            .from(veterinarios_clinicas)
+            .innerJoin(veterinarios, eq(veterinarios_clinicas.veterinario_id, veterinarios.id))
+            .where(
+                and(
+                    eq(veterinarios_clinicas.clinica_id, clinicaId),
+                    eq(veterinarios_clinicas.estado_activo, true)
+                )
+            );
+    }
+
+    /**
      * Obtiene el veterinario por ID de perfil.
      * @param id - ID del perfil de veterinario
      * @returns Veterinario encontrado -> {@link Veterinario} o null si no existe

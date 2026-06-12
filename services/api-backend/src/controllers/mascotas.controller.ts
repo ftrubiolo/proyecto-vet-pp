@@ -17,6 +17,11 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
                 return reply.code(400).send({ message: 'El usuario no tiene un perfil de veterinario asociado' });
             }
             result = await MascotaService.getAllMascotasByVeterinarioId(request.user.vetId);
+        } else if (request.user.rol === 'Propietario') {
+            if (!request.user.proId) {
+                return reply.code(400).send({ message: 'El usuario no tiene un perfil de propietario asociado' });
+            }
+            result = await MascotaService.getAllMascotasByPropietarioId(request.user.proId);
         } else {
             return reply.code(403).send({ message: 'No tienes permisos para ver esta lista de pacientes' });
         }

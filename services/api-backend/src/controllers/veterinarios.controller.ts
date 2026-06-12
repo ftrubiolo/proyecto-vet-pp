@@ -99,3 +99,16 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
     return reply.code(500).send({ message });
   }
 }
+
+export const getByClinica = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+  const { clinicaId } = request.params as { clinicaId: string };
+  if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
+
+  try {
+    const results = await VetService.getByClinicaId(clinicaId);
+    return reply.code(200).send(results);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : 'Error desconocido';
+    return reply.code(500).send({ message });
+  }
+};
