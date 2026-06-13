@@ -8,6 +8,9 @@ export interface MascotaDetail {
   numero_microchip?: string;
   raza: string;
   especie: string;
+  alergias?: string;
+  condiciones_cronicas?: string;
+  contraindicaciones?: string;
   propietarios?: {
     id: string;
     nombre: string;

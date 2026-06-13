@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, PawPrint, Edit } from 'lucide-react';
+import { ArrowLeft, PawPrint, Edit, Calendar, Pill, Syringe, Scale, Plus } from 'lucide-react';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuth } from '../../hooks/useAuth';
 import { Card } from '../../components/ui/Card';
@@ -11,7 +11,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 
 import type { MascotaDetail } from './types';
-import { calcAge } from './utils';
+import { calcAge, formatDate } from './utils';
 
 import { DatosTab } from './components/DatosTab';
 import { HistorialTab } from './components/HistorialTab';
@@ -36,6 +36,7 @@ export function MascotaDetailPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState('datos');
   const [showEditModal, setShowEditModal] = useState(false);
+  const [isManualConsultation, setIsManualConsultation] = useState(false);
   const { user } = useAuth();
   const isOwner = user?.rol === 'Propietario';
 
@@ -94,6 +95,70 @@ export function MascotaDetailPage() {
   const renderLeftPanel = () => {
     const hasFoto = !!(mascota.foto_url && mascota.foto_url !== 'null' && mascota.foto_url !== 'undefined' && mascota.foto_url.trim() !== '');
 
+    const lastVisit = atencionesData && atencionesData.length > 0
+      ? atencionesData[0].fecha_atencion
+      : null;
+
+    const lastWeightRecord = atencionesData
+      ? atencionesData.find((a: any) => a.peso_actual && parseFloat(a.peso_actual) > 0)
+      : null;
+    const lastWeight = lastWeightRecord ? lastWeightRecord.peso_actual : null;
+
+    const activeMedications = tratamientosData
+      ? tratamientosData.filter((t: any) => {
+        const now = new Date();
+        const start = new Date(t.fecha_inicio);
+        const end = t.fecha_fin ? new Date(t.fecha_fin) : null;
+        return start <= now && (!end || end >= now);
+      })
+      : [];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    let vencidasCount = 0;
+    let proximasCount = 0;
+
+    if (vacunasData) {
+      vacunasData.forEach((v: any) => {
+        if (!v.fecha_proxima_dosis) return;
+
+        let nextDoseDate: Date;
+        if (v.fecha_proxima_dosis instanceof Date) {
+          nextDoseDate = new Date(v.fecha_proxima_dosis.getTime());
+          nextDoseDate.setHours(0, 0, 0, 0);
+        } else {
+          const str = String(v.fecha_proxima_dosis);
+          if (!str.includes('T')) {
+            const parts = str.split('-');
+            if (parts.length === 3) {
+              nextDoseDate = new Date(
+                parseInt(parts[0], 10),
+                parseInt(parts[1], 10) - 1,
+                parseInt(parts[2], 10)
+              );
+            } else {
+              nextDoseDate = new Date(str);
+              nextDoseDate.setHours(0, 0, 0, 0);
+            }
+          } else {
+            nextDoseDate = new Date(str);
+            nextDoseDate.setHours(0, 0, 0, 0);
+          }
+        }
+
+        const todayMs = today.getTime();
+        const nextDoseMs = nextDoseDate.getTime();
+        const thirtyDaysMs = 30 * 24 * 60 * 60 * 1000;
+
+        if (nextDoseMs < todayMs) {
+          vencidasCount++;
+        } else if (nextDoseMs <= todayMs + thirtyDaysMs) {
+          proximasCount++;
+        }
+      });
+    }
+
     return (
       <div className="consultation-main-col">
         <button className="mascota-detail-back" onClick={() => navigate('/mascotas')}>
@@ -127,7 +192,13 @@ export function MascotaDetailPage() {
                 {mascota.es_castrado && <Badge variant="neutral">Castrado/a</Badge>}
               </div>
             </div>
-            <div className="mascota-detail-actions">
+            <div className="mascota-detail-actions" style={{ display: 'flex', gap: 8 }}>
+              {!isOwner && (
+                <Button onClick={() => setIsManualConsultation(true)} variant="primary" size="sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <Plus size={14} />
+                  Registrar Consulta
+                </Button>
+              )}
               <Button onClick={() => setShowEditModal(true)} variant="secondary" size="sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
                 <Edit size={14} />
                 Editar Datos
@@ -136,11 +207,68 @@ export function MascotaDetailPage() {
           </div>
         </Card>
 
+        <div className="mascota-clinical-summary-bar">
+          {lastVisit ? (
+            <Badge variant="neutral" className="clinical-summary-badge">
+              <Calendar size={12} />
+              Última visita: {formatDate(lastVisit)}
+            </Badge>
+          ) : (
+            <Badge variant="neutral" className="clinical-summary-badge">
+              <Calendar size={12} />
+              Sin visitas
+            </Badge>
+          )}
+
+          {lastWeight && (
+            <Badge variant="neutral" className="clinical-summary-badge">
+              <Scale size={12} />
+              {lastWeight} kg
+            </Badge>
+          )}
+
+          {activeMedications.length > 0 ? (
+            <Badge variant="accent" className="clinical-summary-badge">
+              <Pill size={12} />
+              {activeMedications.length} {activeMedications.length === 1 ? 'Medicación activa' : 'Medicaciones activas'}
+            </Badge>
+          ) : (
+            <Badge variant="neutral" className="clinical-summary-badge">
+              <Pill size={12} />
+              Sin medicamentos
+            </Badge>
+          )}
+
+          {vencidasCount > 0 ? (
+            <Badge variant="danger" className="clinical-summary-badge">
+              <Syringe size={12} />
+              {vencidasCount === 1 ? 'Vacuna vencida' : `Vacunas vencidas (${vencidasCount})`}
+            </Badge>
+          ) : proximasCount > 0 ? (
+            <Badge variant="warning" className="clinical-summary-badge">
+              <Syringe size={12} />
+              {proximasCount === 1 ? 'Vacuna próxima' : `Vacunas próximas (${proximasCount})`}
+            </Badge>
+          ) : (
+            <Badge variant="success" className="clinical-summary-badge">
+              <Syringe size={12} />
+              Vacunas al día
+            </Badge>
+          )}
+        </div>
+
         <div style={{ marginTop: 'var(--space-lg)' }}>
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
           <div className="mascota-tab-content">
-            {activeTab === 'datos' && <DatosTab mascota={mascota} isOwner={isOwner} atenciones={atencionesData || []} />}
+            {activeTab === 'datos' && (
+              <DatosTab
+                mascota={mascota}
+                isOwner={isOwner}
+                atenciones={atencionesData || []}
+                onEditClick={() => setShowEditModal(true)}
+              />
+            )}
             {activeTab === 'historial' && <HistorialTab atenciones={atencionesData || []} isLoading={isHistorialLoading} />}
             {activeTab === 'vacunas' && <VacunasTab vacunas={vacunasData || []} isLoading={isVacunasLoading} />}
             {activeTab === 'tratamientos' && <TratamientosTab tratamientos={tratamientosData || []} isLoading={isTratamientosLoading} />}
@@ -150,7 +278,7 @@ export function MascotaDetailPage() {
     );
   };
 
-  const hasActiveConsultation = atenderCitaId && clinicaId && !isOwner;
+  const hasActiveConsultation = ((atenderCitaId && clinicaId) || isManualConsultation) && !isOwner;
 
   return (
     <div className="page">
@@ -159,14 +287,21 @@ export function MascotaDetailPage() {
           {renderLeftPanel()}
           <div className="consultation-sidebar-col">
             <ActiveConsultationForm
-              citaId={atenderCitaId!}
-              clinicaId={clinicaId!}
+              citaId={atenderCitaId || null}
+              clinicaId={clinicaId || null}
               mascotaId={mascota.id}
-              onClose={() => setSearchParams({})}
-              onSuccess={() => {
+              onClose={() => {
                 setSearchParams({});
+                setIsManualConsultation(false);
+              }}
+              onSuccess={() => {
+                const hadAppointment = !!atenderCitaId;
+                setSearchParams({});
+                setIsManualConsultation(false);
                 triggerRefetches();
-                navigate('/citas');
+                if (hadAppointment) {
+                  navigate('/citas');
+                }
               }}
             />
           </div>

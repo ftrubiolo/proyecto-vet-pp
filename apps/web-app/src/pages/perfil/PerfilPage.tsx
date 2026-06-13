@@ -46,7 +46,7 @@ export function PerfilPage() {
 
   return (
     <div className="page">
-      <ProfileHeader profile={profile} user={user} isVet={isVet} />
+      <ProfileHeader profile={profile || undefined} user={user} isVet={isVet} />
 
       <div style={{ marginTop: 'var(--space-lg)' }}>
         <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
@@ -73,7 +73,7 @@ export function PerfilPage() {
           {/* SETTINGS TAB */}
           {activeTab === 'settings' && (
             <AccountSettingsTab
-              profile={profile}
+              profile={profile || undefined}
               user={user}
               refetch={refetch}
             />

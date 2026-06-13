@@ -9,14 +9,15 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { Autocomplete } from './Autocomplete';
 
 interface ActiveConsultationFormProps {
-  citaId: string;
-  clinicaId: string;
+  citaId?: string | null;
+  clinicaId?: string | null;
   mascotaId: string;
   onClose: () => void;
   onSuccess: () => void;
 }
 
 export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, onSuccess }: ActiveConsultationFormProps) {
+  const [selectedClinicaId, setSelectedClinicaId] = useState(clinicaId || '');
   const [pesoActual, setPesoActual] = useState('');
   const [notasClinicas, setNotasClinicas] = useState('');
   const [selectedDiag, setSelectedDiag] = useState<{ id: number; name: string }[]>([]);
@@ -44,6 +45,7 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
   const { data: tiposTratamiento } = useFetch<any[]>('/catalogo/tipos-tratamiento');
   const { data: productosRaw } = useFetch<any[]>('/catalogo/productos');
   const { data: vacunasRaw } = useFetch<any[]>('/catalogo/productos/vacunas');
+  const { data: petClinics } = useFetch<any[]>(!clinicaId && mascotaId ? `/clinicas/mascota/${mascotaId}` : null);
 
   const lookupDiag = (diagnosticosRaw || []).map((d: any) => ({ id: d.id, name: d.diagnostico }));
   const lookupProducts = (productosRaw || []).map((p: any) => ({ id: p.id, name: p.nombre_comercial }));
@@ -112,6 +114,10 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
   };
 
   const handleFinalize = async () => {
+    if (!selectedClinicaId) {
+      alert('Por favor seleccione la clínica de atención.');
+      return;
+    }
     if (!notasClinicas.trim()) {
       alert('Por favor ingrese las notas clínicas de la consulta.');
       return;
@@ -119,14 +125,41 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
 
     setIsSaving(true);
     try {
+      // Auto-append currently entered vaccine if not empty
+      const finalVacunas = [...vacunasApplied];
+      if (vProducto) {
+        finalVacunas.push({
+          producto_id: vProducto.id,
+          numero_lote: vLote || null,
+          fecha_aplicacion: vFechaAplicacion,
+          fecha_proxima_dosis: vFechaProxima || null,
+        });
+      }
+
+      // Auto-append currently entered treatment if not empty
+      const finalTreatments = [...treatments];
+      if (tTipoId && tProducto && tDosis && tFrecuencia) {
+        const selectedTipo = (tiposTratamiento || []).find((tt: any) => String(tt.id) === tTipoId);
+        finalTreatments.push({
+          tipo_tratamiento_id: Number(tTipoId),
+          tipoName: selectedTipo?.tipo || 'Tratamiento',
+          producto_id: tProducto.id,
+          dosis: tDosis,
+          frecuencia: tFrecuencia,
+          fecha_inicio: tFechaInicio,
+          fecha_fin: tFechaFin || null,
+          indicaciones_adicionales: tIndicaciones || null,
+        });
+      }
+
       await api.post('/atenciones', {
-        cita_id: citaId,
+        cita_id: citaId || null,
         mascota_id: mascotaId,
-        clinica_id: clinicaId,
+        clinica_id: selectedClinicaId,
         notas_clinicas: notasClinicas,
         peso_actual: pesoActual || null,
         diagnosticos: selectedDiag.map(d => d.id),
-        tratamientos: treatments.map(t => ({
+        tratamientos: finalTreatments.map(t => ({
           tipo_tratamiento_id: t.tipo_tratamiento_id,
           producto_id: t.producto_id,
           dosis: t.dosis,
@@ -135,7 +168,7 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           fecha_fin: t.fecha_fin,
           indicaciones_adicionales: t.indicaciones_adicionales,
         })),
-        vacunas: vacunasApplied.map(v => ({
+        vacunas: finalVacunas.map(v => ({
           producto_id: v.producto_id,
           numero_lote: v.numero_lote,
           fecha_aplicacion: v.fecha_aplicacion,
@@ -160,6 +193,19 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           <X size={16} />
         </button>
       </div>
+
+      {!clinicaId && (
+        <Select
+          label="Clínica de Atención *"
+          options={[
+            { value: '', label: 'Seleccionar clínica...' },
+            ...(petClinics || []).map((c: any) => ({ value: c.id, label: c.nombre_comercial }))
+          ]}
+          value={selectedClinicaId}
+          onChange={(e) => setSelectedClinicaId(e.target.value)}
+          required
+        />
+      )}
 
       <Input
         label="Peso del Paciente (kg)"

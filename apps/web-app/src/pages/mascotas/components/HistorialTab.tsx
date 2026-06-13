@@ -42,7 +42,7 @@ export function HistorialTab({ atenciones, isLoading }: HistorialTabProps) {
             <Card variant="inner" className="timeline-content">
               <div className="timeline-date">
                 <Calendar size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
-                {formatDate(a.fecha_atencion)} · {vetName}
+                {formatDate(a.fecha_atencion)} - Dr. {vetName}
               </div>
               <div className="timeline-title">
                 {diagnostics.length > 0 ? diagnostics.join(', ') : 'Consulta médica'}
