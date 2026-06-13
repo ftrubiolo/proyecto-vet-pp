@@ -13,6 +13,7 @@
     "db:import-vets": "tsx src/db/import-vets.ts",
     "db:import-productos": "tsx src/db/import-productos.ts",
     "db:seed": "tsx src/db/seed.ts",
+    "db:seed-mock": "tsx src/db/seedMock.ts",
     "db:setup": "npm run db:reset && npm run db:push && npm run db:seed && npm run db:import-vets && npm run db:import-productos"
   },
   "keywords": [],

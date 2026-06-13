@@ -14,6 +14,9 @@ export type MascotaBase = Pick<MascotaDb,
     | 'foto_url'
     | 'es_castrado'
     | 'numero_microchip'
+    | 'alergias'
+    | 'condiciones_cronicas'
+    | 'contraindicaciones'
 > & {
     raza: string;
     especie: string;

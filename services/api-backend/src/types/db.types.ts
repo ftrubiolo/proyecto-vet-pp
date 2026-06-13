@@ -46,6 +46,9 @@ export type UpdateMascota = Partial<Pick<NewMascota,
     | 'foto_url'
     | 'numero_microchip'
     | 'es_castrado'
+    | 'alergias'
+    | 'condiciones_cronicas'
+    | 'contraindicaciones'
 >>;
 
 export type MascotaPropietarioDb = typeof mascotas_propietarios.$inferSelect;

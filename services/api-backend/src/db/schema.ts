@@ -112,6 +112,9 @@ export const mascotas = pgTable('mascotas', {
   sexo: char('sexo', { length: 1 }).notNull(), // 'M' o 'H'
   es_castrado: boolean('es_castrado').default(false).notNull(),
   numero_microchip: varchar('numero_microchip'),
+  alergias: text('alergias'),
+  condiciones_cronicas: text('condiciones_cronicas'),
+  contraindicaciones: text('contraindicaciones'),
 });
 
 export const mascotasRelations = relations(mascotas, ({ one, many }) => ({
