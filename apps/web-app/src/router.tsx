@@ -7,44 +7,56 @@ import { MascotasPage } from './pages/mascotas/MascotasPage';
 import { MascotaDetailPage } from './pages/mascotas/MascotaDetailPage';
 import { CitasPage } from './pages/citas/CitasPage';
 import { PerfilPage } from './pages/perfil/PerfilPage';
+import { ErrorPage } from './pages/error/ErrorPage';
 
 export const router = createBrowserRouter([
   {
-    path: '/login',
-    element: <LoginPage />,
-  },
-  {
-    element: <AuthGuard />,
+    path: '/',
+    errorElement: <ErrorPage />,
     children: [
       {
-        element: <AppLayout />,
+        path: 'login',
+        element: <LoginPage />,
+      },
+      {
+        element: <AuthGuard />,
         children: [
           {
-            index: true,
-            element: <Navigate to="/dashboard" replace />,
-          },
-          {
-            path: 'dashboard',
-            element: <DashboardPage />,
-          },
-          {
-            path: 'mascotas',
-            element: <MascotasPage />,
-          },
-          {
-            path: 'mascotas/:id',
-            element: <MascotaDetailPage />,
-          },
-          {
-            path: 'citas',
-            element: <CitasPage />,
-          },
-          {
-            path: 'perfil',
-            element: <PerfilPage />,
+            element: <AppLayout />,
+            children: [
+              {
+                index: true,
+                element: <Navigate to="/dashboard" replace />,
+              },
+              {
+                path: 'dashboard',
+                element: <DashboardPage />,
+              },
+              {
+                path: 'mascotas',
+                element: <MascotasPage />,
+              },
+              {
+                path: 'mascotas/:id',
+                element: <MascotaDetailPage />,
+              },
+              {
+                path: 'citas',
+                element: <CitasPage />,
+              },
+              {
+                path: 'perfil',
+                element: <PerfilPage />,
+              },
+            ],
           },
         ],
+      },
+      {
+        path: '*',
+        element: <ErrorPage />,
       },
     ],
   },
 ]);
+
