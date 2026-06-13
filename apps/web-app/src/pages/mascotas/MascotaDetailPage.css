@@ -26,22 +26,30 @@
 }
 
 .mascota-detail-profile {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--space-lg);
-  margin-bottom: var(--space-xs);
+  margin-bottom: 0;
+}
+
+.mascota-detail-card {
+  overflow: hidden;
 }
 
 .mascota-detail-avatar {
-  width: 72px;
-  height: 72px;
-  border-radius: 50%;
   background: var(--accent-light, rgba(14, 165, 233, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent, var(--accent-blue));
   flex-shrink: 0;
+  align-self: stretch;
+  height: auto;
+  min-height: 143.2px;
+  aspect-ratio: 1 / 1;
+  margin: calc(-1 * var(--space-lg)) 0 calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg));
+  overflow: hidden;
 }
 
 .mascota-detail-info h2 {
@@ -235,4 +243,70 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   line-height: 1.5;
+}
+
+/* ─── Weight Evolution Graph ─── */
+.weight-graph-card {
+  margin-top: var(--space-md);
+}
+
+.weight-graph-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-md);
+}
+
+.weight-graph-header h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.weight-graph-container {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  margin-top: var(--space-sm);
+}
+
+.weight-graph-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 180px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-inner);
+  color: var(--text-muted);
+  font-size: 0.875rem;
+}
+
+/* Propietarios Layout */
+.propietario-item-detail {
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border);
+}
+
+.propietario-item-detail:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Edit Layout Media Queries */
+@media (min-width: 600px) {
+  .mascota-detail-profile {
+    grid-template-columns: auto 1fr auto;
+  }
+}
+
+@media (max-width: 599px) {
+  .mascota-detail-profile {
+    grid-template-columns: auto 1fr;
+  }
+  .mascota-detail-actions {
+    grid-column: span 2;
+    justify-self: stretch;
+  }
+  .mascota-detail-actions button {
+    width: 100%;
+  }
 }
