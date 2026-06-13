@@ -6,7 +6,7 @@ const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
   '/mascotas': 'Mascotas',
   '/citas': 'Citas',
-  '/perfil': 'Mi Perfil',
+  '/perfil': 'Mi Cuenta',
 };
 
 export function Header() {
