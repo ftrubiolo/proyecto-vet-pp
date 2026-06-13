@@ -79,7 +79,8 @@ These variables handle backgrounds, borders, and typography across system light 
 
   /* --- LIGHT THEME --- */
   --bg: #f8f9fa;               /* Application canvas background */
-  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(241, 245, 249, 0.3) 100%), #FFFFFF; /* Base card container background, sidebars, headers */
+  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(241, 245, 249, 0.3) 100%), var(--surface-solid); /* Base card container background, sidebars, headers */
+  --surface-solid: #FFFFFF;
   --surface-2: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(241, 245, 249, 0.3) 100%); /* Pure glass overlay gradient */
   --border: #e5e4e7;           /* Fine borders, rules, and input elements */
   --text: #334155;             /* Body text */
@@ -95,9 +96,10 @@ These variables handle backgrounds, borders, and typography across system light 
 @media (prefers-color-scheme: dark) {
   :root {
     /* --- DARK THEME --- */
-    --bg: #121212;             /* Canvas background */
-    --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), #18181B; /* Elevated dark surface containers */
-    --surface-2: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%); /* Pure glass overlay gradient */
+    --bg: #0f1119;             /* Canvas background */
+    --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(8, 0, 255, 0.02) 100%), var(--surface-solid); /* Elevated dark surface containers */
+    --surface-solid: #12151d;
+    --surface-2: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(241, 245, 249, 0.02) 100%); /* Pure glass overlay gradient */
     --border: #2e303a;         /* High-contrast border color */
     --text: #9ca3af;           /* High-readability body text */
     --text-h: #f3f4f6;         /* Emphasized heading text */

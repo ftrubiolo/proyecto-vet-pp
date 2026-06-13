@@ -61,7 +61,7 @@ export function VetDashboard() {
     : (mascotasData as MascotasResponse)?.mascotas || [];
 
   const rawCitasList = Array.isArray(rawCitas) ? rawCitas : [];
-  
+
   const upcomingCitas = rawCitasList
     .map((c: any) => ({
       id: c.id,
