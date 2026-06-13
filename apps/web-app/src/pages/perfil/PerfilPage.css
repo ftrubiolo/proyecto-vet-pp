@@ -1,40 +1,55 @@
-.perfil-header {
-  display: flex;
-  align-items: center;
-  gap: var(--space-lg);
-  margin-bottom: var(--space-xs);
+/* ─── Profile Header Card (CSS Grid) ─── */
+.perfil-detail-card {
+  overflow: hidden;
 }
 
-.perfil-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
+.perfil-detail-profile {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--space-lg);
+  margin-bottom: 0;
+}
+
+.perfil-detail-avatar {
   background: var(--accent-light, rgba(14, 165, 233, 0.1));
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--accent, var(--accent-blue));
-  font-family: var(--heading);
-  font-size: 2rem;
-  font-weight: 700;
   flex-shrink: 0;
+  align-self: stretch;
+  height: auto;
+  min-height: 143.2px;
+  aspect-ratio: 1 / 1;
+  margin: calc(-1 * var(--space-lg)) 0 calc(-1 * var(--space-lg)) calc(-1 * var(--space-lg));
+  overflow: hidden;
 }
 
-.perfil-header-info h2 {
+.perfil-detail-info h2 {
   font-size: 1.5rem;
   font-weight: 700;
   margin: 0 0 var(--space-xxs);
 }
 
-.perfil-header-email {
+.perfil-detail-email {
   font-size: 0.875rem;
   color: var(--text-muted);
 }
 
-.perfil-section {
-  margin-top: var(--space-lg);
+.perfil-detail-badges {
+  display: flex;
+  gap: var(--space-xs);
+  margin-top: var(--space-xs);
+  flex-wrap: wrap;
 }
 
+/* ─── Tab Navigation Transitions ─── */
+.perfil-tab-content {
+  animation: fadeIn 0.2s ease forwards;
+}
+
+/* ─── Profile Fields Layout ─── */
 .perfil-section-title {
   font-size: 1rem;
   font-weight: 600;
@@ -68,6 +83,7 @@
   color: var(--text-h);
 }
 
+/* ─── Forms and Actions ─── */
 .perfil-edit-form {
   display: flex;
   flex-direction: column;
@@ -79,4 +95,131 @@
   justify-content: flex-end;
   gap: var(--space-sm);
   margin-top: var(--space-sm);
+}
+
+/* ─── Clinic Tab Layout ─── */
+.perfil-clinicas-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.perfil-clinica-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-md);
+  flex-wrap: wrap;
+}
+
+.perfil-clinica-info {
+  flex: 1;
+  min-width: 250px;
+}
+
+.perfil-clinica-title {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--space-xs);
+}
+
+.perfil-clinica-title h4 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.perfil-clinica-details {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.perfil-clinica-details p {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+}
+
+.perfil-clinica-actions {
+  display: flex;
+  gap: var(--space-xs);
+  align-items: center;
+}
+
+/* ─── Invitation Box ─── */
+.perfil-invitation-box {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  animation: fadeIn 0.2s ease;
+}
+
+.perfil-invitation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-sm);
+}
+
+.perfil-invitation-header h5 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.perfil-invitation-close {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.perfil-invitation-close:hover {
+  background: var(--border);
+  color: var(--text-h);
+}
+
+.perfil-invitation-success p {
+  font-size: 0.8125rem;
+  color: var(--text);
+  margin-bottom: var(--space-xs);
+}
+
+.perfil-invitation-input-group {
+  display: flex;
+  gap: var(--space-xs);
+  width: 100%;
+  max-width: 550px;
+  margin-bottom: var(--space-xs);
+}
+
+.perfil-invitation-input-group input {
+  flex: 1;
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  padding: 8px 12px;
+  font-size: 0.8125rem;
+  color: var(--text-h);
+  outline: none;
+}
+
+.perfil-invitation-expiry {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  display: block;
 }
