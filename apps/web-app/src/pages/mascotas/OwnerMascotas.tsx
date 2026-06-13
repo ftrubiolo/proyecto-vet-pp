@@ -11,6 +11,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Modal } from '../../components/ui/Modal';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
+import { Autocomplete } from './components/Autocomplete';
 import './MascotasPage.css';
 
 interface Mascota {
@@ -192,9 +193,12 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
   const { data: tiposRelacion } = useFetch<{ id: number; tipo: string }[]>('/catalogo/mascotas/tipos-relacion');
 
   // Flatten razas for select
-  const razaOptions = (especies || []).flatMap((e) =>
-    e.razas.map((r) => ({ value: r.id, label: `${r.raza} (${e.especie})` }))
+  const razaItems = (especies || []).flatMap((e) =>
+    e.razas.map((r) => ({ id: String(r.id), name: `${r.raza} (${e.especie})` }))
   );
+
+  const selectedRaza = razaItems.find(item => item.id === razaId);
+  const currentRazaName = selectedRaza ? selectedRaza.name : '';
 
   const tipoRelacionOptions = (tiposRelacion || []).map((t) => ({
     value: t.id,
@@ -272,12 +276,13 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
             required
           />
         </div>
-        <Select
+        <Autocomplete
           label="Raza"
-          options={razaOptions}
-          value={razaId}
-          onChange={(e) => setRazaId(e.target.value)}
-          required
+          placeholder="Escriba para buscar raza..."
+          items={razaItems}
+          onSelect={(item) => setRazaId(item.id)}
+          valueName={currentRazaName}
+          clearOnSelect={false}
         />
         <div className="form-group">
           <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
