@@ -29,6 +29,8 @@ export type PropietarioResumen = Pick<PropietarioBase,
     | 'apellido'
     | 'es_empresa'
     | 'razon_social'
+    | 'telefono'
+    | 'direccion'
 > & {
     activo: MascotaPropietarioDb['activo'];
     relacion: TipoRelacionDb['tipo'];

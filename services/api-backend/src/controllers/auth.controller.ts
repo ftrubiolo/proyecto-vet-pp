@@ -238,6 +238,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
                     vetId: vet.id,
                     nombre: vet.nombre,
                     apellido: vet.apellido,
+                    foto_url: vet.foto_url,
                     clinicas: vet.clinicas
                 };
             }
@@ -247,7 +248,8 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
                 additionalInfo = {
                     proId: prop.id,
                     nombre: prop.nombre,
-                    apellido: prop.apellido
+                    apellido: prop.apellido,
+                    foto_url: prop.foto_url
                 };
             }
         }

@@ -10,6 +10,7 @@ export interface UserData {
   proId?: string;
   nombre?: string;
   apellido?: string;
+  foto_url?: string;
   clinicas?: { id: string; nombre_comercial: string }[];
 }
 

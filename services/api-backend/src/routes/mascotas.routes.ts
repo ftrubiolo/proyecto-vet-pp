@@ -49,6 +49,7 @@ const updateSchema = {
             raza_id: { type: 'number' },
             es_castrado: { type: 'boolean' },
             numero_microchip: { type: 'string' },
+            foto_url: { type: 'string' },
         },
     },
 }

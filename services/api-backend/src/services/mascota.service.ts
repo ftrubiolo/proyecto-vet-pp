@@ -64,6 +64,8 @@ export class MascotaService {
                                         apellido: true,
                                         es_empresa: true,
                                         razon_social: true,
+                                        telefono: true,
+                                        direccion: true,
                                     }
                                 },
                                 tipo_relacion: {
@@ -103,6 +105,8 @@ export class MascotaService {
                         apellido: p.apellido,
                         es_empresa: p.es_empresa,
                         razon_social: p.razon_social,
+                        telefono: p.telefono,
+                        direccion: p.direccion,
                         relacion: mp.tipo_relacion?.tipo || 'Desconocido',
                         activo: mp.activo,
                     }];
@@ -133,6 +137,8 @@ export class MascotaService {
                                 apellido: true,
                                 es_empresa: true,
                                 razon_social: true,
+                                telefono: true,
+                                direccion: true,
                             }
                         },
                         tipo_relacion: {
@@ -165,6 +171,8 @@ export class MascotaService {
                     apellido: p.apellido,
                     es_empresa: p.es_empresa,
                     razon_social: p.razon_social,
+                    telefono: p.telefono,
+                    direccion: p.direccion,
                     relacion: mp.tipo_relacion?.tipo || 'Desconocido',
                     activo: mp.activo,
                 }];
@@ -202,6 +210,10 @@ export class MascotaService {
      */
     static async update(id: string, data: Partial<NewMascota>, tx?: DBClient): Promise<MascotaDb | null> {
         const client = tx || db;
+
+        if (data.fecha_nacimiento) {
+            data.fecha_nacimiento = new Date(data.fecha_nacimiento);
+        }
 
         const [updated] = await client
             .update(mascotas)

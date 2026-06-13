@@ -43,6 +43,7 @@ export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promi
                     vetId: vet.id,
                     nombre: vet.nombre,
                     apellido: vet.apellido,
+                    foto_url: vet.foto_url,
                     clinicas: vet.clinicas
                 };
             }
@@ -52,17 +53,23 @@ export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promi
                 additionalInfo = {
                     proId: prop.id,
                     nombre: prop.nombre,
-                    apellido: prop.apellido
+                    apellido: prop.apellido,
+                    foto_url: prop.foto_url
                 };
             }
         }
 
-        return reply.code(200).send({
-            user: {
-                ...user,
-                ...additionalInfo
-            }
-        });
+        return reply
+            .code(200)
+            .header('Cache-Control', 'no-store, no-cache, must-revalidate')
+            .header('Pragma', 'no-cache')
+            .header('Expires', '0')
+            .send({
+                user: {
+                    ...user,
+                    ...additionalInfo
+                }
+            });
     } catch (error) {
         reply.code(500).send({ message: 'Error al obtener el usuario' });
     }
