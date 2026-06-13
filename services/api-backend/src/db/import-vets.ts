@@ -63,6 +63,7 @@ async function main() {
       numero_matricula: rec.numero_matricula,
       dni: rec.dni,
       categoria_id: rec.categoria_id,
+      es_valido: rec.categoria_id !== 'B' && rec.categoria_id !== 'C',
     }));
 
     await db.insert(veterinarios_matriculados_cordoba)
@@ -73,12 +74,14 @@ async function main() {
           nombre_completo: sql`EXCLUDED.nombre_completo`,
           dni: sql`EXCLUDED.dni`,
           categoria_id: sql`EXCLUDED.categoria_id`,
+          es_valido: sql`EXCLUDED.es_valido`,
           actualizado_el: sql`NOW()`,
         },
         where: sql`
           veterinarios_matriculados_cordoba.nombre_completo IS DISTINCT FROM EXCLUDED.nombre_completo OR
           veterinarios_matriculados_cordoba.dni IS DISTINCT FROM EXCLUDED.dni OR
-          veterinarios_matriculados_cordoba.categoria_id IS DISTINCT FROM EXCLUDED.categoria_id
+          veterinarios_matriculados_cordoba.categoria_id IS DISTINCT FROM EXCLUDED.categoria_id OR
+          veterinarios_matriculados_cordoba.es_valido IS DISTINCT FROM EXCLUDED.es_valido
         `
       });
 
