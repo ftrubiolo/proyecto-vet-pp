@@ -1,56 +1,68 @@
-# VetVault 🐾
+# VetVault 🐾 — Sistema Integral de Gestión Veterinaria
 
-Este proyecto es una aplicación de **Control Veterinario para Mascotas**, desarrollada como parte de la materia **Prácticas Profesionalizantes I** del Instituto Superior Villa del Rosario.
+**VetVault** es un ecosistema moderno para la gestión clínica, reserva de citas e historiales médicos para clínicas veterinarias. Ha sido desarrollado como parte del proyecto final de **Prácticas Profesionalizantes I** en el *Instituto Superior Villa del Rosario* (2026).
 
-El objetivo principal es brindar una herramienta integral para que dueños de mascotas y veterinarios puedan llevar un seguimiento detallado de la salud, vacunación e historia clínica de los animales.
-
----
-
-## 🚀 Características Principales
-- **Gestión de Perfiles:** Registro detallado de mascotas (nombre, raza, edad, peso, etc.).
-- **Historial Clínico:** Registro de consultas, diagnósticos y tratamientos.
-- **Calendario de Vacunación:** Notificaciones y seguimiento de próximas vacunas y desparasitaciones.
-- **Gestión de Turnos:** Sistema para agendar citas veterinarias.
-- **Panel de Usuario:** Interfaz intuitiva tanto para dueños como para profesionales.
+El sistema conecta en tiempo real a **veterinarios** (que gestionan consultas, recetas, vacunas y fichas), **tutores o propietarios** (que consultan el historial clínico y carnet sanitario de sus mascotas) y **administradores** de las sucursales clínicas.
 
 ---
 
-## 🛠️ Estructura del Proyecto y Tecnologías
+### 📸 Vista Previa e Interfaz de Usuario
 
-El proyecto está organizado como un **monorrepitorio** con las siguientes divisiones:
+> [!NOTE]
+> *Aquí se incluirán las capturas de pantalla finales de la aplicación una vez desplegada.*
 
-### 📱 Aplicaciones (`/apps`)
-- **`web-app`**: Panel web de administración y gestión para clínicas, veterinarios y propietarios. Desarrollado con **React**.
-- **`mobile-app`**: Aplicación móvil para el uso rápido de los propietarios (consultas de turnos, carnet de vacunación digital).
+| **Panel de Control Principal (Dashboard)** | **Ficha Clínica y Historial Médico** |
+| :---: | :---: |
+| ![Dashboard Principal](https://placehold.co/600x400/0ea5e9/ffffff?text=Dashboard+VetVault) | ![Ficha Médica y Historial](https://placehold.co/600x400/22c55e/ffffff?text=Ficha+M%C3%A9dica+VetVault) |
 
-### ⚙️ Servicios (`/services`)
-- **`api-backend`**: API REST centralizada que conecta las aplicaciones con la base de datos.
-  - **Framework**: Fastify (Node.js + TypeScript)
-  - **Base de Datos**: PostgreSQL
-  - **ORM**: Drizzle ORM
-
----
-
-## 📋 Requisitos Previos
-Antes de comenzar, asegúrate de tener instalado:
-- **Node.js** (v22.x o superior)
-- **PostgreSQL** (o acceso a una base de datos Postgres remota)
-- **Git**
+| **Copiloto de IA (Escribano de Voz)** | **Carnet de Vacunación Digital** |
+| :---: | :---: |
+| ![Copiloto de IA](https://placehold.co/600x400/0ea5e9/ffffff?text=Copiloto+IA+Escribano) | ![Carnet Digital](https://placehold.co/600x400/22c55e/ffffff?text=Carnet+de+Vacunas) |
 
 ---
 
-## 🔧 Instalación y Configuración
+## ✨ Características Principales
 
-Sigue estos pasos para clonar el proyecto y poner en marcha cada uno de los componentes:
+1. **Gestión de Fichas Médicas**: Registro completo de mascotas (peso, fotos, alergias, contraindicaciones e historial clínico interactivo por pestañas).
+2. **Consultas Clínicas (`Atenciones`)**: Permite a los veterinarios registrar notas clínicas, asociar diagnósticos estándares, programar tratamientos y aplicar vacunas simultáneamente.
+3. **Control de Prescripciones y Vacunación**:
+   - Seguimiento exacto de dosis, frecuencias y fechas de inicio/fin de medicamentos.
+   - Carnet sanitario inteligente con cálculo de fechas de refuerzo de vacunas.
+4. **Validación de Matrículas**: Integración con el padrón del Colegio de Veterinarios de Córdoba para verificar de forma segura la autenticidad y habilitación clínica de los profesionales en su registro.
+5. **Vademécum Oficial (SENASA)**: Integración con el catálogo nacional de medicamentos y vacunas de SENASA para evitar errores de carga y lotes.
+6. **Copiloto Clínico por Inteligencia Artificial**:
+   - **Escribano por Voz**: Transcripción de audios grabados en consulta a fichas médicas estructuradas automáticamente mediante Gemini.
+   - **Triaje Sintomático**: Clasificación inteligente de urgencias veterinarias basada en el reporte del dueño.
 
-### 1. Clonar el repositorio
-```bash
-git clone https://github.com/ftrubiolo/proyecto-vet-pp.git
-cd proyecto-vet-pp
+---
+
+## 🛠️ Estructura del Monorrepitorio
+
+El proyecto está organizado como un **monorrepitorio** que divide frontends y servicios backend:
+
+```
+proyecto-vet-pp/
+├── apps/
+│   ├── web-app/             # Aplicación React 19 (Vite) para veterinarios y administradores
+│   └── mobile-app/          # Aplicación React Native para propietarios/tutores (En desarrollo)
+├── services/
+│   └── api-backend/         # Servidor Fastify (Node.js + TypeScript) y base de datos Postgres
+├── SYSTEM_OVERVIEW.md       # Documento detallado de arquitectura y base de datos
+└── README.md                # [Este Documento]
 ```
 
-### 2. Configurar el Backend (Servicio API)
-1. Dirígete al directorio de la API:
+Para conocer en detalle la arquitectura del sistema, diagramas de relaciones y estructura de base de datos, consulte el archivo [SYSTEM_OVERVIEW.md](file:///home/rei/VetVault/proyecto-vet-pp/SYSTEM_OVERVIEW.md).
+
+---
+
+## ⚙️ Instalación y Arranque Rápido
+
+### Requisitos Previos
+- **Node.js** (v22 o superior)
+- **PostgreSQL** local o remoto
+
+### Paso 1: Clonar e Instalar Backend
+1. Navega al directorio del backend:
    ```bash
    cd services/api-backend
    ```
@@ -58,70 +70,54 @@ cd proyecto-vet-pp
    ```bash
    npm install
    ```
-3. Crea un archivo `.env` en la raíz de `services/api-backend` y configura las siguientes variables:
-   ```env
+3. Crea un archivo `.env` en `services/api-backend/` basándote en la siguiente plantilla:
+   ```ini
    PORT=5000
-   DATABASE_URL="postgres://tu_usuario:tu_contraseña@tu_host:5432/tu_db"
-   JWT_SECRET="una_clave_secreta_segura"
+   DATABASE_URL="postgres://tu_usuario:tu_contraseña@localhost:5432/vetvault"
+   JWT_SECRET="clave_secreta_jwt_muy_segura"
+   NODE_ENV="dev"
    ```
-4. Sincroniza la estructura de tu base de datos utilizando Drizzle:
+4. Inicializa y puebla la base de datos de manera automatizada:
    ```bash
-   npm run db:push
+   npm run db:setup        # Resetea, migra y puebla catálogos oficiales (Vets Córdoba / SENASA)
+   npm run db:seed-mock    # Opcional: Carga registros falsos para pruebas clínicas locales
    ```
-5. Inicia el servidor de desarrollo:
+5. Corre la API en modo desarrollo:
    ```bash
-   npm run dev
+   npm run dev             # Levantará el servidor en http://localhost:5000
    ```
-   *La API correrá por defecto en el puerto `5000` (http://localhost:5000).*
 
-### 3. Configurar el Frontend Web
-1. Abre una **nueva terminal** y navega al directorio de la app web:
+### Paso 2: Instalar y Correr Frontend Web
+1. Abre una nueva terminal y dirígete al directorio de la app web:
    ```bash
    cd apps/web-app
    ```
-2. Instala las dependencias:
+2. Instala las dependencias y corre el empaquetador de Vite:
    ```bash
    npm install
-   ```
-3. Inicia el servidor de desarrollo web:
-   ```bash
-   npm run dev
+   npm run dev             # Levantará la interfaz web en http://localhost:5173
    ```
 
-### 4. Configurar la Aplicación Móvil
-1. Navega al directorio de la app móvil:
-   ```bash
-   cd apps/mobile-app
-   ```
-2. Instala las dependencias:
-   ```bash
-   npm install
-   ```
-3. Inicia el entorno de desarrollo móvil:
-   ```bash
-   npm start
-   ```
-
------
+---
 
 ## 👥 Equipo de Trabajo
 
-  - **Rubiolo Facundo** - [@ftrubiolo](https://github.com/ftrubiolo)
-  - **Tomás Taborda** - [@tabordatomas](https://github.com/tabordatomas)
-  - **Valentin Hinojosa** - [@valexxarg777](https://github.com/valexxarg777)
-  - **Ismael Botella** - [@ismaelbotella997](https://github.com/ismaelbotella997)
+- **Rubiolo Facundo** - [@ftrubiolo](https://github.com/ftrubiolo)
+- **Tomás Taborda** - [@tabordatomas](https://github.com/tabordatomas)
+- **Valentin Hinojosa** - [@valexxarg777](https://github.com/valexxarg777)
+- **Ismael Botella** - [@ismaelbotella997](https://github.com/ismaelbotella997)
 
------
+---
 
 ## 🏫 Información Académica
 
-  - **Institución:** Instituto Superior Villa del Rosario
-  - **Materia:** Prácticas Profesionalizantes I
-  - **Profesor:** Enzo Varela
-  - **Año:** 2026
+- **Institución**: Instituto Superior Villa del Rosario
+- **Materia**: Prácticas Profesionalizantes I
+- **Profesor**: Enzo Varela
+- **Año**: 2026
 
------
+---
 
 ## 📄 Licencia
 
-Este proyecto es de uso académico para el instituto Instituto Superior Villa del Rosario.
+Este proyecto ha sido desarrollado exclusivamente con fines académicos para el Instituto Superior Villa del Rosario.
