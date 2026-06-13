@@ -36,6 +36,9 @@ export class MascotaService {
                 raza: m.raza.raza,
                 es_castrado: m.es_castrado,
                 numero_microchip: m.numero_microchip,
+                alergias: m.alergias,
+                condiciones_cronicas: m.condiciones_cronicas,
+                contraindicaciones: m.contraindicaciones,
             }];
         });
     }
@@ -96,6 +99,9 @@ export class MascotaService {
                 raza: m.raza.raza,
                 es_castrado: m.es_castrado,
                 numero_microchip: m.numero_microchip,
+                alergias: m.alergias,
+                condiciones_cronicas: m.condiciones_cronicas,
+                contraindicaciones: m.contraindicaciones,
                 propietarios: m.mascotas_propietarios.flatMap((mp) => {
                     const p = mp.propietario;
                     if (!p) return [];
@@ -162,6 +168,9 @@ export class MascotaService {
             raza: result.raza.raza,
             es_castrado: result.es_castrado,
             numero_microchip: result.numero_microchip,
+            alergias: result.alergias,
+            condiciones_cronicas: result.condiciones_cronicas,
+            contraindicaciones: result.contraindicaciones,
             propietarios: result.mascotas_propietarios.flatMap((mp) => {
                 const p = mp.propietario;
                 if (!p) return [];
@@ -332,6 +341,9 @@ export class MascotaService {
                 raza: m.raza.raza,
                 es_castrado: m.es_castrado,
                 numero_microchip: m.numero_microchip,
+                alergias: m.alergias,
+                condiciones_cronicas: m.condiciones_cronicas,
+                contraindicaciones: m.contraindicaciones,
             });
         }
 

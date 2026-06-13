@@ -8,7 +8,7 @@ export const getByMascota = async (request: FastifyRequest, reply: FastifyReply)
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
 
     try {
-        const hasAccess = await Validation.hasAccesMascota(request.user, mascotaId);
+        const hasAccess = await Validation.hasAccessMascota(request.user, mascotaId);
         if (!hasAccess) {
             return reply.code(403).send({ message: 'No tienes permiso para ver los tratamientos de esta mascota' });
         }

@@ -38,7 +38,7 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
         const cita = await CitaService.getById(id);
         if (!cita) return reply.code(404).send({ message: 'Cita no encontrada' });
 
-        const hasAccess = await Validation.hasAccesMascota(request.user, cita.mascota_id);
+        const hasAccess = await Validation.hasAccessMascota(request.user, cita.mascota_id);
         if (!hasAccess && request.user.rol !== 'Admin' && request.user.vetId !== cita.veterinario_id) {
             return reply.code(403).send({ message: 'No tienes permiso para ver esta cita' });
         }
@@ -55,7 +55,7 @@ export const create = async (request: FastifyRequest, reply: FastifyReply): Prom
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
 
     // Validate if user has access to create a cita for this pet
-    const hasAccess = await Validation.hasAccesMascota(request.user, data.mascota_id);
+    const hasAccess = await Validation.hasAccessMascota(request.user, data.mascota_id);
     if (!hasAccess) {
         return reply.code(403).send({ message: 'No tienes permiso para agendar citas para esta mascota' });
     }
@@ -78,7 +78,7 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
         const cita = await CitaService.getById(id);
         if (!cita) return reply.code(404).send({ message: 'Cita no encontrada' });
 
-        const hasAccess = await Validation.hasAccesMascota(request.user, cita.mascota_id);
+        const hasAccess = await Validation.hasAccessMascota(request.user, cita.mascota_id);
         if (!hasAccess && request.user.rol !== 'Admin' && request.user.vetId !== cita.veterinario_id) {
             return reply.code(403).send({ message: 'No tienes permiso para modificar esta cita' });
         }

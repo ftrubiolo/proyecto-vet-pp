@@ -3,7 +3,15 @@ import { eq, inArray } from "drizzle-orm";
 import { tratamientos, atenciones } from "../db/schema";
 import type { UpdateTratamiento, TratamientoDb } from "../types/db.types";
 
+/**
+ * Servicio para manejar los tratamientos de las mascotas.
+ */
 export class TratamientoService {
+    /**
+     * Obtiene todos los tratamientos de una mascota.
+     * @param mascotaId - ID de la mascota
+     * @returns Array de tratamientos
+     */
     static async getByMascotaId(mascotaId: string): Promise<any[]> {
         const subquery = db
             .select({ id: atenciones.id })
@@ -28,7 +36,13 @@ export class TratamientoService {
             }
         }) as any[];
     }
-    
+
+    /**
+     * Actualiza un tratamiento.
+     * @param id - ID del tratamiento
+     * @param data - Datos del tratamiento a actualizar
+     * @returns Objeto del tratamiento actualizado
+     */
     static async update(id: string, data: UpdateTratamiento): Promise<TratamientoDb | null> {
         if (data.fecha_inicio) {
             data.fecha_inicio = new Date(data.fecha_inicio);

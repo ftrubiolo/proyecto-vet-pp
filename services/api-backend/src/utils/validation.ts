@@ -99,7 +99,13 @@ export class Validation {
     return this.isAdmin(user) || (!!user && user.vetId === veterinarioId);
   }
 
-  static async hasAccesMascota(user: TokenPayload, mascotaId: string): Promise<boolean> {
+  /**
+   * Comprueba si el usuario tiene permiso para acceder a una mascota.
+   * @param user - Usuario autenticado
+   * @param mascotaId - ID de la mascota
+   * @returns true si el usuario tiene permiso para acceder a la mascota, false en caso contrario
+   */
+  static async hasAccessMascota(user: TokenPayload, mascotaId: string): Promise<boolean> {
     return this.isAdmin(user) || await this.isOwner(user, mascotaId) || await this.isPaciente(user, mascotaId);
   }
 

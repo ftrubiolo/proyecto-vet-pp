@@ -15,20 +15,40 @@ export interface AtencionInput {
     vacunas: Omit<NewVacuna, "atencion_id" | "mascota_id" | "veterinario_id">[];
 }
 
+/**
+ * Servicio para manejar las atenciones de las mascotas.
+ */
 export class AtencionService {
+    /**
+     * Obtiene todas las atenciones de una mascota ordenadas por fecha descendente.
+     * @param mascotaId - ID de la mascota
+     * @returns Array de atenciones
+     */
     static async getByMascotaId(mascotaId: string): Promise<any[]> {
         return await db.query.atenciones.findMany({
             where: eq(atenciones.mascota_id, mascotaId),
             with: {
                 veterinario: {
                     columns: {
+                        id: true,
                         nombre: true,
                         apellido: true,
+                        telefono: true,
+                    },
+                    with: {
+                        usuario: {
+                            columns: {
+                                email: true,
+                            }
+                        }
                     }
                 },
                 clinica: {
                     columns: {
+                        id: true,
                         nombre_comercial: true,
+                        telefono: true,
+                        direccion: true,
                     }
                 },
                 atenciones_diagnosticos: {
@@ -47,6 +67,11 @@ export class AtencionService {
         }) as any[];
     }
 
+    /**
+     * Crea un nuevo registro de atención.
+     * @param input - Datos de la atención
+     * @returns Objeto de atención creado
+     */
     static async create(input: AtencionInput): Promise<any> {
         return await db.transaction(async (tx) => {
             // 1. Crear registro de atención

@@ -37,8 +37,8 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
 
-    const hasAcces = await Validation.hasAccesMascota(request.user, id)
-    if (!hasAcces) return reply.code(403).send({ message: 'No tienes permiso para ver esta mascota' });
+    const hasAccess = await Validation.hasAccessMascota(request.user, id)
+    if (!hasAccess) return reply.code(403).send({ message: 'No tienes permiso para ver esta mascota' });
 
     try {
         const result = await MascotaService.getById(id);
@@ -72,8 +72,8 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
 
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
 
-    const hasAcces = await Validation.hasAccesMascota(request.user, id)
-    if (!hasAcces) return reply.code(403).send({ message: 'No tienes permiso para actualizar esta mascota' });
+    const hasAccess = await Validation.hasAccessMascota(request.user, id)
+    if (!hasAccess) return reply.code(403).send({ message: 'No tienes permiso para actualizar esta mascota' });
 
     try {
         const result = await MascotaService.update(id, data);

@@ -50,6 +50,9 @@ const updateSchema = {
             es_castrado: { type: 'boolean' },
             numero_microchip: { type: 'string' },
             foto_url: { type: 'string' },
+            alergias: { type: 'string', nullable: true },
+            condiciones_cronicas: { type: 'string', nullable: true },
+            contraindicaciones: { type: 'string', nullable: true },
         },
     },
 }
