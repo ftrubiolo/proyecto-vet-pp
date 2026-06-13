@@ -40,8 +40,33 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function update(request: FastifyRequest, reply: FastifyReply) {
-    // Basic placeholder for update clinic
-    return reply.code(501).send({ message: 'No implementado' });
+    const user = request.user;
+    if (!user) return reply.code(401).send({ message: 'No autorizado' });
+
+    const { id } = request.params as { id: string };
+    const data = request.body as any;
+
+    if (user.rol !== 'Admin') {
+        if (!user.vetId) {
+            return reply.code(403).send({ message: 'No tienes un perfil de veterinario asociado' });
+        }
+        const association = await VetService.getAssociationWithClinica(user.vetId, id);
+        if (!association) {
+            return reply.code(403).send({ message: 'No tienes permisos para editar esta clínica' });
+        }
+    }
+
+    try {
+        const updated = await ClinicaService.update(id, data);
+        if (!updated) return reply.code(404).send({ message: 'Clínica no encontrada' });
+        return reply.code(200).send({
+            message: 'Clínica actualizada exitosamente',
+            clinica: updated
+        });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return reply.code(500).send({ message });
+    }
 }
 
 export async function admision(request: FastifyRequest, reply: FastifyReply) {

@@ -99,6 +99,8 @@ export class VetService {
                             columns: {
                                 id: true,
                                 nombre_comercial: true,
+                                direccion: true,
+                                telefono: true,
                             }
                         }
                     }
@@ -121,6 +123,8 @@ export class VetService {
                 return [{
                     id: c.id,
                     nombre_comercial: c.nombre_comercial,
+                    direccion: c.direccion,
+                    telefono: c.telefono,
                 }]
             }),
         };
@@ -149,6 +153,8 @@ export class VetService {
                             columns: {
                                 id: true,
                                 nombre_comercial: true,
+                                direccion: true,
+                                telefono: true,
                             }
                         }
                     }
@@ -171,6 +177,8 @@ export class VetService {
                 return [{
                     id: c.id,
                     nombre_comercial: c.nombre_comercial,
+                    direccion: c.direccion,
+                    telefono: c.telefono,
                 }]
             }),
         };

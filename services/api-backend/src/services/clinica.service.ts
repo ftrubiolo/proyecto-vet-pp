@@ -55,4 +55,20 @@ export class ClinicaService {
         return newClinica;
     }
 
+    /**
+     * Actualiza una clínica por ID.
+     * @param id - ID de la clínica
+     * @param data - Datos parciales de la clínica
+     * @param tx - Transacción de base de datos (opcional)
+     * @returns Clínica actualizada -> {@link ClinicaDb} o null si no existe
+     */
+    static async update(id: string, data: Partial<NewClinica>, tx?: DBClient): Promise<ClinicaDb | null> {
+        const client = tx || db;
+        const [updated] = await client.update(clinicas)
+            .set(data)
+            .where(eq(clinicas.id, id))
+            .returning();
+        return updated || null;
+    }
+
 }

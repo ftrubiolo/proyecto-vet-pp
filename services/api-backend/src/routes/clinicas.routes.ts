@@ -11,5 +11,5 @@ export default async function clinicasRoutes(fastify: FastifyInstance) {
     fastify.get("/:id", controller.getOne)
     fastify.post('/:id/admision', controller.admision)
     fastify.post('/', controller.create)
-    fastify.patch('/:id', { preHandler: checkRole(['Admin']) }, controller.update)
+    fastify.patch('/:id', { preHandler: checkRole(['Admin', 'Veterinario']) }, controller.update)
 }
