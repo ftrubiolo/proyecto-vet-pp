@@ -1,4 +1,4 @@
-import { pgTable, serial, varchar, text, timestamp, integer, boolean, decimal, uuid, char } from 'drizzle-orm/pg-core';
+import { pgTable, serial, varchar, text, timestamp, integer, boolean, decimal, uuid, char, jsonb } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 export const roles = pgTable('roles', {
@@ -346,3 +346,57 @@ export const categorias_matriculas = pgTable('categorias_matriculas', {
   categoria: varchar('categoria').notNull(),
   cobertura: text('cobertura').notNull(),
 });
+
+export const vacuna_protocolo = pgTable('vacuna_protocolo', {
+  senasa_id: integer('senasa_id').primaryKey(),
+  numero_inscripcion: varchar('numero_inscripcion'),
+  nombre_comercial: varchar('nombre_comercial'),
+  observaciones: text('observaciones'),
+  indicaciones_y_vias: text('indicaciones_y_vias'),
+  especies_target: varchar('especies_target').array(),
+  dosificacion_por_esp: jsonb('dosificacion_por_esp'),
+  vias_administracion: varchar('vias_administracion').array(),
+  fecha_validez: timestamp('fecha_validez').notNull(),
+  total_dosis_serie_primaria: integer('total_dosis_serie_primaria').notNull(),
+  intervalo_dias: integer('intervalo_dias').array(),
+  tiene_refuerzo: boolean('tiene_refuerzo').default(false).notNull(),
+  refuerzo_cada_dias: integer('refuerzo_cada_dias'),
+});
+
+export const vacuna_serie = pgTable('vacuna_serie', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  protocolo_id: integer('protocolo_id').notNull().references(() => vacuna_protocolo.senasa_id),
+  mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
+  veterinario_id: uuid('veterinario_id').notNull().references(() => veterinarios.id),
+  fecha_inicio: timestamp('fecha_inicio').notNull(),
+  estado_serie: varchar('estado_serie', { length: 20 }).notNull().default('en_curso'),
+  dosis_aplicadas: integer('dosis_aplicadas').notNull(),
+  proximo_refuerzo: timestamp('proximo_refuerzo'),
+});
+
+export const vacuna_dosis = pgTable('vacuna_dosis', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  serie_id: uuid('serie_id').notNull().references(() => vacuna_serie.id),
+  atencion_id: uuid('atencion_id').references(() => atenciones.id),
+  numero_dosis: integer('numero_dosis').notNull(),
+  fecha_aplicacion: timestamp('fecha_aplicacion').notNull(),
+  lote: varchar('lote').notNull(),
+  via_administracion: varchar('via_administracion').notNull(),
+  observaciones: text('observaciones'),
+});
+
+export const vacunaDosisRelations = relations(vacuna_dosis, ({ one }) => ({
+  serie: one(vacuna_serie, { fields: [vacuna_dosis.serie_id], references: [vacuna_serie.id] }),
+  atencion: one(atenciones, { fields: [vacuna_dosis.atencion_id], references: [atenciones.id] }),
+}));
+
+export const vacunaSerieRelations = relations(vacuna_serie, ({ one, many }) => ({
+  mascota: one(mascotas, { fields: [vacuna_serie.mascota_id], references: [mascotas.id] }),
+  veterinario: one(veterinarios, { fields: [vacuna_serie.veterinario_id], references: [veterinarios.id] }),
+  dosis: many(vacuna_dosis),
+  protocolo: one(vacuna_protocolo, { fields: [vacuna_serie.protocolo_id], references: [vacuna_protocolo.senasa_id] }),
+}));
+
+export const vacunaProtocoloRelations = relations(vacuna_protocolo, ({ many }) => ({
+  series: many(vacuna_serie),
+}));
