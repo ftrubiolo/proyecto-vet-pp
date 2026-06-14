@@ -1,0 +1,14 @@
+.create-cita-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.create-cita-form .form-row {
+  display: flex;
+  gap: var(--space-md);
+}
+
+.create-cita-form .form-row > * {
+  flex: 1;
+}

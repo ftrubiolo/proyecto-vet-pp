@@ -473,7 +473,7 @@
 
 .clinical-alerts-card.has-active-alerts {
   border: 1px solid rgba(245, 158, 11, 0.4);
-  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, rgba(239, 68, 68, 0.03) 100%);
+  background: linear-gradient(135deg, rgba(245, 158, 11, 0.08) 0%, var(--surface-solid) 100%);
   box-shadow: 0 4px 20px rgba(245, 158, 11, 0.08);
 }
 
@@ -568,12 +568,12 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
 }
 
 .vaccine-summary-card {
   display: flex;
-  align-items: center;
+  align-items: baseline;
+  justify-content: flex-start;
   gap: var(--space-sm);
   padding: var(--space-sm) var(--space-md) !important;
 }
@@ -587,7 +587,9 @@
 
 .vaccine-summary-info {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: baseline;
+  gap: var(--space-xs);
 }
 
 .vaccine-summary-count {
@@ -608,11 +610,6 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-xs);
-  margin-bottom: var(--space-lg);
-}
-
-.vaccine-group-section:last-child {
-  margin-bottom: 0;
 }
 
 .vaccine-group-title {
