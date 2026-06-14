@@ -1,4 +1,4 @@
-import { TokenPayload } from '../types/auth.types';
+import type { TokenPayload } from '@vetvault/shared';
 import { UserService } from '../services/user.service';
 import { VetService } from '../services/veterinario.service';
 import { MascotaService } from '../services/mascota.service';

@@ -1,18 +1,7 @@
 import { createContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { api } from '../api/client';
 import { clearFetchCache } from '../hooks/useFetch';
-
-export interface UserData {
-  id: string;
-  email: string;
-  rol: string;
-  vetId?: string;
-  proId?: string;
-  nombre?: string;
-  apellido?: string;
-  foto_url?: string;
-  clinicas?: { id: string; nombre_comercial: string }[];
-}
+import type { UserData } from '@vetvault/shared';
 
 interface LoginResponse {
   message: string;

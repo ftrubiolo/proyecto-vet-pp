@@ -3,7 +3,7 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
-import { formatDate } from '../utils';
+import { formatDate } from '@vetvault/shared';
 
 interface TratamientosTabProps {
   tratamientos: any[];

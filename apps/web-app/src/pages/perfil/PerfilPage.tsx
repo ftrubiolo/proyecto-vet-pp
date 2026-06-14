@@ -3,7 +3,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { Spinner } from '../../components/ui/Spinner';
 import { Tabs } from '../../components/ui/Tabs';
-import type { VetProfile, OwnerProfile } from './types';
+import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 import { ProfileHeader } from './components/ProfileHeader';
 import { PersonalInfoTab } from './components/PersonalInfoTab';
 import { ClinicsTab } from './components/ClinicsTab';

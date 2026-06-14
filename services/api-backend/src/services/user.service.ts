@@ -5,7 +5,7 @@ import bcrypt from 'bcrypt';
 import { RolService } from './rol.service';
 
 import type { UsuarioDb, NewUsuario, DBClient } from '../types/db.types';
-import { UpdateUsuarioInput } from '../types/auth.types';
+import type { UpdateUsuarioInput } from '@vetvault/shared';
 
 export type UsuarioAuth = Pick<UsuarioDb, 'id' | 'email' | 'password_hash'> & { rol: string };
 

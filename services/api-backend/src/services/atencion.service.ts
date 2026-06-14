@@ -1,6 +1,6 @@
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { atenciones, atenciones_diagnosticos, tratamientos, vacunas, citas } from "../db/schema";
+import { atenciones, atenciones_diagnosticos, tratamientos, vacunas, citas, vacuna_protocolo, vacuna_serie, vacuna_dosis, catalogo_productos } from "../db/schema";
 import type { NewAtencion, NewTratamiento, NewVacuna } from "../types/db.types";
 
 export interface AtencionInput {
@@ -12,7 +12,14 @@ export interface AtencionInput {
     peso_actual?: string | null;
     diagnosticos: number[]; // IDs de diagnosticos_atencion
     tratamientos: Omit<NewTratamiento, "atencion_id">[];
-    vacunas: Omit<NewVacuna, "atencion_id" | "mascota_id" | "veterinario_id">[];
+    vacunas: {
+        producto_id: number;
+        numero_lote: string;
+        fecha_aplicacion: string;
+        fecha_proxima_dosis?: string | null;
+        iniciar_nueva_serie?: boolean;
+        via_administracion: string;
+    }[];
 }
 
 /**
@@ -108,17 +115,154 @@ export class AtencionService {
                 await tx.insert(tratamientos).values(treatValues);
             }
 
-            // 4. Insertar vacunas
+            // 4. Insertar vacunas en la nueva estructura (Protocolo -> Serie -> Dosis)
             if (input.vacunas && input.vacunas.length > 0) {
-                const vaccineValues = input.vacunas.map(v => ({
-                    ...v,
-                    atencion_id: newAtencion.id,
-                    mascota_id: input.mascota_id,
-                    veterinario_id: input.veterinario_id,
-                    fecha_aplicacion: v.fecha_aplicacion ? new Date(v.fecha_aplicacion) : new Date(),
-                    fecha_proxima_dosis: v.fecha_proxima_dosis ? new Date(v.fecha_proxima_dosis) : null,
-                }));
-                await tx.insert(vacunas).values(vaccineValues);
+                for (const v of input.vacunas) {
+                    const prodId = v.producto_id;
+                    const fechaAplicacion = v.fecha_aplicacion ? new Date(v.fecha_aplicacion) : new Date();
+                    const fechaProxima = v.fecha_proxima_dosis ? new Date(v.fecha_proxima_dosis) : null;
+
+                    // Validaciones obligatorias
+                    if (!v.numero_lote || !v.numero_lote.trim()) {
+                        throw new Error(`El número de lote es obligatorio para la vacuna ID: ${prodId}`);
+                    }
+                    if (!v.via_administracion || !v.via_administracion.trim()) {
+                        throw new Error(`La vía de administración es obligatoria para la vacuna ID: ${prodId}`);
+                    }
+
+                    // 4a. Buscar o crear el protocolo
+                    let proto = await tx.query.vacuna_protocolo.findFirst({
+                        where: eq(vacuna_protocolo.senasa_id, prodId)
+                    });
+
+                    if (!proto) {
+                        const prod = await tx.query.catalogo_productos.findFirst({
+                            where: eq(catalogo_productos.id, prodId)
+                        });
+                        const validez = new Date();
+                        validez.setFullYear(validez.getFullYear() + 1);
+
+                        const [newProto] = await tx.insert(vacuna_protocolo).values({
+                            senasa_id: prodId,
+                            numero_inscripcion: prod?.numero_senasa || 'MIGRADO',
+                            nombre_comercial: prod?.nombre_comercial || 'Vacuna Creada',
+                            observaciones: 'Creado automáticamente en consulta',
+                            indicaciones_y_vias: 'Auto-creado',
+                            especies_target: ['CANINOS', 'FELINOS'],
+                            dosificacion_por_esp: {},
+                            vias_administracion: ['SUBCUTANEA'],
+                            fecha_validez: validez,
+                            total_dosis_serie_primaria: 1,
+                            intervalo_dias: [],
+                            tiene_refuerzo: fechaProxima !== null,
+                            refuerzo_cada_dias: fechaProxima ? 365 : null,
+                        }).returning();
+                        
+                        if (!newProto) {
+                            throw new Error("No se pudo crear el protocolo de vacuna");
+                        }
+                        proto = newProto;
+                    }
+
+                    // 4b. Buscar serie activa (en_curso o última completa si no se inicia nueva serie)
+                    let serie = null;
+                    if (!v.iniciar_nueva_serie) {
+                        // Intentar buscar una serie 'en_curso'
+                        serie = await tx.query.vacuna_serie.findFirst({
+                            where: and(
+                                eq(vacuna_serie.mascota_id, input.mascota_id),
+                                eq(vacuna_serie.protocolo_id, prodId),
+                                eq(vacuna_serie.estado_serie, 'en_curso')
+                            )
+                        });
+
+                        // Si no hay serie en curso, y el protocolo tiene refuerzo, buscar la última completa para registrar refuerzo
+                        if (!serie && proto.tiene_refuerzo) {
+                            serie = await tx.query.vacuna_serie.findFirst({
+                                where: and(
+                                    eq(vacuna_serie.mascota_id, input.mascota_id),
+                                    eq(vacuna_serie.protocolo_id, prodId),
+                                    eq(vacuna_serie.estado_serie, 'completa')
+                                ),
+                                orderBy: (vs, { desc }) => [desc(vs.fecha_inicio)]
+                            });
+                        }
+                    }
+
+                    if (!serie) {
+                        const totalDosis = proto.total_dosis_serie_primaria || 1;
+                        const estado = (1 >= totalDosis) ? 'completa' : 'en_curso';
+
+                        let proximoRefuerzo: Date | null = null;
+                        if (estado === 'completa') {
+                            if (fechaProxima) {
+                                proximoRefuerzo = fechaProxima;
+                            } else if (proto.tiene_refuerzo && proto.refuerzo_cada_dias) {
+                                proximoRefuerzo = new Date(fechaAplicacion.getTime());
+                                proximoRefuerzo.setDate(proximoRefuerzo.getDate() + proto.refuerzo_cada_dias);
+                            }
+                        }
+
+                        const [newSerie] = await tx.insert(vacuna_serie).values({
+                            protocolo_id: prodId,
+                            mascota_id: input.mascota_id,
+                            veterinario_id: input.veterinario_id,
+                            fecha_inicio: fechaAplicacion,
+                            estado_serie: estado,
+                            dosis_aplicadas: 1,
+                            proximo_refuerzo: proximoRefuerzo,
+                        }).returning();
+
+                        if (!newSerie) {
+                            throw new Error("No se pudo crear la serie de vacuna");
+                        }
+                        serie = newSerie;
+
+                        await tx.insert(vacuna_dosis).values({
+                            serie_id: newSerie.id,
+                            atencion_id: newAtencion.id,
+                            numero_dosis: 1,
+                            fecha_aplicacion: fechaAplicacion,
+                            lote: v.numero_lote,
+                            via_administracion: v.via_administracion,
+                            observaciones: 'Registrado en consulta',
+                        });
+                    } else {
+                        const numeroDosis = (serie.dosis_aplicadas || 0) + 1;
+                        const totalDosis = proto.total_dosis_serie_primaria || 1;
+                        
+                        // Si ya estaba completa o alcanza el límite
+                        const estado = (serie.estado_serie === 'completa' || numeroDosis >= totalDosis) ? 'completa' : 'en_curso';
+
+                        let proximoRefuerzo: Date | null = null;
+                        if (estado === 'completa') {
+                            if (fechaProxima) {
+                                proximoRefuerzo = fechaProxima;
+                            } else if (proto.tiene_refuerzo && proto.refuerzo_cada_dias) {
+                                proximoRefuerzo = new Date(fechaAplicacion.getTime());
+                                proximoRefuerzo.setDate(proximoRefuerzo.getDate() + proto.refuerzo_cada_dias);
+                            }
+                        }
+
+                        await tx.update(vacuna_serie)
+                            .set({
+                                dosis_aplicadas: numeroDosis,
+                                estado_serie: estado,
+                                proximo_refuerzo: proximoRefuerzo,
+                            })
+                            .where(eq(vacuna_serie.id, serie.id));
+
+                        await tx.insert(vacuna_dosis).values({
+                            serie_id: serie.id,
+                            atencion_id: newAtencion.id,
+                            numero_dosis: numeroDosis,
+                            fecha_aplicacion: fechaAplicacion,
+                            lote: v.numero_lote,
+                            via_administracion: v.via_administracion,
+                            observaciones: 'Registrado en consulta',
+                        });
+                    }
+                }
             }
 
             // 5. Si viene de una cita, actualizar el estado de la cita a Confirmada (o mantener)

@@ -10,8 +10,7 @@ import { Tabs } from '../../components/ui/Tabs';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 
-import type { MascotaDetail } from './types';
-import { calcAge, formatDate } from './utils';
+import { type MascotaDetail, calcAge, formatDate } from '@vetvault/shared';
 
 import { DatosTab } from './components/DatosTab';
 import { HistorialTab } from './components/HistorialTab';
@@ -120,15 +119,28 @@ export function MascotaDetailPage() {
     let proximasCount = 0;
 
     if (vacunasData) {
-      vacunasData.forEach((v: any) => {
-        if (!v.fecha_proxima_dosis) return;
+      vacunasData.forEach((serie: any) => {
+        if (serie.estado_serie === 'abandonada') return;
+
+        const protocolo = serie.protocolo;
+        if (!protocolo) return;
+
+        // Si la serie está en curso (incompleta), no contamos refuerzo
+        if (serie.dosis_aplicadas < (protocolo.total_dosis_serie_primaria || 1)) {
+          return;
+        }
+
+        // Si no tiene refuerzo o no hay fecha de próximo refuerzo, no contamos
+        if (!protocolo.tiene_refuerzo || !serie.proximo_refuerzo) {
+          return;
+        }
 
         let nextDoseDate: Date;
-        if (v.fecha_proxima_dosis instanceof Date) {
-          nextDoseDate = new Date(v.fecha_proxima_dosis.getTime());
+        if (serie.proximo_refuerzo instanceof Date) {
+          nextDoseDate = new Date(serie.proximo_refuerzo.getTime());
           nextDoseDate.setHours(0, 0, 0, 0);
         } else {
-          const str = String(v.fecha_proxima_dosis);
+          const str = String(serie.proximo_refuerzo);
           if (!str.includes('T')) {
             const parts = str.split('-');
             if (parts.length === 3) {
@@ -266,6 +278,8 @@ export function MascotaDetailPage() {
                 mascota={mascota}
                 isOwner={isOwner}
                 atenciones={atencionesData || []}
+                vacunas={vacunasData || []}
+                tratamientos={tratamientosData || []}
                 onEditClick={() => setShowEditModal(true)}
               />
             )}

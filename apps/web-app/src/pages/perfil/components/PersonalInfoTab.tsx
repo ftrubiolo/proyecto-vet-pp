@@ -4,7 +4,7 @@ import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { api } from '../../../api/client';
-import type { VetProfile, OwnerProfile } from '../types';
+import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 
 interface PersonalInfoTabProps {
   profile: VetProfile | OwnerProfile;

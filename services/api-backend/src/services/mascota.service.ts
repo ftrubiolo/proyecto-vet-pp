@@ -3,7 +3,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { estados_cita, mascotas, mascotas_propietarios, clinicas_mascotas, veterinarios_clinicas } from "../db/schema";
 
 import type { MascotaDb, NewMascota, DBClient } from '../types/db.types';
-import { MascotaList, MascotaPerfil } from "../types/mascota.types";
+import type { MascotaList, MascotaPerfil } from "@vetvault/shared";
 
 /**
  * Servicio para la gestión de mascotas (pacientes).

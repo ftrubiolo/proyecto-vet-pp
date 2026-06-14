@@ -1,7 +1,7 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
 import { UserService } from '../services/user.service';
 import { Validation } from '../utils/validation';
-import { UpdateUsuarioInput } from '../types/auth.types';
+import type { UpdateUsuarioInput } from '@vetvault/shared';
 import { VetService } from '../services/veterinario.service';
 import { PropietarioService } from '../services/propietario.service';
 

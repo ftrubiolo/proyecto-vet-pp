@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import jwt from 'jsonwebtoken';
 
-import { TokenPayload } from '../types/auth.types';
+import type { TokenPayload } from '@vetvault/shared';
 // Extendemos el Request de Fastify para que acepte nuestra propiedad 'user'
 declare module 'fastify' {
     interface FastifyRequest {

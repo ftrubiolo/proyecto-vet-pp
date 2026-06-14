@@ -7,6 +7,7 @@ import { Input, Select } from '../../../components/ui/Input';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 import { Autocomplete } from './Autocomplete';
+import { ProtocolCurationModal } from './ProtocolCurationModal';
 
 interface ActiveConsultationFormProps {
   citaId?: string | null;
@@ -39,6 +40,26 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
   const [vLote, setVLote] = useState('');
   const [vFechaAplicacion, setVFechaAplicacion] = useState(new Date().toISOString().split('T')[0]);
   const [vFechaProxima, setVFechaProxima] = useState('');
+
+  // Curation and active series states
+  const [showCurationModal, setShowCurationModal] = useState(false);
+  const [curationTemplate, setCurationTemplate] = useState<any>(null);
+  const [activeSerie, setActiveSerie] = useState<any>(null);
+  const [continuarSerie, setContinuarSerie] = useState(true);
+  const [isValidatingProtocol, setIsValidatingProtocol] = useState(false);
+  const [vProtocolo, setVProtocolo] = useState<any>(null);
+  const [vViaAdministracion, setVViaAdministracion] = useState('');
+  const [vValidationWarning, setVValidationWarning] = useState<string | null>(null);
+
+  // Fetch pet details to get species
+  const { data: mascota } = useFetch<any>(
+    mascotaId ? `/mascotas/${mascotaId}` : null
+  );
+
+  // Fetch pet's active series lists
+  const { data: petSeries } = useFetch<any[]>(
+    mascotaId ? `/vacunas/mascota/${mascotaId}` : null
+  );
 
   // Fetch lookup lists
   const { data: diagnosticosRaw } = useFetch<any[]>('/catalogo/diagnosticos');
@@ -92,21 +113,181 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
     setTreatments(treatments.filter((_, i) => i !== index));
   };
 
+  const calculateNextDoseDate = (shouldContinue: boolean, applyDateStr: string, proto: any, activeS: any) => {
+    if (!applyDateStr || !proto) {
+      setVFechaProxima('');
+      return;
+    }
+
+    const applyDate = new Date(applyDateStr);
+    if (isNaN(applyDate.getTime())) {
+      setVFechaProxima('');
+      return;
+    }
+
+    if (shouldContinue && activeS) {
+      if (activeS.estado_serie === 'en_curso') {
+        const currentDoseIndex = activeS.dosis_aplicadas - 1;
+        const intervals = proto.intervalo_dias || [];
+        if (currentDoseIndex >= 0 && currentDoseIndex < intervals.length) {
+          const days = intervals[currentDoseIndex];
+          const nextDate = new Date(applyDate.getTime());
+          nextDate.setDate(nextDate.getDate() + days);
+          setVFechaProxima(nextDate.toISOString().split('T')[0]);
+          return;
+        }
+      } else if (activeS.estado_serie === 'completa' && proto.tiene_refuerzo && proto.refuerzo_cada_dias) {
+        const nextDate = new Date(applyDate.getTime());
+        nextDate.setDate(nextDate.getDate() + proto.refuerzo_cada_dias);
+        setVFechaProxima(nextDate.toISOString().split('T')[0]);
+        return;
+      }
+    } else {
+      const totalDosis = proto.total_dosis_serie_primaria || 1;
+      const intervals = proto.intervalo_dias || [];
+      if (totalDosis > 1 && intervals.length > 0) {
+        const days = intervals[0];
+        const nextDate = new Date(applyDate.getTime());
+        nextDate.setDate(nextDate.getDate() + days);
+        setVFechaProxima(nextDate.toISOString().split('T')[0]);
+        return;
+      } else if (totalDosis === 1 && proto.tiene_refuerzo && proto.refuerzo_cada_dias) {
+        const nextDate = new Date(applyDate.getTime());
+        nextDate.setDate(nextDate.getDate() + proto.refuerzo_cada_dias);
+        setVFechaProxima(nextDate.toISOString().split('T')[0]);
+        return;
+      }
+    }
+
+    setVFechaProxima('');
+  };
+
+  const handleSelectVacuna = async (item: { id: number; name: string }) => {
+    setIsValidatingProtocol(true);
+    setVProducto(item);
+    setActiveSerie(null);
+    setContinuarSerie(true);
+    setVProtocolo(null);
+    setVViaAdministracion('');
+    setVValidationWarning(null);
+
+    try {
+      const response = await api.get<{ isCurated: boolean; protocolo: any }>(`/vacunas/protocolo/producto/${item.id}`);
+      
+      if (!response.isCurated) {
+        setCurationTemplate(response.protocolo);
+        setShowCurationModal(true);
+      } else {
+        const proto = response.protocolo;
+        setVProtocolo(proto);
+
+        // Auto-select route
+        if (proto.vias_administracion && proto.vias_administracion.length > 0) {
+          setVViaAdministracion(proto.vias_administracion[0]);
+        }
+
+        // Warning on target species
+        let warning = null;
+        const petSpeciesStr = (mascota?.especie || '').toLowerCase();
+        const targets = (proto.especies_target || []).map((s: string) => s.toLowerCase());
+        
+        if (targets.length > 0 && petSpeciesStr) {
+          const matches = targets.some((t: string) => {
+            if (t.includes('canin') && (petSpeciesStr.includes('canin') || petSpeciesStr.includes('perr'))) return true;
+            if (t.includes('felin') && (petSpeciesStr.includes('felin') || petSpeciesStr.includes('gat'))) return true;
+            if (t.includes(petSpeciesStr) || petSpeciesStr.includes(t)) return true;
+            return false;
+          });
+          
+          if (!matches) {
+            warning = `La vacuna está registrada para ${proto.especies_target.join(', ')}, pero el paciente es ${mascota?.especie || 'otra especie'}.`;
+          }
+        }
+        setVValidationWarning(warning);
+
+        // Check active 'en_curso' or 'completa' (with booster) series
+        const openSerie = (petSeries || []).find(
+          (s: any) => s.protocolo_id === item.id && s.estado_serie === 'en_curso'
+        );
+        
+        let foundSerie = openSerie || null;
+        if (!foundSerie && proto.tiene_refuerzo) {
+          const completedSerie = (petSeries || [])
+            .filter((s: any) => s.protocolo_id === item.id && s.estado_serie === 'completa')
+            .sort((a: any, b: any) => new Date(b.fecha_inicio).getTime() - new Date(a.fecha_inicio).getTime())[0];
+          if (completedSerie) {
+            foundSerie = completedSerie;
+          }
+        }
+
+        if (foundSerie) {
+          setActiveSerie(foundSerie);
+        }
+
+        // Calculate default date suggestions
+        calculateNextDoseDate(true, vFechaAplicacion, proto, foundSerie);
+      }
+    } catch (err) {
+      console.error('Error al verificar protocolo:', err);
+    } finally {
+      setIsValidatingProtocol(false);
+    }
+  };
+
+  const handleCloseCuration = () => {
+    setShowCurationModal(false);
+    setVProducto(null);
+    setCurationTemplate(null);
+    setVProtocolo(null);
+    setVViaAdministracion('');
+    setVValidationWarning(null);
+  };
+
+  const handleSaveCuration = (savedProtocol: any) => {
+    setShowCurationModal(false);
+    setCurationTemplate(null);
+    setVProtocolo(savedProtocol);
+
+    if (savedProtocol.vias_administracion && savedProtocol.vias_administracion.length > 0) {
+      setVViaAdministracion(savedProtocol.vias_administracion[0]);
+    }
+
+    setActiveSerie(null);
+    calculateNextDoseDate(false, vFechaAplicacion, savedProtocol, null);
+  };
+
   const handleAddVacuna = () => {
     if (!vProducto) {
       alert('Por favor seleccione una vacuna.');
       return;
     }
+    if (!vLote || !vLote.trim()) {
+      alert('El número de lote es obligatorio.');
+      return;
+    }
+    if (!vViaAdministracion || !vViaAdministracion.trim()) {
+      alert('La vía de administración es obligatoria.');
+      return;
+    }
+
     setVacunasApplied([...vacunasApplied, {
       producto_id: vProducto.id,
       productoName: vProducto.name,
-      numero_lote: vLote || null,
+      numero_lote: vLote.trim(),
       fecha_aplicacion: vFechaAplicacion,
       fecha_proxima_dosis: vFechaProxima || null,
+      iniciar_nueva_serie: !continuarSerie,
+      via_administracion: vViaAdministracion,
     }]);
 
     setVProducto(null);
     setVLote('');
+    setVViaAdministracion('');
+    setVProtocolo(null);
+    setVValidationWarning(null);
+    setActiveSerie(null);
+    setContinuarSerie(true);
+    setVFechaProxima('');
   };
 
   const handleRemoveVacuna = (index: number) => {
@@ -128,11 +309,24 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       // Auto-append currently entered vaccine if not empty
       const finalVacunas = [...vacunasApplied];
       if (vProducto) {
+        if (!vLote || !vLote.trim()) {
+          alert('El número de lote es obligatorio.');
+          setIsSaving(false);
+          return;
+        }
+        if (!vViaAdministracion || !vViaAdministracion.trim()) {
+          alert('La vía de administración es obligatoria.');
+          setIsSaving(false);
+          return;
+        }
         finalVacunas.push({
           producto_id: vProducto.id,
-          numero_lote: vLote || null,
+          productoName: vProducto.name,
+          numero_lote: vLote.trim(),
           fecha_aplicacion: vFechaAplicacion,
           fecha_proxima_dosis: vFechaProxima || null,
+          iniciar_nueva_serie: !continuarSerie,
+          via_administracion: vViaAdministracion,
         });
       }
 
@@ -173,6 +367,8 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           numero_lote: v.numero_lote,
           fecha_aplicacion: v.fecha_aplicacion,
           fecha_proxima_dosis: v.fecha_proxima_dosis,
+          iniciar_nueva_serie: v.iniciar_nueva_serie || false,
+          via_administracion: v.via_administracion,
         })),
       });
 
@@ -341,19 +537,69 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           label="Vacuna"
           placeholder="Escriba para buscar vacuna..."
           items={lookupVacunas}
-          onSelect={(item) => setVProducto(item)}
+          onSelect={handleSelectVacuna}
         />
+        {isValidatingProtocol && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 8 }}>
+            <Spinner size={12} />
+            <span>Verificando protocolo oficial...</span>
+          </div>
+        )}
+        {vProducto && !isValidatingProtocol && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
+            <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
+              Seleccionado: {vProducto.name}
+            </span>
+            {vValidationWarning && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', backgroundColor: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: 6, margin: '4px 0', color: 'var(--danger)', fontSize: '0.75rem', fontWeight: 600 }}>
+                ⚠️ {vValidationWarning}
+              </div>
+            )}
+            {activeSerie && (
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', backgroundColor: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: 6, margin: '6px 0' }}>
+                <input
+                  type="checkbox"
+                  id="continuarSerieCheckbox"
+                  checked={continuarSerie}
+                  onChange={(e) => {
+                    setContinuarSerie(e.target.checked);
+                    calculateNextDoseDate(e.target.checked, vFechaAplicacion, vProtocolo, activeSerie);
+                  }}
+                  style={{ width: 14, height: 14, cursor: 'pointer' }}
+                />
+                <label htmlFor="continuarSerieCheckbox" style={{ fontSize: '0.78rem', fontWeight: 600, color: '#d97706', cursor: 'pointer' }}>
+                  {activeSerie.estado_serie === 'completa'
+                    ? 'Registrar como dosis de refuerzo (booster) para la serie existente'
+                    : `Continuar serie en curso existente (Registrar como Dosis ${activeSerie.dosis_aplicadas + 1})`
+                  }
+                </label>
+              </div>
+            )}
+          </div>
+        )}
+
         {vProducto && (
-          <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
-            Seleccionado: {vProducto.name}
-          </span>
+          <Select
+            label="Vía de administración *"
+            options={[
+              { value: '', label: 'Seleccionar vía...' },
+              ...((vProtocolo?.vias_administracion || ['SUBCUTANEA', 'INTRAMUSCULAR', 'ORAL']).map((via: string) => ({
+                value: via,
+                label: via,
+              })))
+            ]}
+            value={vViaAdministracion}
+            onChange={(e) => setVViaAdministracion(e.target.value)}
+            required
+          />
         )}
 
         <Input
-          label="Número de Lote"
+          label="Número de Lote *"
           placeholder="Ej: LOTE-ABC-123"
           value={vLote}
           onChange={(e) => setVLote(e.target.value)}
+          required
         />
 
         <div className="form-row">
@@ -361,7 +607,10 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
             label="Aplicada hoy"
             type="date"
             value={vFechaAplicacion}
-            onChange={(e) => setVFechaAplicacion(e.target.value)}
+            onChange={(e) => {
+              setVFechaAplicacion(e.target.value);
+              calculateNextDoseDate(continuarSerie, e.target.value, vProtocolo, activeSerie);
+            }}
           />
           <Input
             label="Próxima dosis"
@@ -382,7 +631,9 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
             <div key={index} className="prescribed-item-card">
               <div className="prescribed-item-info">
                 <span className="prescribed-item-title">Vacuna: {v.productoName}</span>
-                <span className="prescribed-item-details">Lote: {v.numero_lote || '–'}</span>
+                <span className="prescribed-item-details">
+                  Lote: {v.numero_lote} · Vía: {v.via_administracion}
+                </span>
                 {v.fecha_proxima_dosis && <span className="prescribed-item-details">Próxima: {v.fecha_proxima_dosis}</span>}
               </div>
               <button className="prescribed-item-delete" type="button" onClick={() => handleRemoveVacuna(index)}>
@@ -391,6 +642,15 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
             </div>
           ))}
         </div>
+      )}
+
+      {showCurationModal && curationTemplate && (
+        <ProtocolCurationModal
+          isOpen={showCurationModal}
+          protocoloTemplate={curationTemplate}
+          onClose={handleCloseCuration}
+          onSave={handleSaveCuration}
+        />
       )}
 
       <div className="consultation-actions-footer">

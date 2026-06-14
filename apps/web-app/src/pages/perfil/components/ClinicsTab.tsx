@@ -5,7 +5,7 @@ import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Spinner } from '../../../components/ui/Spinner';
 import { api } from '../../../api/client';
-import type { VetProfile } from '../types';
+import type { VetProfile } from '@vetvault/shared';
 
 interface ClinicsTabProps {
   profile: VetProfile;

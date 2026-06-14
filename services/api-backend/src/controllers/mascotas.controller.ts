@@ -1,7 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { MascotaService } from "../services/mascota.service";
-import { UpdateMascota } from "../types/db.types";
-import { CreateMascotaInput } from "../types/mascota.types";
+import { NewMascota, UpdateMascota } from "../types/db.types";
+import type { CreateMascotaInput } from "@vetvault/shared";
 import { db } from "../db";
 import { Validation } from "../utils/validation";
 
@@ -55,7 +55,10 @@ export const create = async (request: FastifyRequest, reply: FastifyReply): Prom
 
     try {
         const result = await db.transaction(async (tx) => {
-            const newMascota = await MascotaService.create(mascota, tx);
+            const newMascota = await MascotaService.create({
+                ...mascota,
+                fecha_nacimiento: new Date(mascota.fecha_nacimiento)
+            } as NewMascota, tx);
             const newRelacion = await MascotaService.associateWithOwner(newMascota.id, propietario.propietario_id, propietario.tipo_relacion_id, tx);
             return { newMascota, newRelacion };
         });

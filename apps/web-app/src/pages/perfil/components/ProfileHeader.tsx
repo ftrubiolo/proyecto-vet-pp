@@ -1,7 +1,7 @@
 import { Mail, Stethoscope, User } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
-import type { VetProfile, OwnerProfile } from '../types';
+import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 
 interface ProfileHeaderProps {
   profile: VetProfile | OwnerProfile | undefined;

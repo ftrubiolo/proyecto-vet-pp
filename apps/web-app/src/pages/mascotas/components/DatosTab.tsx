@@ -3,8 +3,8 @@ import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
 import { WeightChart } from './WeightChart';
-import { formatDate, calcAge } from '../utils';
-import type { MascotaDetail } from '../types';
+import { formatDate, calcAge } from '@vetvault/shared'
+import type { MascotaDetail } from '@vetvault/shared';
 
 function formatWhatsAppLink(phone: string, text: string): string {
   let cleanNumber = phone.replace(/\D/g, '');
@@ -29,6 +29,8 @@ interface DatosTabProps {
   mascota: MascotaDetail;
   isOwner: boolean;
   atenciones: any[];
+  vacunas: any[];
+  tratamientos: any[];
   onEditClick?: () => void;
 }
 

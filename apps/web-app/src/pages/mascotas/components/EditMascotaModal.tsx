@@ -6,7 +6,7 @@ import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Input, Select } from '../../../components/ui/Input';
 import { Autocomplete } from './Autocomplete';
-import type { MascotaDetail, Especie } from '../types';
+import type { MascotaDetail, Especie } from '@vetvault/shared';
 
 interface EditMascotaModalProps {
   mascota: MascotaDetail;

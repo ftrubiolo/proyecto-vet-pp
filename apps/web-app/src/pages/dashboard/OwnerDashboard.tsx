@@ -14,35 +14,7 @@ import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import './DashboardPage.css';
 
-interface Mascota {
-  id: string;
-  nombre: string;
-  raza: string;
-  especie: string;
-}
-
-interface MascotasResponse {
-  mascotas: Mascota[];
-}
-
-const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
-function getEstadoBadgeVariant(estado: string) {
-  switch (estado) {
-    case 'Confirmada': return 'success' as const;
-    case 'Pendiente': return 'warning' as const;
-    case 'Cancelada': return 'danger' as const;
-    case 'Completada': return 'neutral' as const;
-    default: return 'neutral' as const;
-  }
-}
-
-function getUIEstado(c: any): string {
-  if (c.atenciones && c.atenciones.length > 0) return 'Completada';
-  const estado = c.estado_cita?.estado;
-  if (estado === 'Agendada') return 'Pendiente';
-  return estado || 'Pendiente';
-}
+import { type Mascota, type MascotasResponse, monthNames, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared';
 
 export function OwnerDashboard() {
   const { user } = useAuth();

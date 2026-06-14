@@ -8,7 +8,7 @@ import { UserService } from '../services/user.service';
 import { VetService } from '../services/veterinario.service';
 import { ClinicaService } from '../services/clinica.service';
 import { PropietarioService } from '../services/propietario.service';
-import { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput, TokenPayload } from '../types/auth.types';
+import type { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput, TokenPayload } from '@vetvault/shared';
 import { NewClinica, NewPropietario, NewUsuario, NewVeterinario } from '../types/db.types';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;

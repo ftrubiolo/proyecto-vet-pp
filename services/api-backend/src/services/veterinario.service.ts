@@ -2,7 +2,7 @@ import { db } from "../db";
 import { eq, and, inArray } from "drizzle-orm";
 import { veterinarios, veterinarios_clinicas, veterinarios_matriculados_cordoba, usuarios, clinicas_mascotas, mascotas } from "../db/schema";
 import { DBClient, NewVeterinario, UpdateVeterinario, VeterinarioClinicaDb, VeterinarioDb } from "../types/db.types";
-import { VeterinarioList, VeterinarioPerfil } from "../types/veterinario.types";
+import type { VeterinarioList, VeterinarioPerfil } from "@vetvault/shared";
 
 /**
  * Servicio para la gestión de perfiles de veterinarios, habilitación de matrículas y asociaciones con clínicas.

@@ -3,7 +3,7 @@ import { eq } from "drizzle-orm";
 import { mascotas_propietarios, propietarios } from "../db/schema";
 import { MascotaService } from "./mascota.service";
 
-import { PropietarioList, PropietarioPerfil } from "../types/propietario.types";
+import type { PropietarioList, PropietarioPerfil } from "@vetvault/shared";
 import type { PropietarioDb, NewPropietario, DBClient } from '../types/db.types';
 
 /**

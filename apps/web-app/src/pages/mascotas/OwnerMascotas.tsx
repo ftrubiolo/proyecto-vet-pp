@@ -14,37 +14,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Autocomplete } from './components/Autocomplete';
 import './MascotasPage.css';
 
-interface Mascota {
-  id: string;
-  nombre: string;
-  fecha_nacimiento: string;
-  sexo: string;
-  es_castrado: boolean;
-  numero_microchip?: string;
-  raza: string;
-  especie: string;
-  edad: number;
-}
-
-interface MascotasResponse {
-  mascotas: Mascota[];
-}
-
-interface Especie {
-  id: number;
-  especie: string;
-  razas: { id: number; raza: string }[];
-}
-
-function calcAge(dateStr: string): string {
-  const birth = new Date(dateStr);
-  const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  const months = now.getMonth() - birth.getMonth();
-  if (years < 1) return `${Math.max(months + (years * 12), 0)} meses`;
-  if (years === 1) return '1 año';
-  return `${years} años`;
-}
+import { type Mascota, type MascotasResponse, type Especie, calcAge } from '@vetvault/shared';
 
 export function OwnerMascotas() {
   const { user } = useAuth();

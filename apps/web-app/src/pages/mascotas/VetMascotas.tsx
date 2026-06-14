@@ -14,37 +14,7 @@ import { EmptyState } from '../../components/ui/EmptyState';
 import { Autocomplete } from './components/Autocomplete';
 import './MascotasPage.css';
 
-interface Mascota {
-  id: string;
-  nombre: string;
-  fecha_nacimiento: string;
-  sexo: string;
-  es_castrado: boolean;
-  numero_microchip?: string;
-  raza: string;
-  especie: string;
-  edad: number;
-}
-
-interface MascotasResponse {
-  mascotas: Mascota[];
-}
-
-interface Especie {
-  id: number;
-  especie: string;
-  razas: { id: number; raza: string }[];
-}
-
-function calcAge(dateStr: string): string {
-  const birth = new Date(dateStr);
-  const now = new Date();
-  const years = now.getFullYear() - birth.getFullYear();
-  const months = now.getMonth() - birth.getMonth();
-  if (years < 1) return `${Math.max(months + (years * 12), 0)} meses`;
-  if (years === 1) return '1 año';
-  return `${years} años`;
-}
+import { type Mascota, type MascotasResponse, type Especie, calcAge } from '@vetvault/shared';
 
 export function VetMascotas() {
   const navigate = useNavigate();
@@ -178,7 +148,7 @@ interface CreatePacienteModalProps {
 function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const { user } = useAuth();
   const [mode, setMode] = useState<'create' | 'admit'>('create');
-  
+
   // Create mode state
   const [nombre, setNombre] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
@@ -188,13 +158,13 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const [propietarioId, setPropietarioId] = useState('');
   const [tipoRelacionId, setTipoRelacionId] = useState('1');
   const [saving, setSaving] = useState(false);
-  
+
   // Admit mode state
   const [admissionCode, setAdmissionCode] = useState('');
   const [searching, setSearching] = useState(false);
   const [foundPet, setFoundPet] = useState<{ id: string; nombre: string; especie: string; raza: string; propietario: string; sexo: string } | null>(null);
   const [admitting, setAdmitting] = useState(false);
-  
+
   const [error, setError] = useState('');
 
   // Fetch especies (with razas)
