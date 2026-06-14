@@ -1,0 +1,9 @@
+{
+  "name": "vetvault-monorepo",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "services/*",
+    "packages/*"
+  ]
+}

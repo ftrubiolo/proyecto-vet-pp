@@ -1,5 +1,5 @@
 {
-  "name": "backend",
+  "name": "api-backend",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
@@ -21,6 +21,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@vetvault/shared": "*",
     "@fastify/cookie": "^11.0.2",
     "@fastify/cors": "^11.2.0",
     "@fastify/swagger": "^9.7.0",
