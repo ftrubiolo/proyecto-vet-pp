@@ -272,4 +272,14 @@ export interface OwnerProfile {
   };
 }
 
+export interface HorarioLaboral {
+  id?: string;
+  veterinario_id?: string;
+  clinica_id?: string;
+  dia_semana: number;
+  hora_inicio: string;
+  hora_fin: string;
+}
+
+
 

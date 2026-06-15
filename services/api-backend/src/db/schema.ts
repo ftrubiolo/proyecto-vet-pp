@@ -400,3 +400,21 @@ export const vacunaSerieRelations = relations(vacuna_serie, ({ one, many }) => (
 export const vacunaProtocoloRelations = relations(vacuna_protocolo, ({ many }) => ({
   series: many(vacuna_serie),
 }));
+
+export const horarios_laborales = pgTable('horarios_laborales', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  veterinario_id: uuid('veterinario_id')
+    .notNull()
+    .references(() => veterinarios.id, { onDelete: 'cascade' }),
+  clinica_id: uuid('clinica_id')
+    .notNull()
+    .references(() => clinicas.id, { onDelete: 'cascade' }),
+  dia_semana: integer('dia_semana').notNull(), // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+  hora_inicio: varchar('hora_inicio', { length: 5 }).notNull(), // Formato "HH:MM"
+  hora_fin: varchar('hora_fin', { length: 5 }).notNull(), // Formato "HH:MM"
+});
+
+export const horariosLaboralesRelations = relations(horarios_laborales, ({ one }) => ({
+  veterinario: one(veterinarios, { fields: [horarios_laborales.veterinario_id], references: [veterinarios.id] }),
+  clinica: one(clinicas, { fields: [horarios_laborales.clinica_id], references: [clinicas.id] }),
+}));
