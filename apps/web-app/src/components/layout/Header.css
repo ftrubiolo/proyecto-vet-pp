@@ -162,7 +162,8 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 18px; /* matching the icon size */
+  width: 18px;
+  /* matching the icon size */
   height: 18px;
   transform: translate(-50%, -50%) scale(1);
   background: var(--accent);
@@ -183,19 +184,17 @@
 .header-action-btn.ai-btn:hover::after {
   opacity: 1;
   transform: translate(-50%, -50%) scale(1.25);
-  background: linear-gradient(
-    90deg,
-    var(--accent) 0%,
-    var(--accent) 25%,
-    #ff2a5f 35%,
-    #ff7e40 45%,
-    #ffeb3b 50%,
-    #00e676 55%,
-    #00b0ff 65%,
-    #d500f9 75%,
-    var(--accent) 85%,
-    var(--accent) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--accent) 0%,
+      var(--accent) 25%,
+      #ff2a5f80 35%,
+      #ff7c407b 45%,
+      #ffeb3b79 50%,
+      #00e67778 55%,
+      #00aeff78 65%,
+      #d400f977 75%,
+      var(--accent) 85%,
+      var(--accent) 100%);
   background-size: 400% 100%;
   animation: rainbow-icon-sweep 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
 }
@@ -221,6 +220,7 @@
   0% {
     background-position: 100% 0%;
   }
+
   100% {
     background-position: 0% 0%;
   }

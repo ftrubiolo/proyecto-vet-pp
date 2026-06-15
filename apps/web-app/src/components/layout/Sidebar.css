@@ -84,18 +84,6 @@
   font-weight: 600;
 }
 
-.sidebar-link.active::before {
-  content: '';
-  position: absolute;
-  left: -12px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 3px;
-  height: 20px;
-  border-radius: 0 3px 3px 0;
-  background: var(--accent, var(--accent-blue));
-}
-
 .sidebar-link-icon {
   width: 20px;
   height: 20px;

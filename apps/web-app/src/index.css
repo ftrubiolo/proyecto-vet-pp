@@ -47,7 +47,9 @@
   --radius-outer: 24px;
   --radius-inner: 12px;
   --radius-pill: 20px;
+  --radius-md: 12px;
   --radius-sm: 8px;
+  --radius-xs: 4px;
 
   /* Spacing */
   --space-xxs: 4px;
