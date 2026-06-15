@@ -223,3 +223,131 @@
   color: var(--text-muted);
   display: block;
 }
+
+/* ─── Horarios Clínicos Box ─── */
+.perfil-horarios-box {
+  margin-top: var(--space-md);
+  padding: var(--space-md);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  animation: fadeIn 0.2s ease;
+}
+
+.perfil-horarios-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--space-md);
+}
+
+.perfil-horarios-header h5 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text-h);
+  margin: 0;
+}
+
+.perfil-horario-day-group {
+  display: flex;
+  align-items: flex-start;
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-sm) 0;
+  gap: var(--space-md);
+}
+
+.perfil-horario-day-group:last-of-type {
+  border-bottom: none;
+}
+
+.perfil-horario-day-label {
+  min-width: 100px;
+  font-size: 0.875rem;
+  color: var(--text-h);
+  padding-top: 6px;
+}
+
+.perfil-horario-slots {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+}
+
+.perfil-horario-slot-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.perfil-horario-time-inputs {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+}
+
+.perfil-horario-time-inputs input[type="time"] {
+  background: var(--surface-solid);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 4px 8px;
+  font-size: 0.8125rem;
+  color: var(--text-h);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.perfil-horario-time-inputs input[type="time"]:focus {
+  border-color: var(--accent);
+}
+
+.perfil-horario-time-inputs span {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.btn-remove-slot {
+  background: none;
+  border: none;
+  color: var(--danger);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color var(--transition), color var(--transition);
+}
+
+.btn-remove-slot:hover {
+  background: rgba(220, 38, 38, 0.1);
+}
+
+.btn-add-slot-day {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  transition: background-color var(--transition);
+}
+
+.btn-add-slot-day:hover {
+  background: var(--accent-light, rgba(14, 165, 233, 0.08));
+}
+
+.no-horarios-text {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 4px 0;
+}
+

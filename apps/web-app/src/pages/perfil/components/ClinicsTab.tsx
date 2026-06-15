@@ -1,11 +1,11 @@
 import { useState } from 'react';
-import { Building, MapPin, Phone, Edit3, X, Check, Copy } from 'lucide-react';
+import { Building, MapPin, Phone, Edit3, X, Check, Copy, Clock, Plus, Trash2 } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Spinner } from '../../../components/ui/Spinner';
 import { api } from '../../../api/client';
-import type { VetProfile } from '@vetvault/shared';
+import type { VetProfile, HorarioLaboral } from '@vetvault/shared';
 
 interface ClinicsTabProps {
   profile: VetProfile;
@@ -26,6 +26,84 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
   const [invitationToken, setInvitationToken] = useState<string | null>(null);
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState(false);
+
+  // Scheduling States
+  const [activeScheduleClinicId, setActiveScheduleClinicId] = useState<string | null>(null);
+  const [tempHorarios, setTempHorarios] = useState<HorarioLaboral[]>([]);
+  const [loadingHorarios, setLoadingHorarios] = useState(false);
+  const [savingHorarios, setSavingHorarios] = useState(false);
+
+  const DAYS_OF_WEEK = [
+    { id: 1, label: 'Lunes' },
+    { id: 2, label: 'Martes' },
+    { id: 3, label: 'Miércoles' },
+    { id: 4, label: 'Jueves' },
+    { id: 5, label: 'Viernes' },
+    { id: 6, label: 'Sábado' },
+    { id: 0, label: 'Domingo' }
+  ];
+
+  const handleConfigureSchedules = async (clinicaId: string) => {
+    if (activeScheduleClinicId === clinicaId) {
+      setActiveScheduleClinicId(null);
+      return;
+    }
+
+    setActiveScheduleClinicId(clinicaId);
+    setLoadingHorarios(true);
+    setInviteClinicId(null); // Close invite box if open
+
+    try {
+      const response = await api.get<HorarioLaboral[]>(`/veterinarios/${profile.id}/horarios`);
+      const clinicSchedules = (response || []).filter((h) => h.clinica_id === clinicaId);
+      setTempHorarios(clinicSchedules);
+    } catch (err: any) {
+      alert(err.message || 'Error al cargar los horarios');
+      setActiveScheduleClinicId(null);
+    } finally {
+      setLoadingHorarios(false);
+    }
+  };
+
+  const handleAddSlot = (day: number) => {
+    setTempHorarios((prev) => [
+      ...prev,
+      { dia_semana: day, hora_inicio: '08:00', hora_fin: '12:00' }
+    ]);
+  };
+
+  const handleRemoveSlot = (index: number) => {
+    setTempHorarios((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleTimeChange = (index: number, field: 'hora_inicio' | 'hora_fin', value: string) => {
+    setTempHorarios((prev) =>
+      prev.map((slot, i) => (i === index ? { ...slot, [field]: value } : slot))
+    );
+  };
+
+  const handleSaveSchedules = async () => {
+    if (!activeScheduleClinicId) return;
+    setSavingHorarios(true);
+
+    try {
+      const formattedHorarios = tempHorarios.map(h => ({
+        dia_semana: h.dia_semana,
+        hora_inicio: h.hora_inicio,
+        hora_fin: h.hora_fin
+      }));
+
+      await api.put(`/veterinarios/${profile.id}/clinicas/${activeScheduleClinicId}/horarios`, {
+        horarios: formattedHorarios
+      });
+      alert('Horarios actualizados correctamente');
+      setActiveScheduleClinicId(null);
+    } catch (err: any) {
+      alert(err.message || 'Error al guardar los horarios');
+    } finally {
+      setSavingHorarios(false);
+    }
+  };
 
   const handleSaveClinic = async (clinicId: string) => {
     setSavingClinic(true);
@@ -152,6 +230,14 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
                         Editar
                       </Button>
                       <Button
+                        variant="secondary"
+                        size="sm"
+                        onClick={() => handleConfigureSchedules(clinica.id)}
+                      >
+                        <Clock size={12} />
+                        Horarios
+                      </Button>
+                      <Button
                         size="sm"
                         onClick={() => handleGenerateInvite(clinica.id)}
                       >
@@ -194,6 +280,88 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
                         </span>
                       </div>
                     ) : null}
+                  </div>
+                )}
+
+                {/* Schedule Box inside the active clinic card */}
+                {activeScheduleClinicId === clinica.id && (
+                  <div className="perfil-horarios-box">
+                    <div className="perfil-horarios-header">
+                      <h5>Horarios de Atención Semanal</h5>
+                      <button className="perfil-invitation-close" onClick={() => setActiveScheduleClinicId(null)}>
+                        <X size={14} />
+                      </button>
+                    </div>
+                    {loadingHorarios ? (
+                      <div style={{ display: 'flex', justifyContent: 'center', padding: '24px' }}>
+                        <Spinner size={20} />
+                      </div>
+                    ) : (
+                      <div className="perfil-horarios-list">
+                        {DAYS_OF_WEEK.map((day) => {
+                          const daySlots = tempHorarios.filter(h => h.dia_semana === day.id);
+                          return (
+                            <div key={day.id} className="perfil-horario-day-group">
+                              <div className="perfil-horario-day-label">
+                                <strong>{day.label}</strong>
+                              </div>
+                              <div className="perfil-horario-slots">
+                                {daySlots.length === 0 ? (
+                                  <span className="no-horarios-text">No laborable</span>
+                                ) : (
+                                  daySlots.map((slot, index) => {
+                                    // Find original index in tempHorarios
+                                    const origIndex = tempHorarios.findIndex(h => h === slot);
+                                    return (
+                                      <div key={index} className="perfil-horario-slot-row">
+                                        <div className="perfil-horario-time-inputs">
+                                          <input
+                                            type="time"
+                                            value={slot.hora_inicio}
+                                            onChange={(e) => handleTimeChange(origIndex, 'hora_inicio', e.target.value)}
+                                            required
+                                          />
+                                          <span>a</span>
+                                          <input
+                                            type="time"
+                                            value={slot.hora_fin}
+                                            onChange={(e) => handleTimeChange(origIndex, 'hora_fin', e.target.value)}
+                                            required
+                                          />
+                                        </div>
+                                        <button
+                                          type="button"
+                                          className="btn-remove-slot"
+                                          onClick={() => handleRemoveSlot(origIndex)}
+                                          title="Eliminar franja"
+                                        >
+                                          <Trash2 size={14} />
+                                        </button>
+                                      </div>
+                                    );
+                                  })
+                                )}
+                                <button
+                                  type="button"
+                                  className="btn-add-slot-day"
+                                  onClick={() => handleAddSlot(day.id)}
+                                >
+                                  <Plus size={12} /> Agregar franja
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div className="perfil-horarios-actions" style={{ marginTop: 'var(--space-md)', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+                          <Button variant="secondary" size="sm" onClick={() => setActiveScheduleClinicId(null)}>
+                            Cancelar
+                          </Button>
+                          <Button size="sm" onClick={handleSaveSchedules} disabled={savingHorarios}>
+                            {savingHorarios ? 'Guardando...' : 'Guardar Horarios'}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </Card>
