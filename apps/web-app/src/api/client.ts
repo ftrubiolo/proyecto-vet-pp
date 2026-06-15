@@ -60,6 +60,12 @@ export const api = {
       body: body ? JSON.stringify(body) : undefined,
     }),
 
+  put: <T>(endpoint: string, body?: unknown) =>
+    apiFetch<T>(endpoint, {
+      method: 'PUT',
+      body: body ? JSON.stringify(body) : undefined,
+    }),
+
   patch: <T>(endpoint: string, body?: unknown) =>
     apiFetch<T>(endpoint, {
       method: 'PATCH',

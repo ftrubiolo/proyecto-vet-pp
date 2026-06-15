@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { and, eq, inArray } from "drizzle-orm";
+import { and, eq, inArray, gte, lte } from "drizzle-orm";
 import { citas, veterinarios_clinicas, mascotas_propietarios } from "../db/schema";
 import type { NewCita, UpdateCita, CitaDb } from "../types/db.types";
 
@@ -11,8 +11,9 @@ export class CitaService {
      * Obtiene todas las citas médicas.
      * @returns Array de citas médicas
      */
-    static async getAll(): Promise<CitaDb[] | null> {
+    static async getAll(dateFilter?: { start: Date; end: Date }): Promise<CitaDb[] | null> {
         return await db.query.citas.findMany({
+            where: dateFilter ? and(gte(citas.fecha_hora, dateFilter.start), lte(citas.fecha_hora, dateFilter.end)) : undefined,
             with: {
                 mascota: true,
                 veterinario: true,
@@ -30,7 +31,7 @@ export class CitaService {
      * @param vetId - ID del veterinario
      * @returns Array de citas médicas
      */
-    static async getByVeterinarioId(vetId: string): Promise<CitaDb[] | null> {
+    static async getByVeterinarioId(vetId: string, dateFilter?: { start: Date; end: Date }): Promise<CitaDb[] | null> {
         const clinicaIds = await db.query.veterinarios_clinicas.findMany({
             where: and(
                 eq(veterinarios_clinicas.veterinario_id, vetId),
@@ -44,8 +45,12 @@ export class CitaService {
         if (!clinicaIds || clinicaIds.length === 0) return [];
         const ids = clinicaIds.map(c => c.clinica_id as string);
 
+        const whereClause = dateFilter
+            ? and(inArray(citas.clinica_id, ids), gte(citas.fecha_hora, dateFilter.start), lte(citas.fecha_hora, dateFilter.end))
+            : inArray(citas.clinica_id, ids);
+
         return await db.query.citas.findMany({
-            where: inArray(citas.clinica_id, ids),
+            where: whereClause,
             with: {
                 mascota: true,
                 veterinario: true,
@@ -63,7 +68,7 @@ export class CitaService {
      * @param proId - ID del propietario
      * @returns Array de citas médicas
      */
-    static async getByPropietarioId(proId: string): Promise<CitaDb[] | null> {
+    static async getByPropietarioId(proId: string, dateFilter?: { start: Date; end: Date }): Promise<CitaDb[] | null> {
         const ownerMascotas = await db.query.mascotas_propietarios.findMany({
             where: and(
                 eq(mascotas_propietarios.propietario_id, proId),
@@ -77,8 +82,12 @@ export class CitaService {
         if (!ownerMascotas || ownerMascotas.length === 0) return [];
         const mascotaIds = ownerMascotas.map(om => om.mascota_id as string);
 
+        const whereClause = dateFilter
+            ? and(inArray(citas.mascota_id, mascotaIds), gte(citas.fecha_hora, dateFilter.start), lte(citas.fecha_hora, dateFilter.end))
+            : inArray(citas.mascota_id, mascotaIds);
+
         return await db.query.citas.findMany({
-            where: inArray(citas.mascota_id, mascotaIds),
+            where: whereClause,
             with: {
                 mascota: true,
                 veterinario: true,

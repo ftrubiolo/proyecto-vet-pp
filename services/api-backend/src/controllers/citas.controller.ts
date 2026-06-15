@@ -6,20 +6,25 @@ import type { NewCita, UpdateCita } from "../types/db.types";
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
 
+    const { startDate, endDate } = request.query as { startDate?: string; endDate?: string };
+    const dateFilter = startDate && endDate
+        ? { start: new Date(startDate), end: new Date(endDate) }
+        : undefined;
+
     try {
         let result;
         if (request.user.rol === 'Admin') {
-            result = await CitaService.getAll();
+            result = await CitaService.getAll(dateFilter);
         } else if (request.user.rol === 'Veterinario') {
             if (!request.user.vetId) {
                 return reply.code(400).send({ message: 'El usuario no tiene un perfil de veterinario asociado' });
             }
-            result = await CitaService.getByVeterinarioId(request.user.vetId);
+            result = await CitaService.getByVeterinarioId(request.user.vetId, dateFilter);
         } else if (request.user.rol === 'Propietario') {
             if (!request.user.proId) {
                 return reply.code(400).send({ message: 'El usuario no tiene un perfil de propietario asociado' });
             }
-            result = await CitaService.getByPropietarioId(request.user.proId);
+            result = await CitaService.getByPropietarioId(request.user.proId, dateFilter);
         } else {
             return reply.code(403).send({ message: 'No tienes permisos para ver esta lista de citas' });
         }
