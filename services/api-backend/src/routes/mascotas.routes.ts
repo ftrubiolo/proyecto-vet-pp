@@ -32,8 +32,12 @@ const createSchema = {
                 properties: {
                     propietario_id: { type: 'string' },
                     tipo_relacion_id: { type: 'number' },
+                    email: { type: 'string' },
+                    nombre: { type: 'string' },
+                    apellido: { type: 'string' },
+                    telefono: { type: 'string' },
                 },
-                required: ['propietario_id', 'tipo_relacion_id'],
+                required: ['tipo_relacion_id'],
             },
         },
     },

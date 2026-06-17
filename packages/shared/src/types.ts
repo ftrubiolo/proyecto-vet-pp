@@ -238,6 +238,8 @@ export interface UserData {
   apellido?: string;
   foto_url?: string;
   clinicas?: { id: string; nombre_comercial: string }[];
+  subscriptionStatus?: 'activo' | 'inactivo' | 'impago' | 'cancelado';
+  subscriptionExpiresAt?: string;
 }
 
 export interface VetProfile {
@@ -281,5 +283,13 @@ export interface HorarioLaboral {
   hora_fin: string;
 }
 
-
-
+export interface Suscripcion {
+  id: string;
+  usuario_id: string;
+  mp_preapproval_id?: string | null;
+  mp_payer_id?: string | null;
+  estado: 'activo' | 'impago' | 'cancelado' | 'inactivo';
+  plan?: 'independent' | 'clinic_pro' | 'enterprise' | null;
+  fecha_expiracion?: string | null;
+  grace_period_start?: string | null;
+}

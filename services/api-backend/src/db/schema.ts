@@ -418,3 +418,18 @@ export const horariosLaboralesRelations = relations(horarios_laborales, ({ one }
   veterinario: one(veterinarios, { fields: [horarios_laborales.veterinario_id], references: [veterinarios.id] }),
   clinica: one(clinicas, { fields: [horarios_laborales.clinica_id], references: [clinicas.id] }),
 }));
+
+export const suscripciones = pgTable('suscripciones', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  usuario_id: uuid('usuario_id').notNull().references(() => usuarios.id, { onDelete: 'cascade' }),
+  mp_preapproval_id: varchar('mp_preapproval_id').unique(),
+  mp_payer_id: varchar('mp_payer_id'),
+  estado: varchar('estado', { length: 20 }).default('inactivo').notNull(), // 'activo', 'impago', 'cancelado', 'inactivo'
+  plan: varchar('plan', { length: 20 }), // 'independent', 'clinic_pro'
+  fecha_expiracion: timestamp('fecha_expiracion'),
+  grace_period_start: timestamp('grace_period_start'),
+});
+
+export const suscripcionesRelations = relations(suscripciones, ({ one }) => ({
+  usuario: one(usuarios, { fields: [suscripciones.usuario_id], references: [usuarios.id] }),
+}));

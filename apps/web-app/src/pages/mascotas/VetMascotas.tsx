@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { PawPrint, Search, Plus, Calendar, Tag } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
@@ -159,6 +159,20 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const [tipoRelacionId, setTipoRelacionId] = useState('1');
   const [saving, setSaving] = useState(false);
 
+  // Autocomplete Owner search states
+  const [ownerSearchQuery, setOwnerSearchQuery] = useState('');
+  const [ownerSearchResults, setOwnerSearchResults] = useState<any[]>([]);
+  const [isSearchingOwners, setIsSearchingOwners] = useState(false);
+  const [showOwnerDropdown, setShowOwnerDropdown] = useState(false);
+  const [selectedOwner, setSelectedOwner] = useState<any | null>(null);
+
+  // New/Temp owner fields state
+  const [isNewOwnerMode, setIsNewOwnerMode] = useState(false);
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [ownerNombre, setOwnerNombre] = useState('');
+  const [ownerApellido, setOwnerApellido] = useState('');
+  const [ownerTelefono, setOwnerTelefono] = useState('');
+
   // Admit mode state
   const [admissionCode, setAdmissionCode] = useState('');
   const [searching, setSearching] = useState(false);
@@ -184,10 +198,53 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
     label: t.tipo,
   }));
 
+  // Debounce API search for owners
+  useEffect(() => {
+    if (ownerSearchQuery.trim().length < 2) {
+      setOwnerSearchResults([]);
+      return;
+    }
+    const delayDebounce = setTimeout(async () => {
+      setIsSearchingOwners(true);
+      try {
+        const results = await api.get<any[]>(`/propietarios/buscar?q=${encodeURIComponent(ownerSearchQuery)}`);
+        setOwnerSearchResults(results || []);
+      } catch (err) {
+        console.error('Error searching owners:', err);
+      } finally {
+        setIsSearchingOwners(false);
+      }
+    }, 300);
+    return () => clearTimeout(delayDebounce);
+  }, [ownerSearchQuery]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
     setError('');
+
+    const propietarioData: any = {
+      tipo_relacion_id: Number(tipoRelacionId),
+    };
+
+    if (isNewOwnerMode) {
+      if (!ownerEmail || !ownerNombre || !ownerApellido || !ownerTelefono) {
+        setError('Por favor complete todos los datos del nuevo tutor');
+        setSaving(false);
+        return;
+      }
+      propietarioData.email = ownerEmail;
+      propietarioData.nombre = ownerNombre;
+      propietarioData.apellido = ownerApellido;
+      propietarioData.telefono = ownerTelefono;
+    } else {
+      if (!propietarioId) {
+        setError('Por favor seleccione un tutor existente o cree uno nuevo');
+        setSaving(false);
+        return;
+      }
+      propietarioData.propietario_id = propietarioId;
+    }
 
     try {
       await api.post('/mascotas', {
@@ -198,10 +255,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
           raza_id: Number(razaId),
           es_castrado: esCastrado,
         },
-        propietario: {
-          propietario_id: propietarioId,
-          tipo_relacion_id: Number(tipoRelacionId),
-        },
+        propietario: propietarioData,
       });
       onCreated();
     } catch (err: any) {
@@ -337,13 +391,142 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
             </label>
           </div>
 
-          <Input
-            label="ID del Propietario"
-            placeholder="UUID del propietario"
-            value={propietarioId}
-            onChange={(e) => setPropietarioId(e.target.value)}
-            required
-          />
+          <div className="sidebar-divider" style={{ margin: 'var(--space-md) 0' }}></div>
+
+          {/* Owner Selection Section */}
+          <div className="form-group" style={{ position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+              <span className="form-label" style={{ marginBottom: 0 }}><strong>Tutor / Propietario</strong></span>
+              <button
+                type="button"
+                className="forgot-password-btn"
+                style={{ fontSize: '0.8rem', padding: 0 }}
+                onClick={() => {
+                  setIsNewOwnerMode(!isNewOwnerMode);
+                  setSelectedOwner(null);
+                  setPropietarioId('');
+                  setError('');
+                }}
+              >
+                {isNewOwnerMode ? 'Buscar tutor existente' : 'Crear tutor temporal'}
+              </button>
+            </div>
+
+            {isNewOwnerMode ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12, border: '1px dashed var(--border-color)', borderRadius: 8, background: 'var(--surface-2)' }}>
+                <Input
+                  label="Correo Electrónico *"
+                  placeholder="ejemplo@email.com"
+                  type="email"
+                  value={ownerEmail}
+                  onChange={(e) => setOwnerEmail(e.target.value)}
+                  required
+                />
+                <div className="form-row">
+                  <Input
+                    label="Nombre *"
+                    placeholder="Nombre"
+                    value={ownerNombre}
+                    onChange={(e) => setOwnerNombre(e.target.value)}
+                    required
+                  />
+                  <Input
+                    label="Apellido *"
+                    placeholder="Apellido"
+                    value={ownerApellido}
+                    onChange={(e) => setOwnerApellido(e.target.value)}
+                    required
+                  />
+                </div>
+                <Input
+                  label="Teléfono *"
+                  placeholder="Ej: 357315443322"
+                  value={ownerTelefono}
+                  onChange={(e) => setOwnerTelefono(e.target.value)}
+                  required
+                />
+              </div>
+            ) : selectedOwner ? (
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface-2)', border: '1px solid var(--border-color)', borderRadius: 8 }}>
+                <div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-color)' }}>{selectedOwner.nombre} {selectedOwner.apellido}</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{selectedOwner.email} · Tel: {selectedOwner.telefono}</div>
+                </div>
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => {
+                    setSelectedOwner(null);
+                    setPropietarioId('');
+                  }}
+                >
+                  Cambiar
+                </Button>
+              </div>
+            ) : (
+              <div>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Buscar por nombre, email o teléfono..."
+                  value={ownerSearchQuery}
+                  onChange={(e) => {
+                    setOwnerSearchQuery(e.target.value);
+                    setShowOwnerDropdown(true);
+                  }}
+                  onFocus={() => setShowOwnerDropdown(true)}
+                  onBlur={() => {
+                    setTimeout(() => setShowOwnerDropdown(false), 200);
+                  }}
+                />
+                {isSearchingOwners && (
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>Buscando...</div>
+                )}
+                {showOwnerDropdown && ownerSearchResults.length > 0 && (
+                  <ul className="autocomplete-results" style={{
+                    position: 'absolute',
+                    top: '100%',
+                    left: 0,
+                    right: 0,
+                    background: 'var(--surface-solid)',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: 'var(--radius-inner)',
+                    zIndex: 1200,
+                    listStyle: 'none',
+                    padding: '4px 0',
+                    marginTop: '4px',
+                    boxShadow: 'var(--shadow)',
+                    maxHeight: '180px',
+                    overflowY: 'auto'
+                  }}>
+                    {ownerSearchResults.map(owner => (
+                      <li
+                        key={owner.id}
+                        onClick={() => {
+                          setSelectedOwner(owner);
+                          setPropietarioId(owner.id);
+                          setOwnerSearchQuery('');
+                          setOwnerSearchResults([]);
+                          setShowOwnerDropdown(false);
+                        }}
+                        style={{
+                          padding: '8px 12px',
+                          cursor: 'pointer',
+                          fontSize: '0.82rem',
+                          color: 'var(--text-color)',
+                          borderBottom: '1px solid var(--border-color)'
+                        }}
+                        className="autocomplete-item"
+                      >
+                        <div><strong>{owner.nombre} {owner.apellido}</strong></div>
+                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{owner.email} · {owner.telefono}</div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+          </div>
 
           <Select
             label="Tipo de Relación"

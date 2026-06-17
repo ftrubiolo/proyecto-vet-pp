@@ -1,9 +1,14 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { MascotaService } from "../services/mascota.service";
-import { NewMascota, UpdateMascota } from "../types/db.types";
+import { UserService } from "../services/user.service";
+import { PropietarioService } from "../services/propietario.service";
+import { RolService } from "../services/rol.service";
+import { VetService } from "../services/veterinario.service";
+import { NewMascota, UpdateMascota, NewUsuario, NewPropietario } from "../types/db.types";
 import type { CreateMascotaInput } from "@vetvault/shared";
 import { db } from "../db";
 import { Validation } from "../utils/validation";
+import { clinicas_mascotas } from "../db/schema";
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
@@ -51,15 +56,82 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 }
 
 export const create = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-    const { mascota, propietario } = request.body as CreateMascotaInput;
+    const { mascota, propietario } = request.body as any;
+    const user = request.user;
 
     try {
         const result = await db.transaction(async (tx) => {
+            let ownerId = propietario.propietario_id;
+
+            // If proprietor ID is not directly provided, resolve it by email
+            if (!ownerId && propietario.email) {
+                const cleanEmail = propietario.email.trim().toLowerCase();
+                const existingUser = await UserService.getByEmail(cleanEmail);
+
+                if (existingUser) {
+                    // Look up owner profile associated with existing user
+                    const existingOwnerId = await PropietarioService.getIdByUsuarioId(existingUser.id);
+                    if (existingOwnerId) {
+                        ownerId = existingOwnerId;
+                    } else {
+                        // Create proprietor profile for existing user
+                        const ownerProfile = await PropietarioService.create({
+                            usuario_id: existingUser.id,
+                            nombre: propietario.nombre || 'Tutor',
+                            apellido: propietario.apellido || 'Temporal',
+                            telefono: propietario.telefono || '',
+                        } as NewPropietario, tx);
+                        ownerId = ownerProfile.id;
+                    }
+                } else {
+                    // Create new temporary user and proprietor profile
+                    const rolId = await RolService.getIdByRol('Propietario');
+                    if (!rolId) throw new Error("Rol de Propietario no encontrado");
+
+                    const newUsuario = await UserService.create({
+                        email: cleanEmail,
+                        password_hash: '__TEMP_USER_PLACEHOLDER__',
+                        rol_id: rolId,
+                    } as NewUsuario, tx);
+
+                    const ownerProfile = await PropietarioService.create({
+                        usuario_id: newUsuario.id,
+                        nombre: propietario.nombre || 'Tutor',
+                        apellido: propietario.apellido || 'Temporal',
+                        telefono: propietario.telefono || '',
+                    } as NewPropietario, tx);
+
+                    ownerId = ownerProfile.id;
+                }
+            }
+
+            if (!ownerId) {
+                throw new Error("No se pudo identificar o crear un propietario para la mascota");
+            }
+
+            // Create patient (mascota)
             const newMascota = await MascotaService.create({
                 ...mascota,
                 fecha_nacimiento: new Date(mascota.fecha_nacimiento)
             } as NewMascota, tx);
-            const newRelacion = await MascotaService.associateWithOwner(newMascota.id, propietario.propietario_id, propietario.tipo_relacion_id, tx);
+
+            // Associate with owner
+            const newRelacion = await MascotaService.associateWithOwner(newMascota.id, ownerId, propietario.tipo_relacion_id || 1, tx);
+
+            // Automatically admit patient to vet's clinic if registered by a veterinarian
+            if (user && user.rol === 'Veterinario' && user.vetId) {
+                const clinicasList = await VetService.getClinicasByVeterinarioId(user.vetId);
+                if (clinicasList && clinicasList.length > 0) {
+                    const primaryClinicaId = clinicasList[0];
+                    await tx.insert(clinicas_mascotas).values({
+                        clinica_id: primaryClinicaId,
+                        mascota_id: newMascota.id,
+                        estado_paciente_id: 2, // Activo
+                        fecha_admision: new Date()
+                    });
+                }
+            }
+
             return { newMascota, newRelacion };
         });
         return reply.code(201).send({ message: 'Mascota creada exitosamente', result });

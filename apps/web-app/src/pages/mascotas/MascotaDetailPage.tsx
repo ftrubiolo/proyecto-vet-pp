@@ -1,8 +1,9 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, PawPrint, Edit, Calendar, Pill, Syringe, Scale, Plus } from 'lucide-react';
 import { useFetch } from '../../hooks/useFetch';
 import { useAuth } from '../../hooks/useAuth';
+import { useAIChat } from '../../hooks/useAIChat';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
 import { Badge } from '../../components/ui/Badge';
@@ -37,10 +38,21 @@ export function MascotaDetailPage() {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isManualConsultation, setIsManualConsultation] = useState(false);
   const { user } = useAuth();
+  const { setActiveMascotaId } = useAIChat();
   const isOwner = user?.rol === 'Propietario';
 
   const atenderCitaId = searchParams.get('atenderCitaId');
   const clinicaId = searchParams.get('clinicaId');
+
+  // Sync viewed pet with the AI Chat context
+  useEffect(() => {
+    if (id) {
+      setActiveMascotaId(id);
+    }
+    return () => {
+      setActiveMascotaId(null);
+    };
+  }, [id, setActiveMascotaId]);
 
   // Fetch mascota general info
   const { data: mascota, isLoading, error, refetch: refetchMascota } = useFetch<MascotaDetail>(
