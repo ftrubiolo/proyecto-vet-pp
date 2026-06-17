@@ -1,0 +1,487 @@
+.register-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-lg);
+  background: linear-gradient(-45deg, #e0f2fe, #bae6fd, #d1fae5, #ccfbf1);
+  background-size: 400% 400%;
+  animation: registerGradient 15s ease infinite;
+}
+
+@media (prefers-color-scheme: dark) {
+  .register-page {
+    background: linear-gradient(-45deg, #0c1929, #0f2027, #0a2619, #0d1f2d);
+    background-size: 400% 400%;
+    animation: registerGradient 15s ease infinite;
+  }
+}
+
+@keyframes registerGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.register-card {
+  background: var(--surface);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-outer);
+  padding: var(--space-2xl);
+  width: 100%;
+  max-width: 680px; /* Slightly wider than login card to hold role cards/pricing */
+  box-shadow: var(--shadow-lg);
+  animation: registerFloatIn 0.6s ease-out forwards;
+}
+
+@keyframes registerFloatIn {
+  0% { opacity: 0; transform: translateY(20px) scale(0.99); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.register-brand {
+  text-align: center;
+  margin-bottom: var(--space-lg);
+}
+
+.register-brand-title {
+  font-family: var(--heading);
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin: 0;
+  letter-spacing: -0.5px;
+}
+
+.register-brand-title span {
+  background: var(--accent-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Stepper Progress Bar styling */
+.stepper-progress {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  margin-bottom: var(--space-xl);
+  padding: 0 var(--space-lg);
+}
+
+.stepper-progress::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--border);
+  z-index: 1;
+  transform: translateY(-50%);
+}
+
+.stepper-progress-fill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 2px;
+  background: var(--accent-blue, #0ea5e9);
+  z-index: 2;
+  transform: translateY(-50%);
+  transition: width 0.4s ease;
+}
+
+.step-node {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 2px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  position: relative;
+  z-index: 3;
+  transition: all 0.3s ease;
+}
+
+.step-node.active {
+  border-color: var(--accent-blue, #0ea5e9);
+  background: var(--accent-blue, #0ea5e9);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(14, 165, 233, 0.4);
+}
+
+.step-node.completed {
+  border-color: var(--success);
+  background: var(--success);
+  color: #ffffff;
+}
+
+/* Step content layout transition */
+.step-content {
+  animation: fadeInStep 0.4s ease-out forwards;
+  min-height: 260px;
+}
+
+@keyframes fadeInStep {
+  0% { opacity: 0; transform: translateX(10px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+.step-title {
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0 0 var(--space-xs);
+  color: var(--text-h);
+}
+
+.step-subtitle {
+  text-align: center;
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  margin-bottom: var(--space-xl);
+}
+
+/* Step 1: Role Selector styles */
+.role-cards-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 520px) {
+  .role-cards-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.role-card {
+  background: var(--surface);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-inner);
+  padding: var(--space-xl);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+}
+
+.role-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-blue, #0ea5e9);
+  box-shadow: var(--shadow-md);
+}
+
+.role-card.selected {
+  border-color: var(--accent-blue, #0ea5e9);
+  background: rgba(14, 165, 233, 0.03);
+  box-shadow: 0 0 16px rgba(14, 165, 233, 0.15);
+}
+
+.role-card-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: var(--space-md);
+  transition: all 0.3s ease;
+}
+
+.role-card.selected .role-card-icon {
+  background: var(--accent-blue, #0ea5e9);
+  color: #ffffff;
+}
+
+.role-card-title {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  margin: 0 0 var(--space-xxs);
+  color: var(--text-h);
+}
+
+.role-card-description {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+/* Step 2: Password Strength Indicator */
+.password-strength-container {
+  margin-top: calc(var(--space-xxs) * -1);
+  margin-bottom: var(--space-sm);
+}
+
+.password-strength-bar-bg {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: var(--space-xxs);
+}
+
+.password-strength-bar-fill {
+  height: 100%;
+  width: 0%;
+  transition: width 0.3s ease, background-color 0.3s ease;
+}
+
+.password-strength-bar-fill.weak {
+  width: 33%;
+  background: var(--danger);
+}
+
+.password-strength-bar-fill.medium {
+  width: 66%;
+  background: #f97316; /* Orange */
+}
+
+.password-strength-bar-fill.strong {
+  width: 100%;
+  background: var(--success);
+}
+
+.password-strength-text {
+  font-size: 0.75rem;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+}
+
+/* Professional & Clinic grid layout */
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-md);
+}
+
+@media (max-width: 580px) {
+  .form-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.license-validation-status {
+  font-size: 0.8125rem;
+  margin-top: calc(var(--space-sm) * -0.5);
+  margin-bottom: var(--space-sm);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+}
+
+.license-validation-status.valid {
+  color: var(--success);
+}
+
+.license-validation-status.invalid {
+  color: var(--danger);
+}
+
+.license-validation-status.checking {
+  color: var(--text-muted);
+}
+
+/* Step 4: Plan pricing setup */
+.plans-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+  margin-bottom: var(--space-lg);
+}
+
+@media (max-width: 560px) {
+  .plans-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+.plan-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  padding: var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.plan-card:hover {
+  border-color: var(--accent-blue, #0ea5e9);
+  box-shadow: var(--shadow-sm);
+}
+
+.plan-card.selected {
+  border-color: var(--accent-blue, #0ea5e9);
+  box-shadow: 0 0 0 2px var(--accent-blue, #0ea5e9);
+  background: rgba(14, 165, 233, 0.01);
+}
+
+.plan-badge {
+  position: absolute;
+  top: -10px;
+  right: var(--space-md);
+  background: var(--accent-gradient);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: var(--radius-inner);
+  text-transform: uppercase;
+}
+
+.plan-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text-h);
+  margin: 0 0 var(--space-xxs);
+}
+
+.plan-price {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin-bottom: var(--space-md);
+}
+
+.plan-price span {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+.plan-features {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+}
+
+.plan-features li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-features li::before {
+  content: '✓';
+  color: var(--success);
+  font-weight: bold;
+}
+
+/* Form Actions Button controls */
+.stepper-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: var(--space-xl);
+  gap: var(--space-md);
+}
+
+.btn-back {
+  padding: 12px 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-inner);
+  color: var(--text-muted);
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  transition: all 0.3s ease;
+}
+
+.btn-back:hover:not(:disabled) {
+  color: var(--text-h);
+  border-color: var(--text-muted);
+}
+
+.btn-next {
+  flex-grow: 1;
+  padding: 12px 24px;
+  background: var(--accent-gradient);
+  border: none;
+  border-radius: var(--radius-inner);
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: var(--sans);
+  box-shadow: 0 4px 14px rgba(14, 165, 233, 0.2);
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btn-next:hover:not(:disabled) {
+  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.3);
+}
+
+.btn-next:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.register-footer {
+  text-align: center;
+  margin-top: var(--space-lg);
+  font-size: 0.875rem;
+  color: var(--text-muted);
+}
+
+/* Success landing screen styles */
+.success-card {
+  text-align: center;
+  padding: var(--space-xl);
+  animation: registerFloatIn 0.6s ease-out;
+}
+
+.success-icon-wrapper {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: rgba(34, 197, 94, 0.1);
+  color: var(--success);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--space-lg);
+}
+
+.success-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-h);
+  margin-bottom: var(--space-xs);
+}
+
+.success-message {
+  color: var(--text-muted);
+  font-size: 0.9375rem;
+  line-height: 1.6;
+  margin-bottom: var(--space-xl);
+}
