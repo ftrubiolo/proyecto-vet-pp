@@ -63,3 +63,18 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
         return reply.code(500).send({ message });
     }
 }
+
+export const buscar = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { q } = request.query as { q?: string };
+    if (!q) {
+        return reply.code(200).send([]);
+    }
+
+    try {
+        const results = await PropietarioService.search(q);
+        return reply.code(200).send(results);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error desconocido';
+        return reply.code(500).send({ message });
+    }
+}

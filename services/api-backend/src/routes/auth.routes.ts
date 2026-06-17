@@ -6,6 +6,7 @@ export default async function authRoutes(fastify: FastifyInstance) {
   fastify.post('/register/veterinario', { schema: registrarVeterinarioSchema }, authController.registrarVeterinario);
   fastify.post('/register/propietario', { schema: registrarPropietarioSchema }, authController.registrarPropietario);
   fastify.post('/register/veterinario/unirse', { schema: registrarVeterinarioUnirseSchema }, authController.registrarVeterinarioUnirse);
+  fastify.get('/validar-matricula', authController.validarMatricula);
   fastify.post('/login', { schema: loginSchema }, authController.login);
   fastify.post('/logout', authController.logout);
 }
@@ -40,7 +41,7 @@ const registrarVeterinarioSchema = {
       },
       "clinica": {
         type: 'object',
-        required: ['nombre', 'direccion', 'telefono'],
+        required: ['nombre_comercial', 'direccion', 'telefono'],
         properties: {
           nombre_comercial: { type: 'string' },
           direccion: { type: 'string' },

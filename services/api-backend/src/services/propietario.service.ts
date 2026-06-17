@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { eq } from "drizzle-orm";
-import { mascotas_propietarios, propietarios } from "../db/schema";
+import { eq, or, ilike } from "drizzle-orm";
+import { mascotas_propietarios, propietarios, usuarios } from "../db/schema";
 import { MascotaService } from "./mascota.service";
 
 import type { PropietarioList, PropietarioPerfil } from "@vetvault/shared";
@@ -10,6 +10,34 @@ import type { PropietarioDb, NewPropietario, DBClient } from '../types/db.types'
  * Servicio para la gestión de propietarios.
  */
 export class PropietarioService {
+    /**
+     * Busca propietarios por nombre, apellido, teléfono o email.
+     * @param queryStr - Término de búsqueda
+     * @returns Array de propietarios con su email
+     */
+    static async search(queryStr: string): Promise<any[]> {
+        const searchTerm = `%${queryStr.trim()}%`;
+        return await db
+            .select({
+                id: propietarios.id,
+                nombre: propietarios.nombre,
+                apellido: propietarios.apellido,
+                telefono: propietarios.telefono,
+                email: usuarios.email,
+            })
+            .from(propietarios)
+            .innerJoin(usuarios, eq(propietarios.usuario_id, usuarios.id))
+            .where(
+                or(
+                    ilike(propietarios.nombre, searchTerm),
+                    ilike(propietarios.apellido, searchTerm),
+                    ilike(propietarios.telefono, searchTerm),
+                    ilike(usuarios.email, searchTerm)
+                )
+            )
+            .limit(10);
+    }
+
     /**
      * Obtiene el ID de un propietario por ID de usuario.
      * @param usuarioId - ID del usuario

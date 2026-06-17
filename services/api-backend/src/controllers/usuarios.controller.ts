@@ -4,6 +4,9 @@ import { Validation } from '../utils/validation';
 import type { UpdateUsuarioInput } from '@vetvault/shared';
 import { VetService } from '../services/veterinario.service';
 import { PropietarioService } from '../services/propietario.service';
+import { db } from '../db';
+import { eq } from 'drizzle-orm';
+import { suscripciones } from '../db/schema';
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
@@ -39,12 +42,32 @@ export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promi
         if (user.rol === 'Veterinario') {
             const vet = await VetService.getByUsuarioId(user.id);
             if (vet) {
+                const sub = await db.select().from(suscripciones).where(eq(suscripciones.usuario_id, user.id)).limit(1);
+                let subStatus: 'activo' | 'inactivo' | 'impago' | 'cancelado' = 'inactivo';
+                let subExpires: string | undefined = undefined;
+
+                if (sub.length > 0) {
+                    const s = sub[0];
+                    subStatus = s.estado as any;
+                    subExpires = s.fecha_expiracion ? s.fecha_expiracion.toISOString() : undefined;
+
+                    // 7-day grace period logic for impago state
+                    if (s.estado === 'impago' && s.grace_period_start) {
+                        const graceLimit = new Date(s.grace_period_start.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        if (new Date() > graceLimit) {
+                            subStatus = 'cancelado'; // Grace period exceeded
+                        }
+                    }
+                }
+
                 additionalInfo = {
                     vetId: vet.id,
                     nombre: vet.nombre,
                     apellido: vet.apellido,
                     foto_url: vet.foto_url,
-                    clinicas: vet.clinicas
+                    clinicas: vet.clinicas,
+                    subscriptionStatus: subStatus,
+                    subscriptionExpiresAt: subExpires,
                 };
             }
         } else if (user.rol === 'Propietario') {

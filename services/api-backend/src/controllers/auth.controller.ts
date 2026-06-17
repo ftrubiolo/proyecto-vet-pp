@@ -1,5 +1,7 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { db } from '../db';
+import { eq } from 'drizzle-orm';
+import { usuarios, suscripciones } from '../db/schema';
 import jwt from 'jsonwebtoken';
 import { Password } from '../utils/password';
 import { RolService } from '../services/rol.service';
@@ -72,8 +74,21 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
     const { usuario, propietario } = request.body as RegistroPropietarioInput;
 
     try {
+        const cleanEmail = usuario.email.trim().toLowerCase();
+        
         // Verificar si el correo existe
-        if (await Validation.existingUser(usuario.email)) return reply.code(400).send({ message: "El correo ya existe" });
+        const existingUser = await UserService.getByEmail(cleanEmail);
+        
+        let isTempUser = false;
+        let existingUserCredentials = null;
+        if (existingUser) {
+            existingUserCredentials = await UserService.getAuthCredentialsByEmail(cleanEmail);
+            if (existingUserCredentials && existingUserCredentials.password_hash === '__TEMP_USER_PLACEHOLDER__') {
+                isTempUser = true;
+            } else {
+                return reply.code(400).send({ message: "El correo ya existe" });
+            }
+        }
 
         // Hash de contraseña
         const passwordHash = await Password.hashPassword(usuario.password);
@@ -84,24 +99,75 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
 
         // Crear usuario, transaccion por si alguno falla
         const result = await db.transaction(async (tx) => {
-            const usuarioData: NewUsuario = {
-                email: usuario.email,
-                password_hash: passwordHash,
-                rol_id: rolId,
-            };
-            const newUser = await UserService.create(usuarioData, tx);
+            if (isTempUser && existingUserCredentials) {
+                // Update temporary user password hash
+                const [updatedUser] = await tx.update(usuarios)
+                    .set({ password_hash: passwordHash })
+                    .where(eq(usuarios.id, existingUserCredentials.id))
+                    .returning();
+                
+                // Find existing proprietor profile to update
+                const existingOwnerId = await PropietarioService.getIdByUsuarioId(existingUserCredentials.id);
+                
+                let profile;
+                if (existingOwnerId) {
+                    profile = await PropietarioService.update(existingOwnerId, {
+                        nombre: propietario.nombre,
+                        apellido: propietario.apellido,
+                        es_empresa: propietario.esEmpresa,
+                        razon_social: propietario.razonSocial || null,
+                        telefono: propietario.telefono,
+                        direccion: propietario.direccion || null,
+                        foto_url: propietario.foto || null,
+                    }, tx);
+                } else {
+                    profile = await PropietarioService.create({
+                        usuario_id: existingUserCredentials.id,
+                        nombre: propietario.nombre,
+                        apellido: propietario.apellido,
+                        es_empresa: propietario.esEmpresa,
+                        razon_social: propietario.razonSocial || null,
+                        telefono: propietario.telefono,
+                        direccion: propietario.direccion || null,
+                        foto_url: propietario.foto || null,
+                    } as NewPropietario, tx);
+                }
 
-            const propietarioData: NewPropietario = {
-                ...propietario,
-                usuario_id: newUser.id,
+                return {
+                    user: {
+                        id: updatedUser.id,
+                        email: updatedUser.email,
+                        rol: 'Propietario',
+                        fecha_creacion: updatedUser.fecha_creacion,
+                    },
+                    profile
+                };
+            } else {
+                const usuarioData: NewUsuario = {
+                    email: cleanEmail,
+                    password_hash: passwordHash,
+                    rol_id: rolId,
+                };
+                const newUser = await UserService.create(usuarioData, tx);
+
+                const propietarioData: NewPropietario = {
+                    nombre: propietario.nombre,
+                    apellido: propietario.apellido,
+                    es_empresa: propietario.esEmpresa,
+                    razon_social: propietario.razonSocial || null,
+                    telefono: propietario.telefono,
+                    direccion: propietario.direccion || null,
+                    foto_url: propietario.foto || null,
+                    usuario_id: newUser.id,
+                }
+                const newPropietario = await PropietarioService.create(propietarioData, tx);
+
+                return { user: newUser, profile: newPropietario };
             }
-            const newPropietario = await PropietarioService.create(propietarioData, tx);
-
-            return { user: newUser, profile: newPropietario };
         });
 
         reply.code(201).send({
-            message: "Propietario registrado exitosamente",
+            message: isTempUser ? "Cuenta activada exitosamente" : "Propietario registrado exitosamente",
             ...result
         });
 
@@ -234,12 +300,32 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
         if (user.rol === 'Veterinario') {
             const vet = await VetService.getByUsuarioId(user.id);
             if (vet) {
+                const sub = await db.select().from(suscripciones).where(eq(suscripciones.usuario_id, user.id)).limit(1);
+                let subStatus: 'activo' | 'inactivo' | 'impago' | 'cancelado' = 'inactivo';
+                let subExpires: string | undefined = undefined;
+
+                if (sub.length > 0) {
+                    const s = sub[0];
+                    subStatus = s.estado as any;
+                    subExpires = s.fecha_expiracion ? s.fecha_expiracion.toISOString() : undefined;
+
+                    // 7-day grace period logic for impago state
+                    if (s.estado === 'impago' && s.grace_period_start) {
+                        const graceLimit = new Date(s.grace_period_start.getTime() + 7 * 24 * 60 * 60 * 1000);
+                        if (new Date() > graceLimit) {
+                            subStatus = 'cancelado'; // Grace period exceeded, lock user out
+                        }
+                    }
+                }
+
                 additionalInfo = {
                     vetId: vet.id,
                     nombre: vet.nombre,
                     apellido: vet.apellido,
                     foto_url: vet.foto_url,
-                    clinicas: vet.clinicas
+                    clinicas: vet.clinicas,
+                    subscriptionStatus: subStatus,
+                    subscriptionExpiresAt: subExpires,
                 };
             }
         } else if (user.rol === 'Propietario') {
@@ -288,4 +374,13 @@ export const logout = async (request: FastifyRequest, reply: FastifyReply): Prom
         })
         .code(200)
         .send({ message: 'Sesión cerrada exitosamente' });
+};
+
+export const validarMatricula = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { matricula } = request.query as { matricula?: string };
+    if (!matricula) {
+        return reply.code(400).send({ message: "Se requiere el número de matrícula" });
+    }
+    const isValid = await Validation.isValidMatricula(matricula);
+    return reply.code(200).send({ isValid });
 };

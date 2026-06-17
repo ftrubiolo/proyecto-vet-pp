@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
-import { Stethoscope } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { ApiClientError } from '../../api/client';
 import { Input } from '../../components/ui/Input';
@@ -12,6 +12,7 @@ export function LoginPage() {
   // Form fields
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
   const [message, setMessage] = useState('');
@@ -49,9 +50,6 @@ export function LoginPage() {
     <div className="login-page">
       <div className="login-card">
         <div className="login-brand">
-          <div className="login-brand-icon">
-            <Stethoscope size={28} />
-          </div>
           <h1 className="login-brand-title">
             Vet<span>Vault</span>
           </h1>
@@ -74,16 +72,42 @@ export function LoginPage() {
           />
 
           <div className="password-container">
-            <Input
-              label="Contraseña"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              disabled={isDisabled}
-              minLength={6}
-            />
+            <div className="form-group" style={{ marginBottom: 0 }}>
+              <label className="form-label">Contraseña</label>
+              <div style={{ position: 'relative' }}>
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  className="form-input"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isDisabled}
+                  minLength={6}
+                  style={{ paddingRight: '40px', width: '100%' }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  style={{
+                    position: 'absolute',
+                    right: '12px',
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-muted)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 0
+                  }}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
             <div className="forgot-password-wrapper">
               <button
                 type="button"
