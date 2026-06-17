@@ -351,3 +351,36 @@
   padding: 4px 0;
 }
 
+/* ─── Subscription Tab Premium Styling ─── */
+.plan-option-card {
+  transition: transform var(--transition), border-color var(--transition), box-shadow var(--transition) !important;
+}
+
+.plan-option-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--accent) !important;
+}
+
+.plan-option-card.premium:hover {
+  box-shadow: 0 12px 30px rgba(14, 165, 233, 0.18) !important;
+}
+
+.plan-option-card.enterprise:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--text-h) !important;
+}
+
+.grace-period-alert {
+  animation: pulseLight 2s infinite ease-in-out;
+}
+
+@keyframes pulseLight {
+  0%, 100% {
+    opacity: 0.95;
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 8px rgba(249, 115, 22, 0.15);
+  }
+}

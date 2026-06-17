@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Clock,
@@ -30,6 +30,7 @@ export function VetCitasView() {
   const [activeFilter, setActiveFilter] = useState<EstadoCita>('Todas');
   const [showCreate, setShowCreate] = useState(false);
   const [timeOffset, setTimeOffset] = useState(-1);
+  const dateInputRef = useRef<HTMLInputElement>(null);
 
   // Calculate startDate and endDate for query
   const getQueryDates = () => {
@@ -72,7 +73,7 @@ export function VetCitasView() {
 
   // Filter and sort appointments
   const filtered = activeFilter === 'Todas'
-    ? citas
+    ? citas.filter((c) => c.estado !== 'Cancelada')
     : citas.filter((c) => c.estado === activeFilter);
 
   const sorted = [...filtered].sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
@@ -158,7 +159,7 @@ export function VetCitasView() {
 
   // Metrics helper
   const getMetricCount = (status: EstadoCita) => {
-    if (status === 'Todas') return citas.length;
+    if (status === 'Todas') return citas.filter(c => c.estado !== 'Cancelada').length;
     return citas.filter(c => c.estado === status).length;
   };
 
@@ -199,7 +200,7 @@ export function VetCitasView() {
           </div>
           <div className="metric-value">{getMetricCount('Completada')}</div>
           <span className="metric-subtext">
-            {citas.length > 0 ? `${Math.round((getMetricCount('Completada') / citas.length) * 100)}%` : '0%'} del total
+            {getMetricCount('Todas') > 0 ? `${Math.round((getMetricCount('Completada') / getMetricCount('Todas')) * 100)}%` : '0%'} del total
           </span>
         </Card>
         <Card className={`metric-card ${activeFilter === 'Pendiente' ? 'selected' : ''}`} clickable onClick={() => setActiveFilter('Pendiente')}>
@@ -228,10 +229,14 @@ export function VetCitasView() {
               <button className="btn-nav-arrow" onClick={() => changeDay(-1)}>
                 <ChevronLeft size={18} />
               </button>
-              <div className="planner-current-date">
+              <div
+                className="planner-current-date"
+                onClick={() => dateInputRef.current?.showPicker()}
+              >
                 <Calendar size={16} />
                 <span>{formatHeaderDate()}</span>
                 <input
+                  ref={dateInputRef}
                   type="date"
                   className="planner-hidden-datepicker"
                   value={currentDate.toISOString().split('T')[0]}
@@ -338,7 +343,7 @@ export function VetCitasView() {
               {Array.from({ length: 7 }, (_, i) => {
                 const dayDate = new Date(start);
                 dayDate.setDate(dayDate.getDate() + i);
-                const dayCitas = citas.filter(c => c.fecha.getDate() === dayDate.getDate() && c.fecha.getMonth() === dayDate.getMonth());
+                const dayCitas = filtered.filter(c => c.fecha.getDate() === dayDate.getDate() && c.fecha.getMonth() === dayDate.getMonth());
 
                 return (
                   <Card key={i} className="weekly-day-card">
@@ -351,10 +356,21 @@ export function VetCitasView() {
                       <div className="weekly-day-citas-list">
                         {dayCitas.map(cita => (
                           <div key={cita.id} className="weekly-cita-item" onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}>
-                            <Clock size={12} />
                             <strong>{cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</strong>
-                            <span>{cita.mascota} ({cita.motivo})</span>
+                            <span style={{ flex: 1 }}>{cita.mascota} ({cita.motivo})</span>
                             <Badge variant={getEstadoBadgeVariant(cita.estado)}>{cita.estado}</Badge>
+                            {(cita.estado === 'Confirmada' || cita.estado === 'Pendiente') && (
+                              <button
+                                className="btn-action-cancel"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleStatusChange(cita.id, 'Cancelada');
+                                }}
+                                title="Cancelar Turno"
+                              >
+                                <X size={12} />
+                              </button>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -421,7 +437,7 @@ export function VetCitasView() {
                       >
                         <div className="appointment-block-info">
                           <span className="app-time">
-                            {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                            {cita.fecha.toLocaleTimeString('es-AR', { hour: 'numeric', minute: '2-digit' })}
                           </span>
                           <span className="app-pet" onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}>
                             {cita.mascota}

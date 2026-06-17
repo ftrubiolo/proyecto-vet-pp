@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
+import { useAIChat } from '../../hooks/useAIChat';
 import { Search, Sparkles, Plus, PawPrint } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { CreateCitaModal } from '../appointments/CreateCitaModal';
@@ -18,14 +19,13 @@ export function Header() {
   const { user } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
+  const { isAIChatOpen, setIsAIChatOpen } = useAIChat();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchFocused, setIsSearchFocused] = useState(false);
-  const [showAIDropdown, setShowAIDropdown] = useState(false);
   const [showCreateCita, setShowCreateCita] = useState(false);
 
   const searchRef = useRef<HTMLDivElement>(null);
-  const aiRef = useRef<HTMLDivElement>(null);
 
   // Fetch mascotas only when the user is focusing or typing in search
   const { data: mascotasData, isLoading } = useFetch<any[]>(
@@ -37,8 +37,8 @@ export function Header() {
   const pageTitle = pageTitles[basePath] || 'VetVault';
 
   const isVet = user?.rol === 'Veterinario';
-  const searchPlaceholder = isVet 
-    ? 'Buscar pacientes...' 
+  const searchPlaceholder = isVet
+    ? 'Buscar pacientes...'
     : 'Buscar mis mascotas...';
 
   // Handle clicking outside dropdowns to close them
@@ -46,9 +46,6 @@ export function Header() {
     function handleClickOutside(event: MouseEvent) {
       if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
         setIsSearchFocused(false);
-      }
-      if (aiRef.current && !aiRef.current.contains(event.target as Node)) {
-        setShowAIDropdown(false);
       }
     }
 
@@ -66,10 +63,10 @@ export function Header() {
   const filteredMascotas = searchQuery.trim() === ''
     ? []
     : rawMascotas.filter((m: any) =>
-        m.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.raza?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        m.especie?.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+      m.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.raza?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      m.especie?.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
   return (
     <header className="header">
@@ -126,45 +123,23 @@ export function Header() {
 
       {/* Action Buttons */}
       <div className="header-right">
-        {/* AI Copilot Wrapper */}
-        <div className="ai-dropdown-wrapper" ref={aiRef}>
-          <button
-            className={`header-action-btn ai-btn ${showAIDropdown ? 'active' : ''}`}
-            onClick={() => setShowAIDropdown(!showAIDropdown)}
-            title="VetVault AI Assistant"
-          >
-            <Sparkles className="ai-icon" size={18} />
-          </button>
-
-          {/* Floating AI Dropdown Aligned Underneath */}
-          {showAIDropdown && (
-            <div className="ai-dropdown-panel">
-              <div className="ai-dropdown-header">
-                <Sparkles size={16} className="ai-dropdown-title-icon" />
-                <h3 className="ai-dropdown-title">VetVault AI</h3>
-              </div>
-              <div className="ai-dropdown-content">
-                <div className="ai-dropdown-empty">
-                  <Sparkles size={32} className="ai-dropdown-empty-icon" />
-                  <h4 className="ai-dropdown-empty-title">
-                    {isVet ? 'Asistente Clínico IA' : 'Asistente de Cuidado IA'}
-                  </h4>
-                  <p className="ai-dropdown-empty-text">
-                    {isVet
-                      ? 'Próximamente podrás analizar historias clínicas, resumir síntomas y redactar recetas utilizando inteligencia artificial.'
-                      : 'Próximamente podrás consultar dudas de cuidado para tus mascotas, interpretar vacunas y recibir consejos personalizados.'}
-                  </p>
-                  <div className="ai-dropdown-badge">Próximamente</div>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
+        {/* AI Copilot Button */}
+        <button
+          className={`header-action-btn ai-btn ${isAIChatOpen ? 'active' : ''}`}
+          onClick={() => setIsAIChatOpen(!isAIChatOpen)}
+          title="VetVault Copilot"
+        >
+          <Sparkles className="ai-icon" size={18} />
+        </button>
 
         {/* Nueva Cita Action */}
         <Button
           className="header-new-cita-btn"
-          onClick={() => setShowCreateCita(true)}
+          onClick={() => {
+            user?.rol === 'Veterinario'
+              ? setShowCreateCita(true)
+              : navigate('/citas')
+          }}
         >
           <Plus size={16} />
           <span className="btn-text-desktop">Nueva Cita</span>
@@ -185,4 +160,3 @@ export function Header() {
     </header>
   );
 }
-

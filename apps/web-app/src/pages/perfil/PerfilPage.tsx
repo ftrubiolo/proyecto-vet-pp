@@ -7,6 +7,7 @@ import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 import { ProfileHeader } from './components/ProfileHeader';
 import { PersonalInfoTab } from './components/PersonalInfoTab';
 import { ClinicsTab } from './components/ClinicsTab';
+import { SubscriptionTab } from './components/SubscriptionTab';
 import { AccountSettingsTab } from './components/AccountSettingsTab';
 import './PerfilPage.css';
 
@@ -37,6 +38,7 @@ export function PerfilPage() {
     ? [
       { id: 'perfil', label: 'Perfil' },
       { id: 'clinicas', label: 'Clinicas' },
+      { id: 'suscripcion', label: 'Suscripción' },
       { id: 'settings', label: 'Configuración' },
     ]
     : [
@@ -68,6 +70,11 @@ export function PerfilPage() {
               profile={profile as VetProfile}
               refetch={refetch}
             />
+          )}
+
+          {/* SUBSCRIPTION DATA TAB */}
+          {activeTab === 'suscripcion' && isVet && (
+            <SubscriptionTab />
           )}
 
           {/* SETTINGS TAB */}

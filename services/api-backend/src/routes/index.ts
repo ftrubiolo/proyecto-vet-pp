@@ -10,6 +10,8 @@ import citasRoutes from './citas.routes';
 import atencionesRoutes from './atenciones.routes';
 import tratamientosRoutes from './tratamientos.routes';
 import vacunasRoutes from './vacunas.routes';
+import suscripcionesRoutes from './suscripciones.routes';
+import aiRoutes from './ai.routes';
 
 /**
  * Registra y centraliza todas las rutas del API Backend de VetVault con sus respectivos prefijos.
@@ -20,6 +22,8 @@ import vacunasRoutes from './vacunas.routes';
  * - `/propietarios` - Información de tutores y dueños de mascotas -> {@link propietariosRoutes}
  * - `/usuarios` - Listado y detalles de la cuenta de usuario/sesión -> {@link usuariosRoutes}
  * - `/catalogo` - Tablas maestras e información de consulta / lookups (razas, productos, motivos, etc) -> {@link catalogoRoutes}
+ * - `/suscripciones` - Planes de suscripción y webhooks de Mercado Pago -> {@link suscripcionesRoutes}
+ * - `/ai` - Chatbot de IA y RAG -> {@link aiRoutes}
  * 
  * @param fastify - Instancia del servidor de Fastify
  */
@@ -35,4 +39,6 @@ export default async function apiRoutes(fastify: FastifyInstance) {
   await fastify.register(atencionesRoutes, { prefix: '/atenciones' });
   await fastify.register(tratamientosRoutes, { prefix: '/tratamientos' });
   await fastify.register(vacunasRoutes, { prefix: '/vacunas' });
+  await fastify.register(suscripcionesRoutes, { prefix: '/suscripciones' });
+  await fastify.register(aiRoutes, { prefix: '/ai' });
 }

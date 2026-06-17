@@ -2,6 +2,8 @@ import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AuthGuard } from './components/AuthGuard';
 import { AppLayout } from './components/layout/AppLayout';
 import { LoginPage } from './pages/login/LoginPage';
+import { RegisterPage } from './pages/login/RegisterPage';
+import { RegisterSuccessPage } from './pages/login/RegisterSuccessPage';
 import { DashboardPage } from './pages/dashboard/DashboardPage';
 import { MascotasPage } from './pages/mascotas/MascotasPage';
 import { MascotaDetailPage } from './pages/mascotas/MascotaDetailPage';
@@ -17,6 +19,14 @@ export const router = createBrowserRouter([
       {
         path: 'login',
         element: <LoginPage />,
+      },
+      {
+        path: 'register',
+        element: <RegisterPage />,
+      },
+      {
+        path: 'register/success',
+        element: <RegisterSuccessPage />,
       },
       {
         element: <AuthGuard />,
