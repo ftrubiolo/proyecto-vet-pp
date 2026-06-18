@@ -7,4 +7,5 @@ export default async function tratamientosRoutes(fastify: FastifyInstance) {
 
     fastify.get('/mascota/:mascotaId', { preHandler: [checkRole(['Admin', 'Veterinario', 'Propietario'])] }, controller.getByMascota);
     fastify.patch('/:id', { preHandler: [checkRole(['Admin', 'Veterinario'])] }, controller.update);
+    fastify.get('/:id/pdf', { preHandler: [checkRole(['Admin', 'Veterinario', 'Propietario'])] }, controller.downloadPdf);
 }

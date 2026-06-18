@@ -6,4 +6,5 @@ export default async function aiRoutes(fastify: FastifyInstance) {
     fastify.addHook('preHandler', verifyToken);
 
     fastify.post('/chat', controller.chat);
+    fastify.post('/pdf', controller.downloadChatPdf);
 }

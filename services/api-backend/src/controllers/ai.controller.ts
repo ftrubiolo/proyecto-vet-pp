@@ -7,6 +7,7 @@ import { Validation } from "../utils/validation";
 import { MascotaService } from "../services/mascota.service";
 import { AtencionService } from "../services/atencion.service";
 import { CitaService } from "../services/cita.service";
+import { PdfService } from "../services/pdf.service";
 
 interface ChatMessage {
     sender: "user" | "ai";
@@ -321,3 +322,23 @@ ${activePetId ? clinicalContext : generalContext}
         return reply.code(500).send({ message });
     }
 };
+
+export const downloadChatPdf = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { title, content } = request.body as { title: string; content: string };
+    if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
+    if (!title || !content) {
+        return reply.code(400).send({ message: 'El título y el contenido son obligatorios' });
+    }
+
+    try {
+        const buffer = await PdfService.generateAIChatPdf(title, content);
+        
+        reply.header('Content-Type', 'application/pdf');
+        reply.header('Content-Disposition', `attachment; filename="consulta-ia-${Date.now()}.pdf"`);
+        return reply.code(200).send(buffer);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error al generar el PDF';
+        return reply.code(500).send({ message });
+    }
+};
+

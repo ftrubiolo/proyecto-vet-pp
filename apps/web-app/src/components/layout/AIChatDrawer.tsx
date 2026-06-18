@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { Sparkles, Send, PawPrint, X, Plus } from 'lucide-react';
+import { Sparkles, Send, PawPrint, X, Plus, FileDown } from 'lucide-react';
 import { useAIChat } from '../../hooks/useAIChat';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { api } from '../../api/client';
+import { downloadPdf } from '../../utils/download';
 import './AIChatDrawer.css';
 
 interface Message {
@@ -58,6 +59,25 @@ export function AIChatDrawer() {
   const [editingTabId, setEditingTabId] = useState<string | null>(null);
   const [editingText, setEditingText] = useState('');
 
+  const [isDownloadingMsg, setIsDownloadingMsg] = useState<string | null>(null);
+
+  const handleDownloadMessagePdf = async (msg: Message) => {
+    setIsDownloadingMsg(msg.id);
+    try {
+      const activeTab = tabs.find((t) => t.id === activeTabId);
+      const title = activeTab ? activeTab.name : 'Consulta de Copiloto';
+      await downloadPdf('/ai/pdf', `copiloto-${Date.now()}.pdf`, {
+        method: 'POST',
+        body: { title, content: msg.text },
+      });
+    } catch (error) {
+      console.error(error);
+      alert('No se pudo descargar el PDF del mensaje.');
+    } finally {
+      setIsDownloadingMsg(null);
+    }
+  };
+
   const handleStartRename = (tabId: string, currentName: string, e: React.MouseEvent) => {
     e.stopPropagation();
     setEditingTabId(tabId);
@@ -96,7 +116,7 @@ export function AIChatDrawer() {
           const exists = prevTabs.some((t) => t.id === tabId);
           if (exists) return prevTabs;
 
-          let updated = [...prevTabs];
+          const updated = [...prevTabs];
           // Limit to 15 tabs max, pruning oldest custom tab (excluding general)
           if (updated.length >= 15) {
             const idxToRemove = updated.findIndex((t) => t.id !== 'general');
@@ -160,7 +180,7 @@ export function AIChatDrawer() {
   const handleCreateNewTab = () => {
     const newTabId = generateTabId();
     setTabs((prev) => {
-      let updated = [...prev];
+      const updated = [...prev];
       // Limit to 15 tabs max, pruning oldest custom tab (excluding general)
       if (updated.length >= 15) {
         const idxToRemove = updated.findIndex((t) => t.id !== 'general');
@@ -411,6 +431,31 @@ export function AIChatDrawer() {
                     <summary>Detalles técnicos (Desarrollador)</summary>
                     <pre>{msg.technicalError}</pre>
                   </details>
+                )}
+                {msg.sender === 'ai' && !msg.technicalError && (
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+                    <button
+                      onClick={() => handleDownloadMessagePdf(msg)}
+                      disabled={isDownloadingMsg === msg.id}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        color: 'var(--color-primary-light, #2563eb)',
+                        fontSize: '11px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 4,
+                        padding: '2px 6px',
+                        borderRadius: '4px',
+                        transition: 'background 0.2s',
+                      }}
+                      title="Descargar respuesta como PDF"
+                    >
+                      <FileDown size={12} />
+                      {isDownloadingMsg === msg.id ? 'Descargando...' : 'Descargar PDF'}
+                    </button>
+                  </div>
                 )}
               </div>
             </div>

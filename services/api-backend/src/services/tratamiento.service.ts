@@ -57,4 +57,46 @@ export class TratamientoService {
             .returning();
         return updated || null;
     }
+
+    /**
+     * Obtiene un tratamiento detallado por su ID.
+     */
+    static async getById(id: string): Promise<any | null> {
+        return await db.query.tratamientos.findFirst({
+            where: eq(tratamientos.id, id),
+            with: {
+                tipo_tratamiento: true,
+                producto: true,
+                atencion: {
+                    with: {
+                        mascota: {
+                            with: {
+                                raza: {
+                                    with: {
+                                        especie: true
+                                    }
+                                },
+                                mascotas_propietarios: {
+                                    with: {
+                                        propietario: true
+                                    }
+                                }
+                            }
+                        },
+                        veterinario: {
+                            with: {
+                                usuario: {
+                                    columns: {
+                                        email: true,
+                                    }
+                                }
+                            }
+                        },
+                        clinica: true,
+                    }
+                }
+            }
+        });
+    }
 }
+

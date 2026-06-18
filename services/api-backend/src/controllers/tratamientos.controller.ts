@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { TratamientoService } from "../services/tratamiento.service";
 import { Validation } from "../utils/validation";
+import { PdfService } from "../services/pdf.service";
 import type { UpdateTratamiento } from "../types/db.types";
 
 export const getByMascota = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
@@ -41,3 +42,30 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
         return reply.code(500).send({ message });
     }
 };
+
+export const downloadPdf = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
+    const { id } = request.params as { id: string };
+    if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
+
+    try {
+        const tratamiento = await TratamientoService.getById(id);
+        if (!tratamiento) {
+            return reply.code(404).send({ message: 'Tratamiento no encontrado' });
+        }
+
+        const hasAccess = await Validation.hasAccessMascota(request.user, tratamiento.atencion?.mascota_id);
+        if (!hasAccess) {
+            return reply.code(403).send({ message: 'No tienes acceso a los tratamientos de este paciente' });
+        }
+
+        const buffer = await PdfService.generateTratamientoPdf(tratamiento);
+        
+        reply.header('Content-Type', 'application/pdf');
+        reply.header('Content-Disposition', `attachment; filename="tratamiento-${tratamiento.atencion?.mascota?.nombre || 'mascota'}-${id.substring(0, 8)}.pdf"`);
+        return reply.code(200).send(buffer);
+    } catch (error) {
+        const message = error instanceof Error ? error.message : 'Error al generar el PDF';
+        return reply.code(500).send({ message });
+    }
+};
+

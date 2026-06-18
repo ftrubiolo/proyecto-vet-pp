@@ -278,4 +278,51 @@ export class AtencionService {
             return newAtencion;
         });
     }
+
+    /**
+     * Obtiene una atención detallada por su ID para reportes.
+     */
+    static async getById(id: string): Promise<any | null> {
+        return await db.query.atenciones.findFirst({
+            where: eq(atenciones.id, id),
+            with: {
+                mascota: {
+                    with: {
+                        raza: {
+                            with: {
+                                especie: true
+                            }
+                        },
+                        mascotas_propietarios: {
+                            with: {
+                                propietario: true
+                            }
+                        }
+                    }
+                },
+                veterinario: {
+                    with: {
+                        usuario: {
+                            columns: {
+                                email: true,
+                            }
+                        }
+                    }
+                },
+                clinica: true,
+                atenciones_diagnosticos: {
+                    with: {
+                        diagnostico: true
+                    }
+                },
+                tratamientos: {
+                    with: {
+                        tipo_tratamiento: true,
+                        producto: true,
+                    }
+                }
+            }
+        });
+    }
 }
+

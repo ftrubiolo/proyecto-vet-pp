@@ -297,7 +297,7 @@ export function MascotaDetailPage() {
             )}
             {activeTab === 'historial' && <HistorialTab atenciones={atencionesData || []} isLoading={isHistorialLoading} />}
             {activeTab === 'vacunas' && <VacunasTab vacunas={vacunasData || []} isLoading={isVacunasLoading} />}
-            {activeTab === 'tratamientos' && <TratamientosTab tratamientos={tratamientosData || []} isLoading={isTratamientosLoading} />}
+            {activeTab === 'tratamientos' && <TratamientosTab tratamientos={tratamientosData || []} isLoading={isTratamientosLoading} mascotaNombre={mascota?.nombre} />}
           </div>
         </div>
       </div>
