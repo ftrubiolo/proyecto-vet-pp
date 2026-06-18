@@ -1,4 +1,4 @@
-# VetVault 🐾 — Sistema Integral de Gestión Veterinaria
+# VetVault 
 
 **VetVault** es un ecosistema moderno para la gestión clínica, reserva de citas e historiales médicos para clínicas veterinarias. Ha sido desarrollado como parte del proyecto final de **Prácticas Profesionalizantes I** en el *Instituto Superior Villa del Rosario* (2026).
 
@@ -6,18 +6,16 @@ El sistema conecta en tiempo real a **veterinarios** (que gestionan consultas, r
 
 ---
 
-### 📸 Vista Previa e Interfaz de Usuario
+### 📸 Capturas de Pantalla
 
-> [!NOTE]
-> *Aquí se incluirán las capturas de pantalla finales de la aplicación una vez desplegada.*
-
-| **Panel de Control Principal (Dashboard)** | **Ficha Clínica y Historial Médico** |
-| :---: | :---: |
-| ![Dashboard Principal](https://placehold.co/600x400/0ea5e9/ffffff?text=Dashboard+VetVault) | ![Ficha Médica y Historial](https://placehold.co/600x400/22c55e/ffffff?text=Ficha+M%C3%A9dica+VetVault) |
-
-| **Copiloto de IA (Escribano de Voz)** | **Carnet de Vacunación Digital** |
-| :---: | :---: |
-| ![Copiloto de IA](https://placehold.co/600x400/0ea5e9/ffffff?text=Copiloto+IA+Escribano) | ![Carnet Digital](https://placehold.co/600x400/22c55e/ffffff?text=Carnet+de+Vacunas) |
+#### **Panel de Control del Veterinario**  
+![Panel de Control del Veterinario](assets/screenshots/vet-dashboard.png)
+#### **Ficha del Paciente**  
+![Ficha del Paciente](assets/screenshots/pet-profile.png)
+#### **Agenda de Turnos**  
+![Agenda de Turnos](assets/screenshots/appointment-scheduling.png)
+#### **Copiloto IA**  
+![Copiloto IA](assets/screenshots/ai-chat.png)
 
 ---
 
@@ -31,8 +29,9 @@ El sistema conecta en tiempo real a **veterinarios** (que gestionan consultas, r
 4. **Validación de Matrículas**: Integración con el padrón del Colegio de Veterinarios de Córdoba para verificar de forma segura la autenticidad y habilitación clínica de los profesionales en su registro.
 5. **Vademécum Oficial (SENASA)**: Integración con el catálogo nacional de medicamentos y vacunas de SENASA para evitar errores de carga y lotes.
 6. **Copiloto Clínico por Inteligencia Artificial**:
-   - **Escribano por Voz**: Transcripción de audios grabados en consulta a fichas médicas estructuradas automáticamente mediante Gemini.
-   - **Triaje Sintomático**: Clasificación inteligente de urgencias veterinarias basada en el reporte del dueño.
+   - **Consultas Clínicas Contextuales**: Responde preguntas sobre diagnósticos, tratamientos y vacunas usando el historial real del paciente activo (RAG).
+   - **Asistencia en Prescripciones**: Ayuda a calcular dosis, verificar interacciones y consultar el vademécum SENASA en lenguaje natural.
+   - **Resumen de Historial Clínico**: Genera resúmenes inteligentes de la evolución del paciente, patrones de peso y diagnósticos recurrentes.
 
 ---
 
@@ -45,13 +44,11 @@ proyecto-vet-pp/
 ├── apps/
 │   ├── web-app/             # Aplicación React 19 (Vite) para veterinarios y administradores
 │   └── mobile-app/          # Aplicación React Native para propietarios/tutores (En desarrollo)
-├── services/
-│   └── api-backend/         # Servidor Fastify (Node.js + TypeScript) y base de datos Postgres
-├── SYSTEM_OVERVIEW.md       # Documento detallado de arquitectura y base de datos
-└── README.md                # [Este Documento]
+├── packages/
+│   └── shared/              # Tipos, interfaces y utilidades compartidas entre servicios
+└── services/
+    └── api-backend/         # Servidor Fastify (Node.js + TypeScript) y base de datos Postgres
 ```
-
-Para conocer en detalle la arquitectura del sistema, diagramas de relaciones y estructura de base de datos, consulte el archivo [SYSTEM_OVERVIEW.md](file:///home/rei/VetVault/proyecto-vet-pp/SYSTEM_OVERVIEW.md).
 
 ---
 
@@ -87,7 +84,20 @@ Para conocer en detalle la arquitectura del sistema, diagramas de relaciones y e
    npm run dev             # Levantará el servidor en http://localhost:5000
    ```
 
-### Paso 2: Instalar y Correr Frontend Web
+### Paso 2: Construir el Paquete Compartido
+El frontend web depende del paquete `@vetvault/shared`, por lo que debe compilarse primero:
+
+1. Navega al directorio del paquete compartido:
+   ```bash
+   cd packages/shared
+   ```
+2. Instala las dependencias y compila:
+   ```bash
+   npm install
+   npm run build            # Genera los archivos en dist/
+   ```
+
+### Paso 3: Instalar y Correr Frontend Web
 1. Abre una nueva terminal y dirígete al directorio de la app web:
    ```bash
    cd apps/web-app
