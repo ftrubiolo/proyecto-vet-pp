@@ -51,6 +51,32 @@ async function apiFetch<T>(
   return response.json();
 }
 
+export async function apiUpload(endpoint: string, file: File, folder = 'general'): Promise<{ url: string; key: string }> {
+  const formData = new FormData();
+  formData.append('file', file);
+
+  const url = `${API_BASE}${endpoint}?folder=${folder}`;
+
+  const response = await fetch(url, {
+    method: 'POST',
+    credentials: 'include',
+    body: formData,
+  });
+
+  if (!response.ok) {
+    let errorMessage = 'Error al subir archivo';
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.message || errorData.error || errorMessage;
+    } catch {
+      // Use default error message
+    }
+    throw new ApiClientError(errorMessage, response.status);
+  }
+
+  return response.json();
+}
+
 export const api = {
   get: <T>(endpoint: string) => apiFetch<T>(endpoint, { method: 'GET' }),
 

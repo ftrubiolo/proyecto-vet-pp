@@ -1,9 +1,9 @@
-import { useState, useEffect } from 'react';
-import { Edit3 } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Edit3, Upload, X } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
-import { api } from '../../../api/client';
+import { api, apiUpload } from '../../../api/client';
 import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 
 interface PersonalInfoTabProps {
@@ -19,20 +19,40 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
   const [apellido, setApellido] = useState('');
   const [telefono, setTelefono] = useState('');
   const [direccion, setDireccion] = useState('');
+  const [fotoUrl, setFotoUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (profile) {
       setNombre(profile.nombre || '');
       setApellido(profile.apellido || '');
       setTelefono(profile.telefono || '');
+      setFotoUrl(profile.foto_url || '');
       if (!isVet && 'direccion' in profile) {
         setDireccion((profile as OwnerProfile).direccion || '');
       }
     }
   }, [profile, isVet]);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const result = await apiUpload('/upload', file, isVet ? 'veterinarios' : 'propietarios');
+      setFotoUrl(result.url);
+    } catch (err: any) {
+      setError(err.message || 'Error al subir la imagen');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSave = async () => {
     if (!profileId) return;
@@ -42,7 +62,7 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
 
     try {
       const updateEndpoint = isVet ? `/veterinarios/${profileId}` : `/propietarios/${profileId}`;
-      const body: Record<string, unknown> = { nombre, apellido, telefono };
+      const body: Record<string, unknown> = { nombre, apellido, telefono, foto_url: fotoUrl || null };
       if (!isVet) body.direccion = direccion;
 
       await api.patch(updateEndpoint, body);
@@ -87,6 +107,40 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
 
       {isEditing ? (
         <div className="perfil-edit-form">
+          <div className="form-group">
+            <label className="form-label">Foto de perfil</label>
+            <div className="upload-photo-wrapper">
+              {fotoUrl ? (
+                <div className="upload-photo-preview">
+                  <img src={fotoUrl} alt="Preview" />
+                  <button
+                    type="button"
+                    className="upload-photo-remove"
+                    onClick={() => setFotoUrl('')}
+                    title="Eliminar foto"
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className="upload-photo-placeholder"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Upload size={24} />
+                  <span>{uploading ? 'Subiendo...' : 'Subir foto'}</span>
+                </div>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                onChange={handleFileUpload}
+                style={{ display: 'none' }}
+                disabled={uploading}
+              />
+            </div>
+          </div>
           <div className="form-row">
             <Input
               label="Nombre"

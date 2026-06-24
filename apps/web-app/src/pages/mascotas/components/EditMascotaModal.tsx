@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
+import { Upload, X } from 'lucide-react';
 import { useFetch } from '../../../hooks/useFetch';
-import { api } from '../../../api/client';
+import { api, apiUpload } from '../../../api/client';
 import { useAuth } from '../../../hooks/useAuth';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
@@ -31,7 +32,9 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
   const [contraindicaciones, setContraindicaciones] = useState(mascota.contraindicaciones || '');
   const [razaId, setRazaId] = useState('');
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: especies, isLoading: isCatalogLoading } = useFetch<Especie[]>('/catalogo/especies');
 
@@ -46,6 +49,22 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
 
   const selectedItem = razaItems.find((item) => item.id === resolvedRazaId);
   const currentRazaName = selectedItem ? selectedItem.name : (mascota.raza ? `${mascota.raza} (${mascota.especie})` : '');
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const result = await apiUpload('/upload', file, 'mascotas');
+      setFotoUrl(result.url);
+    } catch (err: any) {
+      setError(err.message || 'Error al subir la imagen');
+    } finally {
+      setUploading(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,12 +155,40 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
           value={numeroMicrochip}
           onChange={(e) => setNumeroMicrochip(e.target.value)}
         />
-        <Input
-          label="URL de Foto"
-          placeholder="https://ejemplo.com/foto.jpg"
-          value={fotoUrl}
-          onChange={(e) => setFotoUrl(e.target.value)}
-        />
+        <div className="form-group">
+          <label className="form-label">Foto</label>
+          <div className="upload-photo-wrapper">
+            {fotoUrl ? (
+              <div className="upload-photo-preview">
+                <img src={fotoUrl} alt="Preview" />
+                <button
+                  type="button"
+                  className="upload-photo-remove"
+                  onClick={() => setFotoUrl('')}
+                  title="Eliminar foto"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ) : (
+              <div
+                className="upload-photo-placeholder"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload size={24} />
+                <span>{uploading ? 'Subiendo...' : 'Haz clic para subir foto'}</span>
+              </div>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleFileUpload}
+              style={{ display: 'none' }}
+              disabled={uploading}
+            />
+          </div>
+        </div>
         <div className="form-group">
           <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
             <input

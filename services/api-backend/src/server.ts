@@ -4,6 +4,7 @@ import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
+import multipart from '@fastify/multipart';
 import apiRoutes from './routes';
 
 const app = fastify({ logger: true });
@@ -36,6 +37,13 @@ const start = async () => {
       uiConfig: {
         docExpansion: 'list',
         deepLinking: false,
+      },
+    });
+
+    await app.register(multipart, {
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 1,
       },
     });
 
