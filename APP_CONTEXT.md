@@ -65,3 +65,34 @@ The application provides a clean, modern dashboard layout with the following sec
 - **`apps/web-app`**: The frontend React administration portal used by veterinarians and administrators.
 - **`apps/mobile-app`**: The upcoming React Native application for pet owners.
 - **`services/api-backend`**: The database and API service that powers both frontends.
+
+---
+
+## 6. Copiloto Clínico por Inteligencia Artificial (IA)
+
+El ecosistema integra un Copiloto Clínico basado en IA que asiste tanto a profesionales veterinarios como a propietarios de mascotas. Opera mediante un chat contextualizado (RAG) que interactúa con la base de datos a través de llamadas a herramientas (`tool calls`).
+
+### Reglas de Negocio y Seguridad de la IA:
+- **Diferenciación de Sugerencias**: En el drawer de chat del frontend (`AIChatDrawer.tsx`), se muestran chips de sugerencia contextuales y aleatorios (tomados de un pool de 10 frases) que cambian según el rol (Veterinarios ven consultas de vademécum o dosis, Propietarios ven consultas de vacunas o triaje de síntomas).
+- **Límite de Peticiones (Rate Limiter)**: Un middleware en memoria limita a un máximo de **30 peticiones por minuto** por usuario en la ruta `/api/ai/chat` para evitar abuso de la API de Gemini.
+- **Límite de Llamadas a Herramientas (Function Calls)**: Se mitiga el consumo excesivo de tokens y el bucle infinito limitando las llamadas a base de datos de la IA por turno (`MAX_FUNCTION_CALLS`). Las cuotas son:
+  - **Veterinario**: Hasta 8 llamadas por pregunta.
+  - **Propietario / Tutor**: Hasta 4 llamadas por pregunta.
+  - **Administrador**: Hasta 8 llamadas por pregunta.
+- **Inferencia de Fechas**: El prompt de sistema instruye al agente a interpretar automáticamente fechas relativas (como "mañana" o "hoy") para programar o buscar turnos.
+- **Registro de Auditoría**: Cada ejecución de herramientas por parte de la IA queda registrada en una tabla de auditoría (`audit log`) almacenando el nombre de la tool, parámetros, usuario e ID de sesión.
+
+---
+
+## 7. Suscripciones y Facturación (Mercado Pago)
+
+VetVault cuenta con un módulo de monetización para habilitar las funcionalidades premium según el plan de la veterinaria o profesional independiente.
+
+- **Planes Disponibles**:
+  - `independent` (Veterinarios independientes)
+  - `clinic_pro` (Clínicas completas con múltiples sucursales/veterinarios)
+- **Flujo de Pago**:
+  1. El usuario inicia el checkout (`POST /api/suscripciones/checkout`).
+  2. Es redirigido a la pasarela oficial de Mercado Pago.
+  3. Al confirmarse el pago, Mercado Pago envía un webhook a `/api/suscripciones/webhooks/mercadopago`, el cual actualiza el estado de la suscripción a `activo` en la base de datos.
+- **Bypass de Desarrollo**: Para facilitar pruebas locales sin requerir credenciales reales de producción de Mercado Pago, la ruta `/api/suscripciones/dev-bypass` permite activar instantáneamente el plan `clinic_pro` para el usuario autenticado en entornos de desarrollo (`NODE_ENV=dev`).

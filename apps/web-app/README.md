@@ -1,4 +1,4 @@
-# VetVault Web Application — Panel de Administración Clínica 🐾
+# VetVault Web Application — Panel de Administración Clínica
 
 Este subproyecto contiene el frontend web de **VetVault**, un panel de administración clínica y de turnos diseñado para veterinarias. Proporciona una interfaz web moderna, rápida y responsiva para veterinarios, administradores y tutores de mascotas.
 
@@ -23,7 +23,7 @@ El código fuente dentro de `src/` se organiza de la siguiente manera:
 src/
 ├── api/             # Cliente API base y llamadas de integración HTTP
 ├── assets/          # Imágenes estáticas y recursos locales
-├── components/      # Componentes UI reutilizables y layouts del panel (Header, Sidebar, AuthGuard)
+├── components/      # Componentes UI reutilizables, layouts del panel (Header, Sidebar) y el Copiloto IA (AIChatDrawer)
 ├── context/         # Contextos globales de estado (ej. autenticación de usuario)
 ├── hooks/           # Hooks personalizados de React para lógica de negocio y consultas
 ├── pages/           # Vistas de página principales del sistema
@@ -44,14 +44,14 @@ src/
 La aplicación web de VetVault no utiliza frameworks CSS pesados (como Tailwind) sino que implementa un sistema de diseño propio documentado en [DESIGN.md](file:///home/rei/VetVault/proyecto-vet-pp/apps/web-app/DESIGN.md).
 
 ### 1. Colores y Contexto Dinámico de Roles
-La interfaz adapta dinámicamente sus tonos de acento dependiendo del contexto del usuario autenticado:
-- **Veterinario (`.role-vet`)**: Adopta tonos azules y de alta concentración clínica.
-- **Tutor/Propietario (`.role-owner`)**: Adopta tonos verdes y amigables.
+La interfaz adapta dinámicamente sus tonos de acento dependiendo del contexto del usuario autenticado. Esto se aplica tanto a la navegación como al **Copiloto Clínico IA** (`AIChatDrawer.tsx`):
+- **Veterinario (`.role-vet`)**: Adopta tonos azules y de alta concentración clínica. Las sugerencias de IA se adaptan a consultas profesionales (vademécum, diagnósticos).
+- **Tutor/Propietario (`.role-owner`)**: Adopta tonos verdes y amigables. Las sugerencias de IA se adaptan a consultas de tutores (síntomas, vacunación).
 
 ### 2. Glassmorphic Cards (Efecto de Cristal)
-Los contenedores secundarios (como tarjetas de vacunas, listas e ítems del historial) utilizan desenfoque de fondo y bordes sutiles para crear jerarquía visual:
+Los contenedores secundarios (como tarjetas de vacunas, listas, ítems del historial y burbujas del chat de IA) utilizan desenfoque de fondo y bordes sutiles para crear jerarquía visual:
 ```css
-.vaccine-card {
+.vaccine-card, .chat-bubble-ai {
   background: var(--surface-2);
   border: 1px solid var(--border);
   backdrop-filter: blur(8px);

@@ -32,6 +32,8 @@ El sistema conecta en tiempo real a **veterinarios** (que gestionan consultas, r
    - **Consultas Clínicas Contextuales**: Responde preguntas sobre diagnósticos, tratamientos y vacunas usando el historial real del paciente activo (RAG).
    - **Asistencia en Prescripciones**: Ayuda a calcular dosis, verificar interacciones y consultar el vademécum SENASA en lenguaje natural.
    - **Resumen de Historial Clínico**: Genera resúmenes inteligentes de la evolución del paciente, patrones de peso y diagnósticos recurrentes.
+   - **Control de Acceso y Límites por Rol**: Adapta sugerencias según el tipo de usuario e implementa un presupuesto de llamadas a funciones (`MAX_FUNCTION_CALLS`) según su rol (Veterinario: 8, Propietario: 4, Admin: 8), junto con rate limiting (30 req/min) y registro de auditoría.
+7. **Suscripciones y Facturación**: Integración con Mercado Pago para gestionar suscripciones a los planes `clinic_pro` y `independent`, con procesamiento automatizado de webhooks y bypass para entornos locales de desarrollo.
 
 ---
 
