@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { Sparkles, Send, PawPrint, X, Plus, FileDown } from 'lucide-react';
 import { useAIChat } from '../../hooks/useAIChat';
 import { useAuth } from '../../hooks/useAuth';
@@ -18,6 +18,7 @@ interface Tab {
   id: string;
   name: string;
   messages: Message[];
+  suggestions: string[];
 }
 
 let messageIdCounter = 0;
@@ -28,6 +29,57 @@ function generateMessageId(): string {
 let tabIdCounter = 0;
 function generateTabId(): string {
   return `chat-${Date.now()}-${tabIdCounter++}`;
+}
+
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+function generateSuggestions(tabId: string, isVet: boolean, petName?: string): string[] {
+  if (tabId.startsWith('pet-') && petName) {
+    const pool = isVet
+      ? [
+          `Resumir el historial de ${petName}`,
+          `¿Qué tratamientos activos tiene ${petName}?`,
+          `¿${petName} tiene alergias o contraindicaciones?`,
+          `¿Quién es el dueño de ${petName}?`,
+          `Últimas 3 consultas de ${petName}`,
+          `¿Qué vacunas le faltan a ${petName}?`,
+          `Mostrar disponibilidad para turno de ${petName}`,
+          `¿Está tomando algún medicamento ${petName}?`,
+          `¿Próximo refuerzo de ${petName}?`,
+          `Mostrar cartilla de vacunación de ${petName}`,
+        ]
+      : [
+          `¿Cuándo le toca el próximo refuerzo de vacuna a ${petName}?`,
+          `Explicar los diagnósticos de ${petName} en palabras simples`,
+          `¿Qué tratamientos activos tiene ${petName}?`,
+          `Últimas consultas de ${petName}`,
+        ];
+    return pickRandom(pool, 3);
+  }
+
+  const pool = isVet
+    ? [
+        '¿Qué citas tengo hoy?',
+        '¿Pacientes con vacunas atrasadas?',
+        'Mostrar disponibilidad para mañana',
+        'Resumir el historial de consultas médicas',
+        'Buscar paciente por nombre',
+        '¿Qué pacientes toman Cefalexina?',
+        '¿Quién es el dueño de esta mascota?',
+        'Mostrar tratamientos activos',
+        '¿Qué pacientes tienen alergias registradas?',
+        'Buscar medicamento en vademécum',
+      ]
+    : [
+        '¿Cuándo le toca el próximo refuerzo de vacuna?',
+        'Explicar los diagnósticos recientes en palabras simples',
+        'Mi mascota está vomitando y decaída, ¿es urgente? (Triaje)',
+        '¿Qué tratamientos activos tiene mi mascota?',
+      ];
+  return pickRandom(pool, 3);
 }
 
 export function AIChatDrawer() {
@@ -43,13 +95,18 @@ export function AIChatDrawer() {
       try {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed;
+          return parsed.map((t: any) => ({
+            id: t.id,
+            name: t.name,
+            messages: t.messages || [],
+            suggestions: [],
+          }));
         }
-      } catch (e) {
+      } catch {
         // Fallback to default if JSON is corrupt
       }
     }
-    return [{ id: 'general', name: 'General', messages: [] }];
+    return [{ id: 'general', name: 'General', messages: [], suggestions: [] as string[] }];
   });
 
   const [activeTabId, setActiveTabId] = useState<string>('general');
@@ -131,6 +188,7 @@ export function AIChatDrawer() {
               id: tabId,
               name: `${activePet.nombre}`,
               messages: [],
+              suggestions: generateSuggestions(tabId, isVet, activePet.nombre),
             },
           ];
         });
@@ -138,11 +196,12 @@ export function AIChatDrawer() {
       }, 0);
       return () => clearTimeout(timer);
     }
-  }, [activeMascotaId, activePet]);
+  }, [activeMascotaId, activePet, isVet]);
 
-  // Persist tabs to localStorage
+  // Persist tabs to localStorage (strip suggestions to get fresh ones each session)
   useEffect(() => {
-    localStorage.setItem(storageKey, JSON.stringify(tabs));
+    const toSave = tabs.map(({ id, name, messages }) => ({ id, name, messages }));
+    localStorage.setItem(storageKey, JSON.stringify(toSave));
   }, [tabs, storageKey]);
 
   // Auto-scroll to bottom of messages
@@ -195,6 +254,7 @@ export function AIChatDrawer() {
           id: newTabId,
           name: newTabName,
           messages: [],
+          suggestions: generateSuggestions(newTabId, isVet),
         },
       ];
     });
@@ -283,23 +343,14 @@ export function AIChatDrawer() {
     }
   };
 
-  // Suggestion chips based on user role
-  const vetSuggestions = [
-    '¿Esta mascota tiene alergias o contraindicaciones?',
-    'Resumir el historial de consultas médicas',
-    'Buscar Cefalexina en el vademécum oficial',
-  ];
-
-  const ownerSuggestions = [
-    '¿Cuándo le toca el próximo refuerzo de vacuna?',
-    'Explicar los diagnósticos recientes en palabras simples',
-    'Mi mascota está vomitando y decaída, ¿es urgente? (Triaje)',
-  ];
-
-  const suggestions = isVet ? vetSuggestions : ownerSuggestions;
-
   const currentTab = tabs.find((t) => t.id === activeTabId) || tabs[0];
   const messages = currentTab.messages;
+
+  // Fill suggestions lazily if tab has none (e.g. loaded from old localStorage)
+  const suggestions = useMemo(() => {
+    if (currentTab.suggestions.length > 0) return currentTab.suggestions;
+    return generateSuggestions(currentTab.id, isVet, activePet?.nombre);
+  }, [currentTab.id, currentTab.suggestions, isVet, activePet?.nombre]);
 
   // Lightweight markdown bold and lists formatter
   const formatMessageText = (text: string) => {
@@ -443,12 +494,12 @@ export function AIChatDrawer() {
                         color: 'var(--color-primary-light, #2563eb)',
                         fontSize: '11px',
                         cursor: 'pointer',
-                        display: 'flex',
                         alignItems: 'center',
                         gap: 4,
                         padding: '2px 6px',
                         borderRadius: '4px',
                         transition: 'background 0.2s',
+                        display: 'none',
                       }}
                       title="Descargar respuesta como PDF"
                     >

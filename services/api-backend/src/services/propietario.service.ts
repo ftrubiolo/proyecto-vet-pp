@@ -1,5 +1,5 @@
 import { db } from "../db";
-import { eq, or, ilike } from "drizzle-orm";
+import { and, eq, or, ilike } from "drizzle-orm";
 import { mascotas_propietarios, propietarios, usuarios } from "../db/schema";
 import { MascotaService } from "./mascota.service";
 
@@ -247,5 +247,35 @@ export class PropietarioService {
     static async existsById(usuarioId: string): Promise<boolean> {
         const propietario = await this.getByUsuarioId(usuarioId);
         return !!propietario;
+    }
+
+    /**
+     * Obtiene los propietarios activos de una mascota con sus datos de contacto.
+     * @param mascotaId - ID de la mascota
+     * @returns Array de relaciones activas con propietario y tipo de relación
+     */
+    static async getByMascotaId(mascotaId: string): Promise<any[]> {
+        return await db.query.mascotas_propietarios.findMany({
+            where: and(
+                eq(mascotas_propietarios.mascota_id, mascotaId),
+                eq(mascotas_propietarios.activo, true)
+            ),
+            with: {
+                propietario: {
+                    with: {
+                        usuario: {
+                            columns: {
+                                email: true,
+                            }
+                        }
+                    }
+                },
+                tipo_relacion: {
+                    columns: {
+                        tipo: true,
+                    }
+                }
+            }
+        }) as any[];
     }
 }

@@ -1,6 +1,6 @@
 import { db } from "../db";
-import { and, eq, inArray } from "drizzle-orm";
-import { estados_cita, mascotas, mascotas_propietarios, clinicas_mascotas, veterinarios_clinicas } from "../db/schema";
+import { and, eq, inArray, or, ilike } from "drizzle-orm";
+import { estados_cita, mascotas, mascotas_propietarios, clinicas_mascotas, veterinarios_clinicas, razas, especies } from "../db/schema";
 
 import type { MascotaDb, NewMascota, DBClient } from '../types/db.types';
 import type { MascotaList, MascotaPerfil } from "@vetvault/shared";
@@ -348,5 +348,42 @@ export class MascotaService {
         }
 
         return mapped;
+    }
+
+    /**
+     * Busca mascotas por nombre o número de microchip.
+     * @param queryStr - Término de búsqueda
+     * @returns Lista de hasta 10 mascotas encontradas
+     */
+    static async search(queryStr: string): Promise<any[]> {
+        const q = `%${queryStr.trim().toLowerCase()}%`;
+        const result = await db
+            .select()
+            .from(mascotas)
+            .leftJoin(razas, eq(mascotas.raza_id, razas.id))
+            .leftJoin(especies, eq(razas.especie_id, especies.id))
+            .where(
+                or(
+                    ilike(mascotas.nombre, q),
+                    ilike(mascotas.numero_microchip, q)
+                )
+            )
+            .limit(10);
+
+        return result.map((row: any) => ({
+            id: row.mascotas.id,
+            nombre: row.mascotas.nombre,
+            foto_url: row.mascotas.foto_url,
+            fecha_nacimiento: row.mascotas.fecha_nacimiento,
+            edad: MascotaService.calcularEdad(row.mascotas.fecha_nacimiento),
+            sexo: row.mascotas.sexo as 'M' | 'H',
+            especie: row.razas?.especie?.especie || '',
+            raza: row.razas?.raza || '',
+            es_castrado: row.mascotas.es_castrado,
+            numero_microchip: row.mascotas.numero_microchip,
+            alergias: row.mascotas.alergias,
+            condiciones_cronicas: row.mascotas.condiciones_cronicas,
+            contraindicaciones: row.mascotas.contraindicaciones,
+        }));
     }
 }

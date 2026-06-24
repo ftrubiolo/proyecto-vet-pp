@@ -1,7 +1,7 @@
 import { db } from "../db";
 import { eq, and } from "drizzle-orm";
-import { atenciones, atenciones_diagnosticos, tratamientos, vacunas, citas, vacuna_protocolo, vacuna_serie, vacuna_dosis, catalogo_productos } from "../db/schema";
-import type { NewAtencion, NewTratamiento, NewVacuna } from "../types/db.types";
+import { atenciones, atenciones_diagnosticos, tratamientos, citas, vacuna_protocolo, vacuna_serie, vacuna_dosis, catalogo_productos } from "../db/schema";
+import type { NewAtencion, NewTratamiento } from "../types/db.types";
 
 export interface AtencionInput {
     cita_id?: string | null;
@@ -323,6 +323,46 @@ export class AtencionService {
                 }
             }
         });
+    }
+
+    /**
+     * Obtiene las últimas N atenciones de una mascota.
+     * @param mascotaId - ID de la mascota
+     * @param limit - Cantidad máxima de resultados (default 5)
+     * @returns Array de atenciones
+     */
+    static async getUltimasByMascotaId(mascotaId: string, limit: number = 5): Promise<any[]> {
+        return await db.query.atenciones.findMany({
+            where: eq(atenciones.mascota_id, mascotaId),
+            with: {
+                veterinario: {
+                    columns: {
+                        id: true,
+                        nombre: true,
+                        apellido: true,
+                    }
+                },
+                clinica: {
+                    columns: {
+                        id: true,
+                        nombre_comercial: true,
+                    }
+                },
+                atenciones_diagnosticos: {
+                    with: {
+                        diagnostico: true
+                    }
+                },
+                tratamientos: {
+                    with: {
+                        tipo_tratamiento: true,
+                        producto: true,
+                    }
+                }
+            },
+            orderBy: (atenciones, { desc }) => [desc(atenciones.fecha_atencion)],
+            limit,
+        }) as any[];
     }
 }
 
