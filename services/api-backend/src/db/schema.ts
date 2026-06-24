@@ -52,7 +52,6 @@ export const veterinariosRelations = relations(veterinarios, ({ one, many }) => 
   usuario: one(usuarios, { fields: [veterinarios.usuario_id], references: [usuarios.id] }),
   citas: many(citas),
   atenciones: many(atenciones),
-  vacunas: many(vacunas),
 }));
 
 export const veterinarios_clinicas = pgTable('veterinarios_clinicas', {
@@ -122,7 +121,6 @@ export const mascotasRelations = relations(mascotas, ({ one, many }) => ({
   mascotas_propietarios: many(mascotas_propietarios),
   citas: many(citas),
   atenciones: many(atenciones),
-  vacunas: many(vacunas),
 }));
 
 export const mascotas_propietarios = pgTable('mascotas_propietarios', {
@@ -281,26 +279,8 @@ export const productosCategoriasRelations = relations(productos_categorias, ({ o
 }));
 
 export const catalogoProductosRelations = relations(catalogo_productos, ({ many }) => ({
-  vacunas: many(vacunas),
   productos_categorias: many(productos_categorias),
   tratamientos: many(tratamientos),
-}));
-
-export const vacunas = pgTable('vacunas', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  mascota_id: uuid('mascota_id').notNull().references(() => mascotas.id),
-  veterinario_id: uuid('veterinario_id').references(() => veterinarios.id),
-  atencion_id: uuid('atencion_id').references(() => atenciones.id),
-  producto_id: integer('producto_id').notNull().references(() => catalogo_productos.id),
-  numero_lote: varchar('numero_lote'),
-  fecha_aplicacion: timestamp('fecha_aplicacion').notNull(),
-  fecha_proxima_dosis: timestamp('fecha_proxima_dosis'),
-});
-
-export const vacunasRelations = relations(vacunas, ({ one }) => ({
-  mascota: one(mascotas, { fields: [vacunas.mascota_id], references: [mascotas.id] }),
-  veterinario: one(veterinarios, { fields: [vacunas.veterinario_id], references: [veterinarios.id] }),
-  producto: one(catalogo_productos, { fields: [vacunas.producto_id], references: [catalogo_productos.id] }),
 }));
 
 export const tratamientos = pgTable('tratamientos', {
@@ -433,3 +413,12 @@ export const suscripciones = pgTable('suscripciones', {
 export const suscripcionesRelations = relations(suscripciones, ({ one }) => ({
   usuario: one(usuarios, { fields: [suscripciones.usuario_id], references: [usuarios.id] }),
 }));
+
+export const audit_log = pgTable('audit_log', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  user_id: uuid('user_id').notNull(),
+  user_rol: varchar('user_rol', { length: 20 }).notNull(),
+  tool: varchar('tool', { length: 100 }).notNull(),
+  args: jsonb('args'),
+  timestamp: timestamp('timestamp').defaultNow().notNull(),
+});

@@ -1,4 +1,4 @@
-import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas, mascotas, mascotas_propietarios, citas, tratamientos, atenciones, atenciones_diagnosticos, vacunas, vacuna_protocolo, vacuna_serie, vacuna_dosis, horarios_laborales } from "../db/schema";
+import { usuarios, veterinarios, propietarios, clinicas, veterinarios_clinicas, mascotas, mascotas_propietarios, citas, tratamientos, atenciones, atenciones_diagnosticos, vacuna_protocolo, vacuna_serie, vacuna_dosis, horarios_laborales } from "../db/schema";
 import { db } from "../db";
 
 export type DBClient = typeof db | any;
@@ -64,10 +64,6 @@ export type NewAtencion = typeof atenciones.$inferInsert;
 export type TratamientoDb = typeof tratamientos.$inferSelect;
 export type NewTratamiento = typeof tratamientos.$inferInsert;
 export type UpdateTratamiento = Partial<NewTratamiento>;
-
-export type VacunaDb = typeof vacunas.$inferSelect;
-export type NewVacuna = typeof vacunas.$inferInsert;
-export type UpdateVacuna = Partial<NewVacuna>;
 
 export type VacunaProtocoloDb = typeof vacuna_protocolo.$inferSelect;
 export type NewVacunaProtocolo = typeof vacuna_protocolo.$inferInsert;

@@ -71,6 +71,13 @@
       "when": 1781550388917,
       "tag": "0009_sharp_roughhouse",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1782000000000,
+      "tag": "0010_drop_vacunas",
+      "breakpoints": true
     }
   ]
 }

@@ -17,7 +17,9 @@ import {
   citas,
   atenciones,
   atenciones_diagnosticos,
-  vacunas,
+  vacuna_protocolo,
+  vacuna_serie,
+  vacuna_dosis,
   tratamientos,
   diagnosticos_atencion,
   catalogo_productos,
@@ -35,7 +37,8 @@ async function main() {
     await db.execute(sql`
       TRUNCATE TABLE 
         tratamientos, 
-        vacunas, 
+        vacuna_dosis, 
+        vacuna_serie, 
         atenciones_diagnosticos, 
         atenciones, 
         citas, 
@@ -137,6 +140,15 @@ async function main() {
       tratamientoMedicamento = inserted[0];
     }
 
+    let tratamientoAntiparasitario = dbTiposTratamiento.find(tt => tt.tipo === 'Antiparasitario');
+    if (!tratamientoAntiparasitario) {
+      const inserted = await db.insert(tipos_tratamiento).values({
+        tipo: 'Antiparasitario',
+        descripcion: 'Desparasitación interna y externa.'
+      }).returning();
+      tratamientoAntiparasitario = inserted[0];
+    }
+
     // --- 2. Asegurar Razas y Especies ---
     console.log('🐕 Verificando catálogo de razas...');
     const dbRazas = await db.select().from(razas);
@@ -182,19 +194,28 @@ async function main() {
     let otitisExterna = dbDiagnostics.find(d => d.diagnostico === 'Otitis Externa');
     let sano = dbDiagnostics.find(d => d.diagnostico === 'Paciente Sano / Control de Rutina');
     let gastroenteritis = dbDiagnostics.find(d => d.diagnostico === 'Gastroenteritis Aguda Inespecífica');
+    let dermatitisAtopica = dbDiagnostics.find(d => d.diagnostico === 'Dermatitis Atópica');
+    let parasitosisIntestinal = dbDiagnostics.find(d => d.diagnostico === 'Parasitosis Intestinal');
+    let infeccionUrinaria = dbDiagnostics.find(d => d.diagnostico === 'Infección Urinaria');
 
-    if (!otitisExterna || !sano || !gastroenteritis) {
+    if (!otitisExterna || !sano || !gastroenteritis || !dermatitisAtopica || !parasitosisIntestinal || !infeccionUrinaria) {
       console.log('⚠️ Diagnósticos incompletos. Insertando diagnósticos de prueba...');
       await db.insert(diagnosticos_atencion).values([
         { diagnostico: 'Otitis Externa', categoria: 'Dermatología' },
         { diagnostico: 'Paciente Sano / Control de Rutina', categoria: 'Preventivo / General' },
-        { diagnostico: 'Gastroenteritis Aguda Inespecífica', categoria: 'Gastroenterología' }
+        { diagnostico: 'Gastroenteritis Aguda Inespecífica', categoria: 'Gastroenterología' },
+        { diagnostico: 'Dermatitis Atópica', categoria: 'Dermatología' },
+        { diagnostico: 'Parasitosis Intestinal', categoria: 'Gastroenterología' },
+        { diagnostico: 'Infección Urinaria', categoria: 'Urología' }
       ]).onConflictDoNothing();
 
       const refreshedDiag = await db.select().from(diagnosticos_atencion);
       otitisExterna = refreshedDiag.find(d => d.diagnostico === 'Otitis Externa');
       sano = refreshedDiag.find(d => d.diagnostico === 'Paciente Sano / Control de Rutina');
       gastroenteritis = refreshedDiag.find(d => d.diagnostico === 'Gastroenteritis Aguda Inespecífica');
+      dermatitisAtopica = refreshedDiag.find(d => d.diagnostico === 'Dermatitis Atópica');
+      parasitosisIntestinal = refreshedDiag.find(d => d.diagnostico === 'Parasitosis Intestinal');
+      infeccionUrinaria = refreshedDiag.find(d => d.diagnostico === 'Infección Urinaria');
     }
 
     const dbProductos = await db.select().from(catalogo_productos).limit(50);
@@ -556,6 +577,83 @@ async function main() {
       await db.insert(citas).values(appt);
     }
 
+    // Citas para Hoy
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const tomorrow = new Date(today);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    const todayCitasData = [
+      {
+        mascota_id: mascotasList[5].id, // Mia
+        veterinario_id: vVeronica[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0),
+        motivo_id: vacunacion!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      {
+        mascota_id: mascotasList[7].id, // Simba
+        veterinario_id: vDante[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaAgendada!.id
+      },
+      {
+        mascota_id: mascotasList[1].id, // Lola
+        veterinario_id: vVeronica[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 14, 0),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      {
+        mascota_id: mascotasList[4].id, // Rocky
+        veterinario_id: vMaxi[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 16, 0),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      }
+    ];
+
+    for (const appt of todayCitasData) {
+      await db.insert(citas).values(appt);
+    }
+
+    // Citas para Mañana
+    const tomorrowCitasData = [
+      {
+        mascota_id: mascotasList[3].id, // Luna
+        veterinario_id: vMaxi[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 9, 0),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      {
+        mascota_id: mascotasList[6].id, // Beto
+        veterinario_id: vVeronica[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 11, 0),
+        motivo_id: vacunacion!.id,
+        estado_cita_id: citaAgendada!.id
+      },
+      {
+        mascota_id: mascotasList[2].id, // Felix
+        veterinario_id: vDante[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(tomorrow.getFullYear(), tomorrow.getMonth(), tomorrow.getDate(), 15, 0),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      }
+    ];
+
+    for (const appt of tomorrowCitasData) {
+      await db.insert(citas).values(appt);
+    }
+
     // --- 12. Crear Atenciones Clínicas ---
     console.log('🩺 Registrando consultas clínicas, vacunas y tratamientos...');
 
@@ -575,6 +673,50 @@ async function main() {
       diagnostico_id: sano!.id
     });
 
+    // Vacuna de refuerzo para Toby (nuevo sistema: protocolo → serie → dosis)
+    await db.insert(vacuna_protocolo).values({
+      senasa_id: vaccineProduct!.id,
+      numero_inscripcion: vaccineProduct!.numero_senasa,
+      nombre_comercial: vaccineProduct!.nombre_comercial,
+      total_dosis_serie_primaria: 1,
+      tiene_refuerzo: true,
+      refuerzo_cada_dias: 365,
+      fecha_validez: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      especies_target: ['Canino'],
+      vias_administracion: ['Subcutánea'],
+    }).onConflictDoNothing();
+
+    const serieToby = await db.insert(vacuna_serie).values({
+      protocolo_id: vaccineProduct!.id,
+      mascota_id: mascotasList[0].id,
+      veterinario_id: vDante[0].id,
+      fecha_inicio: pastCitasList[0].fecha_hora,
+      estado_serie: 'completa',
+      dosis_aplicadas: 1,
+      proximo_refuerzo: new Date(pastCitasList[0].fecha_hora.getTime() + 365 * 24 * 60 * 60 * 1000),
+    }).returning();
+
+    await db.insert(vacuna_dosis).values({
+      serie_id: serieToby[0].id,
+      atencion_id: aToby[0].id,
+      numero_dosis: 1,
+      fecha_aplicacion: pastCitasList[0].fecha_hora,
+      lote: 'L-AB456',
+      via_administracion: 'Subcutánea',
+    });
+
+    // Desparasitación preventiva para Toby
+    await db.insert(tratamientos).values({
+      atencion_id: aToby[0].id,
+      tipo_id: tratamientoAntiparasitario!.id,
+      producto_id: otherProduct2!.id,
+      dosis: '1 comprimido',
+      frecuencia: 'Dosis única, repetir a los 15 días',
+      fecha_inicio: pastCitasList[0].fecha_hora,
+      fecha_fin: new Date(pastCitasList[0].fecha_hora.getTime() + 15 * 24 * 60 * 60 * 1000),
+      indicaciones_adicionales: 'Administrar con el estómago lleno para evitar náuseas. Repetir dosis en 15 días para completar el ciclo.'
+    });
+
     // Atencion 2: Lola
     const aLola = await db.insert(atenciones).values({
       cita_id: pastCitasList[1].id,
@@ -591,14 +733,24 @@ async function main() {
       diagnostico_id: sano!.id
     });
 
-    await db.insert(vacunas).values({
+    // Vacuna para Lola (mismo protocolo, nueva serie)
+    const serieLola = await db.insert(vacuna_serie).values({
+      protocolo_id: vaccineProduct!.id,
       mascota_id: mascotasList[1].id,
       veterinario_id: vVeronica[0].id,
+      fecha_inicio: pastCitasList[1].fecha_hora,
+      estado_serie: 'completa',
+      dosis_aplicadas: 1,
+      proximo_refuerzo: new Date(pastCitasList[1].fecha_hora.getTime() + 365 * 24 * 60 * 60 * 1000),
+    }).returning();
+
+    await db.insert(vacuna_dosis).values({
+      serie_id: serieLola[0].id,
       atencion_id: aLola[0].id,
-      producto_id: vaccineProduct!.id,
-      numero_lote: 'L-AB123',
+      numero_dosis: 1,
       fecha_aplicacion: pastCitasList[1].fecha_hora,
-      fecha_proxima_dosis: new Date(pastCitasList[1].fecha_hora.getTime() + 365 * 24 * 60 * 60 * 1000)
+      lote: 'L-AB123',
+      via_administracion: 'Subcutánea',
     });
 
     // Atencion 3: Felix
