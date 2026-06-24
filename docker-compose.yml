@@ -1,0 +1,69 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  minio:
+    image: minio/minio
+    command: server /data --console-address :9001
+    environment:
+      MINIO_ROOT_USER: vetvault
+      MINIO_ROOT_PASSWORD: vetvault-secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api-backend:
+    build:
+      context: .
+      dockerfile: services/api-backend/Dockerfile
+    ports:
+      - "5000:5000"
+    env_file:
+      - services/api-backend/.env
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      MINIO_ENDPOINT: minio
+      MINIO_PUBLIC_URL: http://localhost:9000/vetvault-fotos
+    volumes:
+      - ./services/api-backend/src:/app/services/api-backend/src
+      - ./packages/shared/src:/app/packages/shared/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  web-app:
+    build:
+      context: .
+      dockerfile: apps/web-app/Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./apps/web-app/src:/app/apps/web-app/src
+    depends_on:
+      - api-backend
+
+volumes:
+  pgdata:
+  miniodata:
