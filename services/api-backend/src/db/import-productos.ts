@@ -16,9 +16,9 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 
 async function main() {
   const rootDir = path.resolve(__dirname, '../../');
-  const catPath = path.resolve(rootDir, 'categorias.json');
-  const prodPath = path.resolve(rootDir, 'productos.json');
-  const relPath = path.resolve(rootDir, 'productos_categorias.json');
+  const catPath = path.resolve(rootDir, 'data/categorias.json');
+  const prodPath = path.resolve(rootDir, 'data/productos.json');
+  const relPath = path.resolve(rootDir, 'data/productos_categorias.json');
 
   // Verificar la existencia de todos los archivos JSON requeridos
   for (const filePath of [catPath, prodPath, relPath]) {

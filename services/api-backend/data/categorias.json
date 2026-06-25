@@ -1,0 +1,332 @@
+[
+  {
+    "id": 33,
+    "categoria": "Antipirético",
+    "descripcion": "Medicamento común para el control de la fiebre."
+  },
+  {
+    "id": 34,
+    "categoria": "Piroplasmicida",
+    "descripcion": "Fármaco específico para hemoparásitos (ej: Babesia)."
+  },
+  {
+    "id": 36,
+    "categoria": "Modificador de la Conducta",
+    "descripcion": "Psicotrópicos controlados (ej: ansiolíticos). Requiere Receta Archivada."
+  },
+  {
+    "id": 1,
+    "categoria": "Afecciones del sistema circulatorio",
+    "descripcion": "Medicamentos cardiovasculares y soporte hemodinámico."
+  },
+  {
+    "id": 2,
+    "categoria": "Afecciones del sistema digestivo",
+    "descripcion": "Antieméticos, procinéticos y protectores."
+  },
+  {
+    "id": 3,
+    "categoria": "Afecciones del sistema locomotor",
+    "descripcion": "Medicamentos para artrosis, artritis y dolor articular."
+  },
+  {
+    "id": 4,
+    "categoria": "Afecciones del sistema reproductivo",
+    "descripcion": "Hormonas reproductivas sintéticas."
+  },
+  {
+    "id": 5,
+    "categoria": "Afecciones del sistema nervioso central",
+    "descripcion": "Anticonvulsivos, sedantes y anestésicos controlados."
+  },
+  {
+    "id": 6,
+    "categoria": "Afecciones del sistema nervioso periférico",
+    "descripcion": "Fármacos para el tratamiento de parálisis o neuropatías locales."
+  },
+  {
+    "id": 7,
+    "categoria": "Afecciones del sistema respiratorio",
+    "descripcion": "Broncodilatadores, mucolíticos y antibióticos respiratorios."
+  },
+  {
+    "id": 8,
+    "categoria": "Afecciones del sistema urinario",
+    "descripcion": "Medicamentos para insuficiencia renal o infecciones urinarias."
+  },
+  {
+    "id": 9,
+    "categoria": "Afecciones del sistema endócrino",
+    "descripcion": "Hormonas tiroideas, insulina y tratamientos metabólicos."
+  },
+  {
+    "id": 10,
+    "categoria": "Afecciones del sistema tegumentario",
+    "descripcion": "Fármacos dermatológicos tópicos o sistémicos."
+  },
+  {
+    "id": 11,
+    "categoria": "Afecciones Oticas",
+    "descripcion": "Suspensiones de prescripción para otitis bacterianas o micóticas."
+  },
+  {
+    "id": 12,
+    "categoria": "Afecciones oftalmológicas",
+    "descripcion": "Colirios y ungüentos oftálmicos antibióticos/antiinflamatorios."
+  },
+  {
+    "id": 13,
+    "categoria": "Anestésico",
+    "descripcion": "Anestésicos fijos e inhalatorios. Requiere Receta Archivada."
+  },
+  {
+    "id": 16,
+    "categoria": "Estados Inflamatorios",
+    "descripcion": "Corticoides y antiinflamatorios no esteroides (AINEs)."
+  },
+  {
+    "id": 17,
+    "categoria": "Garrapata Bovina",
+    "descripcion": "Antiparasitarios externos con estrictos tiempos de carencia en carne/leche."
+  },
+  {
+    "id": 18,
+    "categoria": "Infecciones Bacterianas",
+    "descripcion": "Antibióticos sistémicos. Validez máxima de receta de 5 días (Res. 80/2025)."
+  },
+  {
+    "id": 19,
+    "categoria": "Infecciones Micóticas",
+    "descripcion": "Antimicóticos locales y sistémicos."
+  },
+  {
+    "id": 20,
+    "categoria": "Infecciones Virales",
+    "descripcion": "Antivirales o inmunomoduladores específicos."
+  },
+  {
+    "id": 21,
+    "categoria": "Inmunogeno / Vacuna",
+    "descripcion": "Biológicos. Obligatorio control de número de lote en base de datos."
+  },
+  {
+    "id": 24,
+    "categoria": "Manejo de la Reproducción",
+    "descripcion": "Agentes hormonales de control de estro o sincronización de celo."
+  },
+  {
+    "id": 25,
+    "categoria": "Melophagosis Ovina",
+    "descripcion": "Antiparasitarios externos específicos para ovinos."
+  },
+  {
+    "id": 26,
+    "categoria": "Neoplasias",
+    "descripcion": "Agentes quimioterápicos oncológicos de manejo delicado."
+  },
+  {
+    "id": 27,
+    "categoria": "Parasitosis Externas",
+    "descripcion": "Antiparasitarios de uso en el animal (pipetas, inyectables, collares)."
+  },
+  {
+    "id": 28,
+    "categoria": "Parasitosis Internas",
+    "descripcion": "Antiparasitarios orales o inyectables (nematodos y cestodos)."
+  },
+  {
+    "id": 29,
+    "categoria": "Sarna Bovina",
+    "descripcion": "Tratamientos inyectables (ej: ivermectina) o baños sarnicidas."
+  },
+  {
+    "id": 30,
+    "categoria": "Sarna Ovina",
+    "descripcion": "Tratamientos específicos de sarna ovina con periodo de retiro."
+  },
+  {
+    "id": 44,
+    "categoria": "Eutanásico",
+    "descripcion": "Sustancias barbitúricas controladas de uso profesional exclusivo."
+  },
+  {
+    "id": 45,
+    "categoria": "Sedante",
+    "descripcion": "Psicotrópicos de venta bajo receta archivada (ej: xilacina)."
+  },
+  {
+    "id": 46,
+    "categoria": "Analgésico",
+    "descripcion": "Control del dolor agudo y crónico."
+  },
+  {
+    "id": 47,
+    "categoria": "Miorrelajante",
+    "descripcion": "Medicamento terapéutico para espasmos musculares."
+  },
+  {
+    "id": 48,
+    "categoria": "Agente parasimpaticolítico",
+    "descripcion": "Fármacos autónomos de emergencia (ej: atropina)."
+  },
+  {
+    "id": 49,
+    "categoria": "Anticolinérgico",
+    "descripcion": "Inhibidores de receptores de acetilcolina."
+  },
+  {
+    "id": 50,
+    "categoria": "Coagulante",
+    "descripcion": "Antiespasmódicos, procoagulantes o fitomenadiona."
+  },
+  {
+    "id": 56,
+    "categoria": "Antihistamínicos",
+    "descripcion": "Tratamiento de reacciones alérgicas o prurito agudo."
+  },
+  {
+    "id": 60,
+    "categoria": "Diuretico",
+    "descripcion": "Fármacos para la remoción de líquidos (ej: furosemida)."
+  },
+  {
+    "id": 62,
+    "categoria": "Inmunomodulador",
+    "descripcion": "Moduladores de la respuesta inmunológica."
+  },
+  {
+    "id": 63,
+    "categoria": "Analéptico",
+    "descripcion": "Estimulantes cardiorrespiratorios de emergencia."
+  },
+  {
+    "id": 64,
+    "categoria": "Antiinflamatorio",
+    "descripcion": "Antiinflamatorios generales (ej: meloxicam, flunixin)."
+  },
+  {
+    "id": 73,
+    "categoria": "Hematínico",
+    "descripcion": "Tratamientos para anemia (ej: hierro dextrano)."
+  },
+  {
+    "id": 74,
+    "categoria": "Anticetogenico",
+    "descripcion": "Tratamiento de cetosis en vacas lecheras."
+  },
+  {
+    "id": 76,
+    "categoria": "Antiulceroso",
+    "descripcion": "Protectores gástricos de prescripción (ej: omeprazol)."
+  },
+  {
+    "id": 77,
+    "categoria": "Hemostático",
+    "descripcion": "Control de hemorragias quirúrgicas o accidentales."
+  },
+  {
+    "id": 79,
+    "categoria": "Anabólico",
+    "descripcion": "Hormonas anabólicas sujetas a control legal y periodo de carencia."
+  },
+  {
+    "id": 80,
+    "categoria": "Orexígeno",
+    "descripcion": "Estimulantes del apetito (ej: ciproheptadina)."
+  },
+  {
+    "id": 82,
+    "categoria": "Desintoxicante",
+    "descripcion": "Protectores hepáticos inyectables o agentes quelantes."
+  },
+  {
+    "id": 84,
+    "categoria": "Neurolitico",
+    "descripcion": "Fármacos para bloqueo neurolítico del dolor crónico."
+  },
+  {
+    "id": 85,
+    "categoria": "Antiflogístico",
+    "descripcion": "Antiinflamatorios de acción localizada."
+  },
+  {
+    "id": 86,
+    "categoria": "Antitrombótico",
+    "descripcion": "Fármacos anticoagulantes."
+  },
+  {
+    "id": 88,
+    "categoria": "Estimulador de la actividad ovárica",
+    "descripcion": "Hormonas gonadotrópicas de prescripción."
+  },
+  {
+    "id": 89,
+    "categoria": "Antiprolactínico",
+    "descripcion": "Inhibidores de prolactina (ej. cabergolina en pseudopreñez)."
+  },
+  {
+    "id": 93,
+    "categoria": "Antibiotico intramamario",
+    "descripcion": "Tratamientos de mastitis. Crítico por periodo de retiro en leche."
+  },
+  {
+    "id": 96,
+    "categoria": "Inductor del parto",
+    "descripcion": "Hormonas como la oxitocina de prescripción."
+  },
+  {
+    "id": 97,
+    "categoria": "Antidiarreico",
+    "descripcion": "Tratamientos clínicos para diarreas severas."
+  },
+  {
+    "id": 98,
+    "categoria": "Protector de la mucosa gástrica",
+    "descripcion": "Tratamientos para gastritis y úlceras."
+  },
+  {
+    "id": 102,
+    "categoria": "Dermatológico",
+    "descripcion": "Cremas medicadas, ungüentos antibióticos/micóticos tópicos."
+  },
+  {
+    "id": 103,
+    "categoria": "Tramiento del shock anafiláctico",
+    "descripcion": "Adrenalina, dexametasona inyectable (emergencia)."
+  },
+  {
+    "id": 104,
+    "categoria": "Antitóxico",
+    "descripcion": "Antídotos para envenenamientos clínicos."
+  },
+  {
+    "id": 106,
+    "categoria": "Afecciones podales",
+    "descripcion": "Tratamientos locales para pietín y otras afecciones de pezuñas."
+  },
+  {
+    "id": 109,
+    "categoria": "Antiarrítmico",
+    "descripcion": "Fármacos cardíacos de prescripción (ej: digoxina)."
+  },
+  {
+    "id": 111,
+    "categoria": "Antifibrinolítico",
+    "descripcion": "Fármacos para el control del sangrado severo."
+  },
+  {
+    "id": 115,
+    "categoria": "simpaticomiético indirecto",
+    "descripcion": "Medicamentos especializados (ej: fenilpropanolamina)."
+  },
+  {
+    "id": 121,
+    "categoria": "tranquilizante/ no sedante",
+    "descripcion": "Psicotrópicos modificadores de conducta leves."
+  },
+  {
+    "id": 122,
+    "categoria": "Anticoccidial",
+    "descripcion": "Tratamiento farmacológico de la coccidiosis en el animal."
+  }
+]

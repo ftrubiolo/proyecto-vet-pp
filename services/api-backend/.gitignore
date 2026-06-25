@@ -1,7 +1,3 @@
 node_modules
 .env
 .venev
-veterinarios_limpios.json
-categorias.json
-productos.json
-productos_categorias.json

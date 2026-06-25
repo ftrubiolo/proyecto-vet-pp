@@ -15,7 +15,7 @@ function chunkArray<T>(array: T[], size: number): T[][] {
 }
 
 async function main() {
-  const jsonPath = path.resolve(__dirname, '../../veterinarios_limpios.json');
+  const jsonPath = path.resolve(__dirname, '../../data/veterinarios_limpios.json');
 
   if (!fs.existsSync(jsonPath)) {
     console.error(`\n[ERROR] No se encontró el archivo JSON en: ${jsonPath}`);
