@@ -20,9 +20,9 @@ RUN cd /app/packages/shared && npm run build
 # 4. Copiar código fuente y datos del backend
 COPY services/api-backend ./services/api-backend
 
-# 5. Configurar script de inicio
+# 5. Configurar script de inicio (removiendo posibles retornos de carro CRLF de Windows)
 COPY services/api-backend/docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
+RUN sed -i 's/\r$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh
 
 WORKDIR /app/services/api-backend
 

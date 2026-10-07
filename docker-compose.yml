@@ -47,13 +47,19 @@ services:
     ports:
       - "8000:8000"
     env_file:
-      - services/api-backend/.env
+      - path: services/api-backend/.env
+        required: false
     environment:
       PORT: "8000"
+      NODE_ENV: dev
+      JWT_SECRET: "vetvault_super_secret_jwt_key_2026_dev"
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
       MINIO_ENDPOINT: minio
       MINIO_PORT: "9000"
       MINIO_PUBLIC_URL: http://localhost:9000/vetvault-fotos
+      MINIO_ACCESS_KEY: vetvault
+      MINIO_SECRET_KEY: vetvault-secret
+      MINIO_BUCKET: vetvault-fotos
     volumes:
       - ./services/api-backend/src:/app/services/api-backend/src
       - ./services/api-backend/data:/app/services/api-backend/data
