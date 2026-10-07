@@ -236,10 +236,10 @@ body {
   }
 }
 
-@keyframes slideRightIn {
+@keyframes slideInRight {
   from {
     opacity: 0;
-    transform: translateX(-8px);
+    transform: translateX(16px);
   }
   to {
     opacity: 1;
@@ -257,4 +257,8 @@ body {
 
 .animate-slide-down {
   animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInRight 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
