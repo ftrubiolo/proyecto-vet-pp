@@ -18,7 +18,7 @@ Run all commands from each workspace's own directory. No root-level scripts.
 ### API backend (`services/api-backend/`)
 
 ```bash
-npm run dev              # tsx watch src/server.ts on :5000
+npm run dev              # tsx watch src/server.ts on :8000
 npm run db:setup         # reset + push + seed + import-vets + import-productos
 npm run db:seed-mock     # optional fake data for local dev
 npm run db:push          # sync Drizzle schema to Postgres
@@ -28,7 +28,7 @@ npm run db:studio        # Drizzle Kit Studio
 ### Web app (`apps/web-app/`)
 
 ```bash
-npm run dev              # Vite dev server on :5173
+npm run dev              # Vite dev server on :8080
 npm run build            # tsc -b && vite build
 npm run lint             # ESLint (ts,tsx only)
 ```
@@ -44,7 +44,7 @@ npm run build            # tsc -> dist/
 ## Key conventions
 
 - **Module systems differ**: `api-backend` is CommonJS (`"type": "commonjs"`), `web-app` and `shared` are ESM.
-- **API base** is hardcoded to `http://localhost:5000/api` in `apps/web-app/src/api/client.ts`.
+- **API base** defaults to `http://localhost:8000/api` in `apps/web-app/src/api/client.ts` (configured via `VITE_API_URL`).
 - **Auth**: JWT in HttpOnly cookie named `token`. Endpoints use `verifyToken` preHandler. Session restored by calling `GET /api/usuarios/me` on mount.
 - **All API routes** are prefixed with `/api` and registered in `services/api-backend/src/routes/index.ts`. Swagger docs at `/documentation`.
 - **No tests** in any package — no test script, runner, or fixtures exist.

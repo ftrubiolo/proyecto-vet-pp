@@ -71,7 +71,7 @@ proyecto-vet-pp/
    ```
 3. Crea un archivo `.env` en `services/api-backend/` basándote en la siguiente plantilla:
    ```ini
-   PORT=5000
+   PORT=8000
    DATABASE_URL="postgres://tu_usuario:tu_contraseña@localhost:5432/vetvault"
    JWT_SECRET="clave_secreta_jwt_muy_segura"
    NODE_ENV="dev"
@@ -83,7 +83,7 @@ proyecto-vet-pp/
    ```
 5. Corre la API en modo desarrollo:
    ```bash
-   npm run dev             # Levantará el servidor en http://localhost:5000
+   npm run dev             # Levantará el servidor en http://localhost:8000
    ```
 
 ### Paso 2: Construir el Paquete Compartido
@@ -107,7 +107,7 @@ El frontend web depende del paquete `@vetvault/shared`, por lo que debe compilar
 2. Instala las dependencias y corre el empaquetador de Vite:
    ```bash
    npm install
-   npm run dev             # Levantará la interfaz web en http://localhost:5173
+   npm run dev             # Levantará la interfaz web en http://localhost:8080
    ```
 
 ---

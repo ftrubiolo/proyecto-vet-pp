@@ -28,7 +28,7 @@ export const createCheckoutSession = async (request: FastifyRequest, reply: Fast
 
   try {
     const preApproval = new PreApproval(client);
-    const host = process.env.FRONTEND_URL || 'http://localhost:5173';
+    const host = process.env.FRONTEND_URL || 'http://localhost:8080';
     let backUrl = `${host}/register/success`;
     if (backUrl.includes('localhost') || backUrl.includes('127.0.0.1')) {
       backUrl = 'https://vetvault.com/register/success';

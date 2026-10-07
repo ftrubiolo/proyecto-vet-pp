@@ -33,7 +33,11 @@
    * [2.7.3. Diagramas de Secuencia (Copiloto IA y Flujo Clínico de Atención/Vacunación)](#273-diagramas-de-secuencia)
    * [2.7.4. Diagrama de Arquitectura de Alto Nivel](#274-diagrama-de-arquitectura-de-alto-nivel)
    * [2.7.5. Diagrama Entidad-Relación (DER)](#275-diagrama-entidad-relación-der)
-8. [2.8. Diseño y Prototipado UX/UI (Design Tokens, Glassmorphism y Roles)](#28-diseño-y-prototipado-uxui)
+8. [2.8. Diseño y Prototipado (UX/UI)](#28-diseño-y-prototipado-uxui)
+   * [2.8.1. Prototipado Inicial y Exploración Visual (Stitch y Prototipo Web)](#281-prototipado-inicial-y-exploración-visual-stitch-y-prototipo-web)
+   * [2.8.2. Mockups de Pantallas Principales (Sistema Final en Producción)](#282-mockups-de-pantallas-principales-sistema-final-en-producción)
+   * [2.8.3. Flujo de Navegación y Arquitectura de la Información](#283-flujo-de-navegación-y-arquitectura-de-la-información)
+   * [2.8.4. Justificación de Decisiones de Diseño](#284-justificación-de-decisiones-de-diseño)
 9. [2.9. Arquitectura Técnica (Desglose Formal del Stack Tecnológico)](#29-arquitectura-técnica)
 10. [2.10. Implementación de Inteligencia Artificial (Copiloto Clínico Gemini)](#210-implementación-de-inteligencia-artificial)
 11. [2.11. Base de Datos (Diccionario de Datos y Script DDL SQL)](#211-base-de-datos)
@@ -50,7 +54,7 @@
 **Visión General:** **VetVault** es una solución SaaS integral de gestión clínica veterinaria y seguimiento de salud de mascotas orientada a resolver la dispersión de datos clínicos, la pérdida de trazabilidad médica de pacientes animales y la consecuente fuga de clientes recurrentes en clínicas y consultorios veterinarios.
 
 El ecosistema está construido como un **monorrepitorio modular en TypeScript** con separación estricta de responsabilidades:
-- **Frontend Web:** Aplicación SPA reactiva desarrollada en **React 19** con **Vite 8** y **React Router 7**, estilizada mediante un sistema de diseño propio basado en **CSS Custom Properties**, efectos de **Glassmorphism**, soporte completo para modo claro/oscuro y acentuación semántica según el rol del usuario.
+- **Frontend Web:** Aplicación SPA reactiva desarrollada en **React 19** con **Vite 8** y **React Router 7**, estilizada con **Tailwind CSS v4** mediante un sistema de diseño basado en design tokens, efectos de **Glassmorphism**, soporte completo para modo claro/oscuro y acentuación semántica según el rol del usuario.
 - **Backend API:** Servicio REST de alto rendimiento construido en **Fastify 5** sobre **Node.js (v22+)** y **TypeScript**, implementando una arquitectura por capas desacoplada (Controladores, Servicios, Rutas, Middlewares).
 - **Persistencia y Almacenamiento:** Base de datos relacional **PostgreSQL 16** modelada y administrada mediante **Drizzle ORM** (con Drizzle Kit para migraciones y schemas fuertemente tipados), complementada con almacenamiento de objetos compatible con **S3 (MinIO / AWS S3)** para fotografías de pacientes y perfiles profesionales.
 
@@ -136,7 +140,7 @@ VetVault capitaliza esta brecha entregando una plataforma SaaS web moderna, resp
   - *Rate Limiting:* Limitación en memoria a un máximo de **30 peticiones por minuto** por usuario en `/api/ai/chat`.
   - *Presupuesto de Tools (MAX_FUNCTION_CALLS):* Cuota estricta por turno: 8 llamadas para Veterinario, 4 para Propietario/Tutor y 8 para Administrador.
   - *Prompt Injection Guardrails:* Cláusulas de sistema que impiden revelar instrucciones internas, eludir reglas de negocio o prescribir fármacos sin supervisión médica.
-* **RNF-05: Usabilidad e Identidad Visual (UX/UI):** Interfaz Web Mobile-First construida con Sistema de Tokens CSS, microinteracciones fluidas, soporte nativo de modo claro/oscuro y alternancia de acentos dinámicos por rol (`.role-vet` en azul `#0EA5E9` y `.role-owner` en verde `#22C55E`), alcanzando un puntaje superior a 85 en la escala SUS.
+* **RNF-05: Usabilidad e Identidad Visual (UX/UI):** Interfaz Web Mobile-First construida con **Tailwind CSS** y un sistema de tokens de diseño, microinteracciones fluidas, soporte nativo de modo claro/oscuro y alternancia de acentos dinámicos por rol (`.role-vet` en azul `#0EA5E9` y `.role-owner` en verde `#22C55E`), alcanzando un puntaje superior a 85 en la escala SUS.
 * **RNF-06: Portabilidad y Contenedorización:** Toda la plataforma (Fastify API, React Web App, PostgreSQL 16 y MinIO Object Storage) debe ser desplegable y reproducible de manera idéntica mediante `docker-compose.yml`.
 
 ---
@@ -396,7 +400,7 @@ Este diagrama detalla la arquitectura desacoplada real del sistema, sus capas y 
 ```mermaid
 graph TD
     subgraph Presentacion [Capa de Presentación]
-        A["Web App SPA (React 19 + Vite 8 + CSS Tokens)"]
+        A["Web App SPA (React 19 + Vite 8 + Tailwind CSS)"]
         A2["Mobile App (React Native - En desarrollo)"]
     end
 
@@ -565,32 +569,141 @@ erDiagram
 
 ---
 
-## 2.8. Diseño y Prototipado UX/UI
+## 2.8. Diseño y Prototipado (UX/UI)
 
-El diseño de VetVault sigue una filosofía moderna, limpia y altamente legible, diseñada para entornos clínicos donde la velocidad de lectura y la precisión son prioritarias.
+El diseño de VetVault articula una metodología moderna de diseño de producto digital centrada en dos usuarios primarios: el profesional veterinario y el tutor de mascotas. La interfaz persigue minimizar la carga cognitiva del profesional durante la consulta presencial y brindar una experiencia fluida, cálida y transparente para los propietarios.
 
-### Flujo de Navegación Diferenciado
-El sistema adapta su interfaz según el rol autenticado:
-1. **Perfil Veterinario:** Enfocado en la productividad clínica. Presenta accesos directos a la **Agenda de Turnos del Día**, **Ficha del Paciente Activo**, **Historial Clínico por pestañas**, **Módulo de Nueva Atención con Prescripción** y el cajón retráctil del **Copiloto Clínico IA (`AIChatDrawer`)**.
-2. **Perfil Propietario / Tutor:** Diseñado bajo paradigma Mobile-First. Prioriza la visualización del **Carné Digital de Vacunación**, la consulta de turnos programados, la ficha descriptiva de sus mascotas y el acceso al chat de orientación preventiva con IA.
-3. **Perfil Administrador:** Gestión de clínicas, sucursales, alta y verificación de profesionales y supervisión de suscripciones activas.
+### 2.8.1. Prototipado Inicial y Exploración Visual (Stitch y Prototipo Web)
 
-### Sistema de Tokens y Temas CSS
-En lugar de depender de frameworks CSS invasivos, VetVault implementa un **Sistema de Tokens Semánticos Nativo** en `src/index.css`:
-* **Tipografías:** `Manrope` (Sans-Serif) para encabezados y números de alto impacto, e `Inter` para cuerpos de texto, tablas y datos clínicos.
-* **Efectos Glassmorphism:**
-  - Tarjetas principales (`.card`): fondo con degradado sutil (`var(--surface)`), borde fino (`1px solid var(--border)`) y desenfoque de fondo (`backdrop-filter: blur(12px)`).
-  - Elementos anidados (`.card-inner`): elevación visual ligera con `backdrop-filter: blur(8px)`.
-* **Modo Oscuro Dinámico:** Activado automáticamente mediante el atributo `[data-theme="dark"]`, redefiniendo variables de superficie (`#0f1119` a `#12151d`) y contrastes tipográficos sin necesidad de recompilar estilos.
-* **Modo Compacto:** Activado mediante `[data-compact="true"]` para optimizar la densidad de información en pantallas de consultorio médico reduciendo paddings y márgenes.
-* **Acentos Semánticos por Rol:**
-  - `.role-vet`: Acento primario azul (`#0EA5E9` / `--accent-blue`) que transmite serenidad y precisión clínica.
-  - `.role-owner`: Acento primario verde esmeralda (`#22C55E` / `--accent-green`) que aporta cercanía y calidez a los tutores.
+En consonancia con las prácticas ágiles contemporáneas asistidas por herramientas de IA generativa, el equipo prescindió de bocetos estáticos planos en papel o wireframes tradicionales monocromáticos, optando por una progresión directa de **exploración visual funcional en Stitch** complementada con un **prototipo web interactivo desplegado en la nube**.
 
-### Componente de Chat Inteligente (AIChatDrawer)
-El componente `AIChatDrawer.tsx` proporciona una interfaz conversacional fluida:
-* **Sugerencias Aleatorias:** Muestra 3 tarjetas de consulta rápida extraídas de un pool de 10 sugerencias adaptadas al rol (los veterinarios reciben consultas sobre vademécum, dosis o diagnósticos; los tutores reciben consultas sobre calendarios de vacunas o cuidados primarios).
-* **Feedback de Herramientas:** Cuando la IA invoca una función interna, la interfaz notifica al usuario qué acción clínica se está resolviendo de manera transparente.
+#### Fase A: Exploración de Concepto y Roles en Stitch
+Mediante la herramienta de diseño e ideación **Stitch**, se exploraron los esquemas iniciales de interacción diferenciada entre profesionales veterinarios y tutores:
+
+1. **Onboarding y Selección de Rol:**
+   Definición del punto de entrada que bifurca la experiencia del usuario entre herramientas clínicas de gestión avanzada y el pasaporte sanitario del paciente.
+   ![Exploración de Onboarding y Selección de Roles en Stitch](assets/stitch/Screenshot 2026-10-07 at 19-25-56 Stitch - Preview.png)
+
+2. **Acceso Seguro y Credenciales:**
+   Esquema de autenticación inicial contemplando campos de acceso rápido y recuperación de credenciales para el personal de la clínica.
+   ![Boceto de Pantalla de Autenticación en Stitch](assets/stitch/Screenshot 2026-10-07 at 19-26-19 Stitch - Preview.png)
+
+3. **Panel Clínico Preliminar:**
+   Primera iteración estructural del tablero de control, evaluando la disposición de métricas operativas diarias (pacientes citados, reportes pendientes y casos activos).
+   ![Exploración Preliminar de Panel Veterinario en Stitch](assets/stitch/Screenshot 2026-10-07 at 19-27-09 Stitch - Preview.png)
+
+#### Fase B: Prototipo Interactivo Funcional (Deploy en GitHub Pages)
+Con el objetivo de realizar pruebas tempranas de usabilidad y validar la navegación antes de codificar la lógica del backend, el equipo desarrolló y desplegó un **prototipo web interactivo navegable**:
+
+* **URL del Prototipo en Vivo:** [https://ftrubiolo.github.io/prototipo/](https://ftrubiolo.github.io/prototipo/)
+* **Validación de Experiencia de Usuario:** Este prototipo permitió someter a prueba con veterinarios reales la visibilidad de turnos, el triaje rápido mediante alertas de emergencia simuladas por IA y la accesibilidad de la barra lateral de comandos.
+
+![Prototipo Interactivo de VetVault desplegado en GitHub Pages](assets/prototipo/Screenshot 2026-10-07 at 19-28-06 VetVault Prototipo.png)
+
+---
+
+### 2.8.2. Mockups de Pantallas Principales (Sistema Final en Producción)
+
+A partir de las conclusiones obtenidas en la fase de prototipado, se desarrolló la interfaz de usuario definitiva sobre **React 19**, **Vite 8** y **Tailwind CSS v4**. A continuación se presentan las pantallas nucleares del sistema:
+
+#### 1. Dashboard Clínico del Veterinario
+El centro neurálgico de la práctica médica diaria. Centraliza los indicadores clave de rendimiento (KPIs), el estado de los turnos de la jornada y los accesos rápidos a consultas:
+* **Tarjetas de Métricas en Tiempo Real:** Contabilización inmediata de turnos programados, pacientes registrados y alertas de refuerzo vacunal del día.
+* **Gráfico de Actividad Semanal:** Renderizado dinámico con la librería **Recharts** que ilustra la distribución de consultas generales, urgencias y vacunaciones.
+* **Timeline de Turnos:** Lista interactiva con estados semánticos (*Pendiente*, *Confirmada*, *Completada*) y botón de acción directa *"Atender"* que abre la consulta médica.
+
+![Dashboard Clínico del Veterinario en Producción](assets/screenshots/vet-dashboard.png)
+
+#### 2. Ficha Médica Integral del Paciente
+Permite al profesional examinar la historia clínica completa del animal en una única vista sin recargar la página:
+* **Cabecera de Filiación:** Nombre, especie, raza, edad calculada, estado reproductivo y badges de alerta médica (alergias graves o condiciones crónicas).
+* **Navegación por Pestañas:** Acceso modular a *Historial Clínico*, *Vacunas*, *Tratamientos* y *Datos Generales*.
+* **Seguimiento Ponderal:** Gráfico cronológico de evolución de peso corporal (kg) para detección temprana de patologías nutricionales o metabólicas.
+* **Trazabilidad Vacunal Oficial:** Cálculo automatizado de la fecha del próximo refuerzo basado en los intervalos certificados por el protocolo de SENASA.
+
+![Ficha Médica Integral del Paciente en Producción](assets/screenshots/pet-profile.png)
+
+#### 3. Agenda y Gestión de Citas Médicas
+Módulo destinado a coordinar la disponibilidad horaria de los profesionales y evitar solapamientos:
+* **Filtros Multi-Clínica:** Selector de sucursal veterinaria y vista de calendario diario y semanal.
+* **Modal de Creación y Reserva:** Selección ágil de tutor, paciente, motivo estandarizado de consulta y franja horaria habilitada.
+* **Transición de Estados:** Manejo visual de citas desde la confirmación hasta su concreción o cancelación justificada.
+
+![Agenda y Gestión de Citas en Producción](assets/screenshots/appointment-scheduling.png)
+
+#### 4. Copiloto Clínico IA Conversacional (AIChatDrawer)
+Asistente inteligente integrado de forma no invasiva mediante un panel lateral retráctil:
+* **Chips de Sugerencia Contextuales:** Muestra 3 tarjetas de consulta rápida rotativas según el rol (consultas sobre dosificación farmacológica o diagnósticos diferenciales para veterinarios; recordatorios o triaje preventivo para tutores).
+* **Transparencia en Function Calling:** Cuando el agente de IA invoca una de sus 14 herramientas internas (ej. consultar turnos o vademécum SENASA), la interfaz muestra visualmente el indicador de la función ejecutada.
+* **Rate Limiter Integrado:** Retroalimentación amigable si el usuario supera la cuota de peticiones por minuto.
+
+![Copiloto Clínico IA Conversacional en Producción](assets/screenshots/ai-chat.png)
+
+---
+
+### 2.8.3. Flujo de Navegación y Arquitectura de la Información
+
+La navegación del sistema se estructura mediante rutas protegidas administradas por **React Router 7**, segregando estrictamente los flujos según el rol autenticado:
+
+```mermaid
+flowchart TD
+    Login["Acceso al Sistema (Login / Registro)"] --> AuthCheck{"Verificación JWT & Rol"}
+    
+    %% Flujo Veterinario
+    AuthCheck -->|Rol: Veterinario| VetHome["Dashboard Clínico"]
+    VetHome --> VetCitas["Agenda de Citas"]
+    VetHome --> VetPacientes["Directorio de Pacientes"]
+    VetHome --> VetIA["Copiloto IA Clínico (Drawer)"]
+    
+    VetCitas --> AtencionModal["Atención Activa en Consultorio"]
+    AtencionModal --> Prescripcion["Prescripción (Catálogo SENASA)"]
+    AtencionModal --> Vacunacion["Protocolo Vacunal & Refuerzo"]
+    AtencionModal --> GenPDF["Emisión PDF Oficial (Carnet / Receta)"]
+    
+    VetPacientes --> FichaMascota["Ficha Integral del Paciente"]
+    FichaMascota --> HistorialClinico["Historial, Curva de Peso y Tratamientos"]
+
+    %% Flujo Propietario / Tutor
+    AuthCheck -->|Rol: Propietario / Tutor| OwnerHome["Portal del Tutor"]
+    OwnerHome --> MisMascotas["Mis Mascotas"]
+    OwnerHome --> SolicitarTurno["Solicitud de Turnos Online"]
+    OwnerHome --> OwnerIA["Copiloto IA Orientativo"]
+    MisMascotas --> CarnetDigital["Descarga Carnet Sanitario Digital (PDF)"]
+
+    %% Flujo Administrador
+    AuthCheck -->|Rol: Administrador| AdminHome["Panel de Administración"]
+    AdminHome --> GestionClinicas["Gestión de Clínicas & Sucursales"]
+    AdminHome --> ValidarVets["Validación Matrículas (Colegio Córdoba)"]
+    AdminHome --> Suscripciones["Control de Suscripciones SaaS (Mercado Pago)"]
+```
+
+---
+
+### 2.8.4. Justificación de Decisiones de Diseño
+
+El diseño de VetVault responde a requerimientos ergonómicos, normativos y de usabilidad propios del ámbito de la salud:
+
+1. **Psicología del Color y Acentuación Semántica por Rol:**
+   * **Azul Clínico (`#0EA5E9` / `--accent-blue`):** Empleado de manera prominente en el entorno del veterinario (`.role-vet`). Transmite precisión, calma y rigor profesional, alineándose con los estándares de interfaces médicas hospitalarias.
+   * **Verde Esmeralda (`#22C55E` / `--accent-green`):** Asignado al perfil de propietarios de mascotas (`.role-owner`). Aporta calidez, optimismo y sensación de vitalidad, fomentando la empatía en el cuidado preventivo del animal.
+   * **Superficies Neutras y Reducción de Fatiga Visual:** Fondos en blanco hueso (`#F8F9FA`) y superficies oscuras balanceadas (`#0F1119` en modo oscuro) previenen el agotamiento ocular de los profesionales que pasan múltiples horas continuas frente al monitor del consultorio.
+
+2. **Tipografía y Legibilidad de Datos Clínicos:**
+   * **`Manrope` (Sans-Serif geométrica):** Reservada para encabezados, cifras numéricas y badges de alerta, aportando un carácter contemporáneo y legible a gran escala.
+   * **`Inter`:** Utilizada para los cuerpos de texto, prescripciones y tablas de laboratorio. Su diseño neutro y proporciones optimizadas eliminan confusiones críticas en dosificaciones (como la distinción visual entre el número `1`, la letra `l` minúscula y la `I` mayúscula, o el `0` y la `O`).
+
+3. **Filosofía Glassmorphism (Efecto de Vidrio Esmerilado):**
+   * El uso de tarjetas con `backdrop-filter: blur(12px)`, degradados translúcidos sutiles y bordes de `1px` (`var(--border)`) proporciona una jerarquía visual tridimensional limpia.
+   * Esta técnica permite desplegar modales de prescripción o el cajón del Copiloto IA sin ocluir completamente la vista del historial del paciente que se encuentra de fondo, preservando la continuidad del contexto clínico.
+
+4. **Adopción de Tailwind CSS v4 y Design Tokens:**
+   * La interfaz implementa un sistema unificado de variables mediante `@theme` en `src/index.css`.
+   * Esta decisión garantiza que toda la biblioteca de componentes (botones, modales, tarjetas, inputs) consuma tokens consistentes sin sobrecarga de dependencias pesadas, logrando una hoja de estilos de producción ultraligera de apenas **64 KB** con tiempos de renderizado inmediatos.
+
+5. **Ergonomía de Consultorio y Accesibilidad (Mobile-First vs. Desktop):**
+   * **Veterinarios (Desktop / Tablet):** Orientado a pantallas de consultorio con densidad informativa optimizada mediante el modo compacto (`[data-compact="true"]`), reduciendo la necesidad de scroll vertical durante el examen físico del animal.
+   * **Tutores (Mobile-First):** Controles táctiles de gran área de interacción, diseño adaptable a dispositivos móviles y acceso al carné de vacunación en un solo toque para situaciones de viaje o urgencia médica.
+
 
 ---
 
@@ -614,7 +727,7 @@ proyecto-vet-pp/
 | Capa | Tecnología | Justificación y Rol en el Proyecto |
 | :--- | :--- | :--- |
 | **Frontend Web** | **React 19 + Vite 8** | Rendimiento óptimo de renderizado, empaquetado instantáneo con Vite y navegación por rutas con React Router 7. |
-| **Diseño / Estilos** | **CSS Custom Properties & Glassmorphism** | Sistema de diseño de alto rendimiento sin sobrecarga de dependencias, temas claro/oscuro y roles dinámicos. |
+| **Diseño / Estilos** | **Tailwind CSS v4 & Glassmorphism** | Sistema de diseño basado en utilidades y design tokens integrados con Vite, efectos glassmorphism, temas claro/oscuro y roles dinámicos. |
 | **Iconografía** | **Lucide React** | Conjunto completo y consistente de iconos vectoriales ligeros para interfaces médicas. |
 | **Comunicación HTTP** | **Native Fetch Wrapper (`apiFetch`)** | Cliente HTTP nativo con soporte integrado para `credentials: 'include'` (cookies seguras HttpOnly) y subidas multipart. |
 | **Backend REST API** | **Fastify 5 + TypeScript** | Framework Node.js de latencia ultra baja, arquitectura modular con TypeScript y tipado estricto. |
@@ -1028,7 +1141,7 @@ CREATE INDEX IF NOT EXISTS idx_audit_log_user ON audit_log(user_id);
 #### Backend (`services/api-backend/.env`)
 ```ini
 # Servidor y Puerto
-PORT=5000
+PORT=8000
 NODE_ENV=dev
 
 # Persistencia PostgreSQL
@@ -1055,7 +1168,7 @@ MINIO_PUBLIC_URL="http://localhost:9000/vetvault-fotos"
 
 #### Frontend (`apps/web-app/.env`)
 ```ini
-VITE_API_URL="http://localhost:5000/api"
+VITE_API_URL="http://localhost:8000/api"
 ```
 
 ### Procedimiento de Instalación y Arranque Rápido
@@ -1065,7 +1178,7 @@ Para iniciar todo el ecosistema con un solo comando (PostgreSQL, MinIO, Backend 
 ```bash
 docker compose up --build
 ```
-El servidor backend quedará disponible en `http://localhost:5000` y el cliente web en `http://localhost:5173`.
+El servidor backend quedará disponible en `http://localhost:8000` y el cliente web en `http://localhost:8080`.
 
 #### Opción B: Ejecución Local en Entorno de Desarrollo
 
@@ -1098,7 +1211,7 @@ El servidor backend quedará disponible en `http://localhost:5000` y el cliente 
 4. **Arranque del Backend API:**
    ```bash
    npm run dev
-   # El servidor iniciará con tsx watch en http://localhost:5000
+   # El servidor iniciará con tsx watch en http://localhost:8000
    ```
 
 5. **Arranque del Frontend Web:**
@@ -1107,7 +1220,7 @@ El servidor backend quedará disponible en `http://localhost:5000` y el cliente 
    cd apps/web-app
    npm install
    npm run dev
-   # La interfaz Vite estará activa en http://localhost:5173
+   # La interfaz Vite estará activa en http://localhost:8080
    ```
 
 ---
@@ -1204,7 +1317,7 @@ proyecto-vet-pp/
 │   │   ├── src/
 │   │   │   ├── api/client.ts        # Cliente Fetch con credenciales
 │   │   │   ├── components/layout/   # AIChatDrawer, Sidebar, Navbar
-│   │   │   └── index.css            # Sistema de Tokens y Glassmorphism
+│   │   │   └── index.css            # Directivas Tailwind, Tokens y Glassmorphism
 │   │   └── package.json
 │   └── mobile-app/                  # React Native (próxima fase)
 ├── packages/

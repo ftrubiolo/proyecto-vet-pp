@@ -53,7 +53,7 @@ const start = async () => {
       return { message: 'Backend API esta funcionando.' };
     });
 
-    const PORT = parseInt(process.env.PORT || '5000', 10);
+    const PORT = parseInt(process.env.PORT || '8000', 10);
     await app.listen({ port: PORT, host: '0.0.0.0' });
 
   } catch (err) {

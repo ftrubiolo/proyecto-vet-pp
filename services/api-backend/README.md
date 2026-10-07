@@ -53,7 +53,7 @@ services/api-backend/
 ### 1. Variables de Entorno (`.env`)
 Crea un archivo `.env` en la raíz de `services/api-backend` con los siguientes campos:
 ```ini
-PORT=5000
+PORT=8000
 DATABASE_URL="postgres://usuario:contraseña@servidor:5432/db"
 JWT_SECRET="tu_clave_secreta_para_firmar_tokens_jwt"
 NODE_ENV="dev"
@@ -87,7 +87,7 @@ npm install
 npm run db:setup
 npm run db:seed-mock
 
-# Iniciar servidor en modo desarrollo (http://localhost:5000)
+# Iniciar servidor en modo desarrollo (http://localhost:8000)
 npm run dev
 ```
 

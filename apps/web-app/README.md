@@ -67,7 +67,7 @@ El sistema detecta automáticamente la configuración de tema del sistema operat
 
 ### Requisitos Previos
 - **Node.js**: Versión 22 o superior.
-- **Servicio Backend**: Debe estar ejecutándose en `http://localhost:5000` (el cliente API en `src/api/client.ts` apunta a esta ruta).
+- **Servicio Backend**: Debe estar ejecutándose en `http://localhost:8000` (el cliente API en `src/api/client.ts` apunta por defecto a esta ruta o según `VITE_API_URL`).
 
 ### Instalación y Arranque
 1. Accede al directorio de la aplicación web:
@@ -84,7 +84,7 @@ El sistema detecta automáticamente la configuración de tema del sistema operat
    ```bash
    npm run dev
    ```
-   La aplicación se abrirá por defecto en [http://localhost:5173](http://localhost:5173).
+   La aplicación se abrirá por defecto en [http://localhost:8080](http://localhost:8080).
 
 ### Comandos Disponibles
 - `npm run dev`: Inicia el servidor de desarrollo de Vite.

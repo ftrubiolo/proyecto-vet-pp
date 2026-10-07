@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vetvault-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  minio:
+    image: minio/minio:latest
+    container_name: vetvault-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: vetvault
+      MINIO_ROOT_PASSWORD: vetvault-secret
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    volumes:
+      - miniodata:/data
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:9000/minio/health/live || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api-backend:
+    build:
+      context: .
+      dockerfile: services/api-backend/Dockerfile
+    container_name: vetvault-api
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - services/api-backend/.env
+    environment:
+      PORT: "8000"
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/postgres
+      MINIO_ENDPOINT: minio
+      MINIO_PORT: "9000"
+      MINIO_PUBLIC_URL: http://localhost:9000/vetvault-fotos
+    volumes:
+      - ./services/api-backend/src:/app/services/api-backend/src
+      - ./services/api-backend/data:/app/services/api-backend/data
+      - ./packages/shared/src:/app/packages/shared/src
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+
+  web-app:
+    build:
+      context: .
+      dockerfile: apps/web-app/Dockerfile
+    container_name: vetvault-web
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+    volumes:
+      - ./apps/web-app/src:/app/apps/web-app/src
+    depends_on:
+      api-backend:
+        condition: service_started
+
+volumes:
+  pgdata:
+  miniodata:
