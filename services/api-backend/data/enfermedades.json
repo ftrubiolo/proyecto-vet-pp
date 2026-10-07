@@ -1,0 +1,492 @@
+{
+  "id": 33,
+  "nombre": "Antipirético"
+}
+{
+  "id": 34,
+  "nombre": "Piroplasmicida"
+}
+{
+  "id": 35,
+  "nombre": "Promotor de crecimiento"
+}
+{
+  "id": 36,
+  "nombre": "Modificador de la Conducta"
+}
+{
+  "id": 37,
+  "nombre": "Neutralizador de cloro"
+}
+{
+  "id": 1,
+  "nombre": "Afecciones del sistema circulatorio"
+}
+{
+  "id": 2,
+  "nombre": "Afecciones del sistema digestivo"
+}
+{
+  "id": 3,
+  "nombre": "Afecciones del sistema locomotor"
+}
+{
+  "id": 4,
+  "nombre": "Afecciones del sistema reproductivo"
+}
+{
+  "id": 5,
+  "nombre": "Afecciones del sistema nervioso central"
+}
+{
+  "id": 6,
+  "nombre": "Afecciones del sistema nervioso periférico"
+}
+{
+  "id": 7,
+  "nombre": "Afecciones del sistema respiratorio"
+}
+{
+  "id": 8,
+  "nombre": "Afecciones del sistema urinario"
+}
+{
+  "id": 9,
+  "nombre": "Afecciones del sistema endócrino"
+}
+{
+  "id": 10,
+  "nombre": "Afecciones del sistema tegumentario"
+}
+{
+  "id": 11,
+  "nombre": "Afecciones Oticas"
+}
+{
+  "id": 12,
+  "nombre": "Afecciones oftalmológicas"
+}
+{
+  "id": 13,
+  "nombre": "Anestésico"
+}
+{
+  "id": 14,
+  "nombre": "Antiséptico / desinfectante"
+}
+{
+  "id": 15,
+  "nombre": "Estados carenciales"
+}
+{
+  "id": 16,
+  "nombre": "Estados Inflamatorios"
+}
+{
+  "id": 17,
+  "nombre": "Garrapata Bovina"
+}
+{
+  "id": 18,
+  "nombre": "Infecciones Bacterianas"
+}
+{
+  "id": 19,
+  "nombre": "Infecciones Micóticas"
+}
+{
+  "id": 20,
+  "nombre": "Infecciones Virales"
+}
+{
+  "id": 21,
+  "nombre": "Inmunogeno / Vacuna"
+}
+{
+  "id": 22,
+  "nombre": "Diagnóstico Kit / Reactivo "
+}
+{
+  "id": 23,
+  "nombre": "Insecticida ambiental"
+}
+{
+  "id": 24,
+  "nombre": "Manejo de la Reproducción"
+}
+{
+  "id": 25,
+  "nombre": "Melophagosis Ovina"
+}
+{
+  "id": 26,
+  "nombre": "Neoplasias"
+}
+{
+  "id": 27,
+  "nombre": "Parasitosis Externas"
+}
+{
+  "id": 28,
+  "nombre": "Parasitosis Internas"
+}
+{
+  "id": 29,
+  "nombre": "Sarna Bovina"
+}
+{
+  "id": 30,
+  "nombre": "Sarna Ovina"
+}
+{
+  "id": 31,
+  "nombre": "Cosmético"
+}
+{
+  "id": 32,
+  "nombre": "Complemento dietario"
+}
+{
+  "id": 38,
+  "nombre": "Hepatoprotector"
+}
+{
+  "id": 39,
+  "nombre": "Energizante"
+}
+{
+  "id": 40,
+  "nombre": "Rehidratante"
+}
+{
+  "id": 41,
+  "nombre": "Suplemento vitamínico"
+}
+{
+  "id": 42,
+  "nombre": "Mineral"
+}
+{
+  "id": 43,
+  "nombre": "Aminoácidos"
+}
+{
+  "id": 44,
+  "nombre": "Eutanásico"
+}
+{
+  "id": 45,
+  "nombre": "Sedante"
+}
+{
+  "id": 46,
+  "nombre": "Analgésico"
+}
+{
+  "id": 47,
+  "nombre": "Miorrelajante"
+}
+{
+  "id": 48,
+  "nombre": "Agente parasimpaticolítico"
+}
+{
+  "id": 49,
+  "nombre": "Anticolinérgico"
+}
+{
+  "id": 50,
+  "nombre": "Coagulante"
+}
+{
+  "id": 51,
+  "nombre": "Detección de celo"
+}
+{
+  "id": 55,
+  "nombre": "Lubricante"
+}
+{
+  "id": 53,
+  "nombre": "Rubefaciente"
+}
+{
+  "id": 54,
+  "nombre": "Cicatrizante"
+}
+{
+  "id": 56,
+  "nombre": "Antihistamínicos"
+}
+{
+  "id": 57,
+  "nombre": "Antialérgico"
+}
+{
+  "id": 58,
+  "nombre": "INHIBIDOR DEL DESARROLLO DE INSECTOS Y ÁCAROS"
+}
+{
+  "id": 59,
+  "nombre": "Antiemetico"
+}
+{
+  "id": 60,
+  "nombre": "Diuretico"
+}
+{
+  "id": 61,
+  "nombre": "Enjuague bucal"
+}
+{
+  "id": 62,
+  "nombre": "Inmunomodulador"
+}
+{
+  "id": 63,
+  "nombre": "Analéptico"
+}
+{
+  "id": 64,
+  "nombre": "Antiinflamatorio"
+}
+{
+  "id": 83,
+  "nombre": "Marcador temporario"
+}
+{
+  "id": 66,
+  "nombre": "Ayuda a mantener alejados insectos molestos"
+}
+{
+  "id": 67,
+  "nombre": "Antiseborreico"
+}
+{
+  "id": 68,
+  "nombre": "Queratolitico"
+}
+{
+  "id": 69,
+  "nombre": "Antiséptico"
+}
+{
+  "id": 70,
+  "nombre": "Sellador de pezón"
+}
+{
+  "id": 71,
+  "nombre": "Antifungico ambiental"
+}
+{
+  "id": 72,
+  "nombre": "Reconstituyente"
+}
+{
+  "id": 73,
+  "nombre": "Hematínico"
+}
+{
+  "id": 74,
+  "nombre": "Anticetogenico"
+}
+{
+  "id": 75,
+  "nombre": "Antioxidante"
+}
+{
+  "id": 76,
+  "nombre": "Antiulceroso"
+}
+{
+  "id": 77,
+  "nombre": "Hemostático"
+}
+{
+  "id": 78,
+  "nombre": "Condroprotector"
+}
+{
+  "id": 79,
+  "nombre": "Anabólico"
+}
+{
+  "id": 80,
+  "nombre": "Orexígeno"
+}
+{
+  "id": 81,
+  "nombre": "Regulador del balance energético"
+}
+{
+  "id": 82,
+  "nombre": "Desintoxicante"
+}
+{
+  "id": 84,
+  "nombre": "Neurolitico"
+}
+{
+  "id": 85,
+  "nombre": "Antiflogístico"
+}
+{
+  "id": 86,
+  "nombre": "Antitrombótico"
+}
+{
+  "id": 87,
+  "nombre": "Inductor de la producción lactea"
+}
+{
+  "id": 88,
+  "nombre": "Estimulador de la actividad ovárica"
+}
+{
+  "id": 89,
+  "nombre": "Antiprolactínico"
+}
+{
+  "id": 90,
+  "nombre": "Degradador de materia orgánica"
+}
+{
+  "id": 91,
+  "nombre": "Toallas higienizantes"
+}
+{
+  "id": 92,
+  "nombre": "Intoxicacion por alcaloides"
+}
+{
+  "id": 93,
+  "nombre": "Antibiotico intramamario"
+}
+{
+  "id": 94,
+  "nombre": "Neutralizador del amoníaco de las camas. Acidificante"
+}
+{
+  "id": 95,
+  "nombre": "Quelante de Fosforo"
+}
+{
+  "id": 96,
+  "nombre": "Inductor del parto"
+}
+{
+  "id": 97,
+  "nombre": "Antidiarreico"
+}
+{
+  "id": 98,
+  "nombre": "Protector de la mucosa gástrica"
+}
+{
+  "id": 99,
+  "nombre": "Desodorizante"
+}
+{
+  "id": 100,
+  "nombre": "Laxante"
+}
+{
+  "id": 101,
+  "nombre": "Astringente"
+}
+{
+  "id": 102,
+  "nombre": "Dermatológico"
+}
+{
+  "id": 103,
+  "nombre": "Tramiento del shock anafiláctico"
+}
+{
+  "id": 104,
+  "nombre": "Antitóxico"
+}
+{
+  "id": 105,
+  "nombre": "Estimulante inespecífico del sistema inmunológico"
+}
+{
+  "id": 106,
+  "nombre": "Afecciones podales"
+}
+{
+  "id": 107,
+  "nombre": "Ayuda a reducir la incidencia y severidad de timpanismo."
+}
+{
+  "id": 108,
+  "nombre": "Higienizante"
+}
+{
+  "id": 109,
+  "nombre": "Antiarrítmico"
+}
+{
+  "id": 110,
+  "nombre": "Kit para la detección y serotipificación de Salmonella spp en muestras de alimento, agua, materia fecal, muestras biológicas, entre otras."
+}
+{
+  "id": 111,
+  "nombre": "Antifibrinolítico"
+}
+{
+  "id": 112,
+  "nombre": "Secante corporal para animales e instalaciones"
+}
+{
+  "id": 113,
+  "nombre": "Diluyente de vacuna"
+}
+{
+  "id": 114,
+  "nombre": "Identificación animal"
+}
+{
+  "id": 115,
+  "nombre": "simpaticomiético indirecto"
+}
+{
+  "id": 116,
+  "nombre": "Desinfectante"
+}
+{
+  "id": 117,
+  "nombre": "Suplementos terapeuticos/preventivos"
+}
+{
+  "id": 118,
+  "nombre": "Solución fisiológica"
+}
+{
+  "id": 119,
+  "nombre": "Detergente - Desengrasante"
+}
+{
+  "id": 120,
+  "nombre": "reducción de la producción y excreción de metano"
+}
+{
+  "id": 121,
+  "nombre": "tranquilizante/ no sedante"
+}
+{
+  "id": 122,
+  "nombre": "Anticoccidial"
+}
+{
+  "id": 123,
+  "nombre": "Acidificante para el agua de bebida"
+}
+{
+  "id": 124,
+  "nombre": "Desinflamantes y descongestivo por frío"
+}
+{
+  "id": 125,
+  "nombre": "Colorante"
+}

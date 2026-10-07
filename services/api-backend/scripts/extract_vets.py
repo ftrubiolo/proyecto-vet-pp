@@ -76,12 +76,19 @@ def main():
         print("Ejemplo: python extract_vets.py veterinarios.pdf veterinarios.csv\n")
         sys.exit(1)
 
-    pdf_path = sys.argv[1]
-    csv_path = sys.argv[2] if len(sys.argv) > 2 else "veterinarios_limpios.csv"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
 
+    pdf_path = sys.argv[1]
     if not os.path.exists(pdf_path):
-        print(f"\n[ERROR] El archivo PDF no existe en la ruta: {pdf_path}\n")
-        sys.exit(1)
+        candidate = os.path.join(DATA_DIR, pdf_path)
+        if os.path.exists(candidate):
+            pdf_path = candidate
+        else:
+            print(f"\n[ERROR] El archivo PDF no existe en la ruta: {pdf_path}\n")
+            sys.exit(1)
+
+    csv_path = sys.argv[2] if len(sys.argv) > 2 else os.path.join(DATA_DIR, "veterinarios_limpios.json")
 
     print(f"Abriendo PDF: {pdf_path}...")
     

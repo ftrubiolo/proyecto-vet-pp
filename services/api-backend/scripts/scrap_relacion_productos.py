@@ -1,5 +1,17 @@
+import os
 import json
 import requests
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DATA_DIR = os.path.abspath(os.path.join(BASE_DIR, "..", "data"))
+
+def resolve_data_path(filename: str) -> str:
+    path_in_data = os.path.join(DATA_DIR, filename)
+    if os.path.exists(path_in_data):
+        return path_in_data
+    if os.path.exists(filename):
+        return filename
+    return path_in_data
 
 # ==============================================================================
 # Script de consulta y recopilación de productos asociados a categorías de SENASA.
@@ -12,7 +24,7 @@ import requests
 # 
 # Requisitos:
 #   - requests (Instalación: `pip install requests`)
-#   - Archivo 'categorias.json' en el directorio de ejecución.
+#   - Archivo 'categorias.json' en services/api-backend/data/
 # 
 # Uso:
 #   python3 scrap_relacion_productos.py
@@ -21,8 +33,9 @@ import requests
 BULK_URL = "https://aps2.senasa.gov.ar/adt_api/api/productosFarmacos/search/publicSearchProductoFarmacoDTO"
 
 # --- PASO 1: Cargar IDs dinámicamente desde el archivo ---
+cat_file = resolve_data_path("categorias.json")
 try:
-    with open("categorias.json", "r", encoding="utf-8") as f:
+    with open(cat_file, "r", encoding="utf-8") as f:
         categorias_data = json.load(f)
 
     # Extraer únicamente los números de ID. (Maneja de forma segura tanto formato de array como de objeto único)
@@ -32,10 +45,10 @@ try:
         # Caso alternativo si es un solo objeto
         enfermedades_ids = [categorias_data.get("id")]
 
-    print(f"Cargadas un total de {len(enfermedades_ids)} categorías desde el archivo.")
+    print(f"Cargadas un total de {len(enfermedades_ids)} categorías desde {cat_file}.")
 
 except Exception as e:
-    print(f"Error al leer categorias.json: {e}")
+    print(f"Error al leer categorias.json en {cat_file}: {e}")
     exit()
 
 # --- PASO 2: Limitar la lista para una ejecución de prueba segura ---
@@ -88,5 +101,7 @@ for cat_id in enfermedades_ids:
 print("\n--- RESUMEN DE PRUEBA ---")
 print(json.dumps(all_relationships, indent=2))
 
-with open("productos_categorias.json", "w") as f:
+output_file = os.path.join(DATA_DIR, "productos_categorias.json")
+with open(output_file, "w") as f:
     json.dump(all_relationships, f, indent=2)
+print(f"Relaciones guardadas en: {output_file}")

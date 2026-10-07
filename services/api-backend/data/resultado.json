@@ -1,0 +1,266 @@
+[
+  {
+    "categoria": "Antipir\u00e9tico",
+    "descripcion": "Medicamento com\u00fan para el control de la fiebre."
+  },
+  {
+    "categoria": "Piroplasmicida",
+    "descripcion": "F\u00e1rmaco espec\u00edfico para hemopar\u00e1sitos (ej: Babesia)."
+  },
+  {
+    "categoria": "Modificador de la Conducta",
+    "descripcion": "Psicotr\u00f3picos controlados (ej: ansiol\u00edticos). Requiere Receta Archivada."
+  },
+  {
+    "categoria": "Afecciones del sistema circulatorio",
+    "descripcion": "Medicamentos cardiovasculares y soporte hemodin\u00e1mico."
+  },
+  {
+    "categoria": "Afecciones del sistema digestivo",
+    "descripcion": "Antiem\u00e9ticos, procin\u00e9ticos y protectores."
+  },
+  {
+    "categoria": "Afecciones del sistema locomotor",
+    "descripcion": "Medicamentos para artrosis, artritis y dolor articular."
+  },
+  {
+    "categoria": "Afecciones del sistema reproductivo",
+    "descripcion": "Hormonas reproductivas sint\u00e9ticas."
+  },
+  {
+    "categoria": "Afecciones del sistema nervioso central",
+    "descripcion": "Anticonvulsivos, sedantes y anest\u00e9sicos controlados."
+  },
+  {
+    "categoria": "Afecciones del sistema nervioso perif\u00e9rico",
+    "descripcion": "F\u00e1rmacos para el tratamiento de par\u00e1lisis o neuropat\u00edas locales."
+  },
+  {
+    "categoria": "Afecciones del sistema respiratorio",
+    "descripcion": "Broncodilatadores, mucol\u00edticos y antibi\u00f3ticos respiratorios."
+  },
+  {
+    "categoria": "Afecciones del sistema urinario",
+    "descripcion": "Medicamentos para insuficiencia renal o infecciones urinarias."
+  },
+  {
+    "categoria": "Afecciones del sistema end\u00f3crino",
+    "descripcion": "Hormonas tiroideas, insulina y tratamientos metab\u00f3licos."
+  },
+  {
+    "categoria": "Afecciones del sistema tegumentario",
+    "descripcion": "F\u00e1rmacos dermatol\u00f3gicos t\u00f3picos o sist\u00e9micos."
+  },
+  {
+    "categoria": "Afecciones Oticas",
+    "descripcion": "Suspensiones de prescripci\u00f3n para otitis bacterianas o mic\u00f3ticas."
+  },
+  {
+    "categoria": "Afecciones oftalmol\u00f3gicas",
+    "descripcion": "Colirios y ung\u00fcentos oft\u00e1lmicos antibi\u00f3ticos/antiinflamatorios."
+  },
+  {
+    "categoria": "Anest\u00e9sico",
+    "descripcion": "Anest\u00e9sicos fijos e inhalatorios. Requiere Receta Archivada."
+  },
+  {
+    "categoria": "Estados Inflamatorios",
+    "descripcion": "Corticoides y antiinflamatorios no esteroides (AINEs)."
+  },
+  {
+    "categoria": "Garrapata Bovina",
+    "descripcion": "Antiparasitarios externos con estrictos tiempos de carencia en carne/leche."
+  },
+  {
+    "categoria": "Infecciones Bacterianas",
+    "descripcion": "Antibi\u00f3ticos sist\u00e9micos. Validez m\u00e1xima de receta de 5 d\u00edas (Res. 80/2025)."
+  },
+  {
+    "categoria": "Infecciones Mic\u00f3ticas",
+    "descripcion": "Antimic\u00f3ticos locales y sist\u00e9micos."
+  },
+  {
+    "categoria": "Infecciones Virales",
+    "descripcion": "Antivirales o inmunomoduladores espec\u00edficos."
+  },
+  {
+    "categoria": "Inmunogeno / Vacuna",
+    "descripcion": "Biol\u00f3gicos. Obligatorio control de n\u00famero de lote en base de datos."
+  },
+  {
+    "categoria": "Manejo de la Reproducci\u00f3n",
+    "descripcion": "Agentes hormonales de control de estro o sincronizaci\u00f3n de celo."
+  },
+  {
+    "categoria": "Melophagosis Ovina",
+    "descripcion": "Antiparasitarios externos espec\u00edficos para ovinos."
+  },
+  {
+    "categoria": "Neoplasias",
+    "descripcion": "Agentes quimioter\u00e1picos oncol\u00f3gicos de manejo delicado."
+  },
+  {
+    "categoria": "Parasitosis Externas",
+    "descripcion": "Antiparasitarios de uso en el animal (pipetas, inyectables, collares)."
+  },
+  {
+    "categoria": "Parasitosis Internas",
+    "descripcion": "Antiparasitarios orales o inyectables (nematodos y cestodos)."
+  },
+  {
+    "categoria": "Sarna Bovina",
+    "descripcion": "Tratamientos inyectables (ej: ivermectina) o ba\u00f1os sarnicidas."
+  },
+  {
+    "categoria": "Sarna Ovina",
+    "descripcion": "Tratamientos espec\u00edficos de sarna ovina con periodo de retiro."
+  },
+  {
+    "categoria": "Eutan\u00e1sico",
+    "descripcion": "Sustancias barbit\u00faricas controladas de uso profesional exclusivo."
+  },
+  {
+    "categoria": "Sedante",
+    "descripcion": "Psicotr\u00f3picos de venta bajo receta archivada (ej: xilacina)."
+  },
+  {
+    "categoria": "Analg\u00e9sico",
+    "descripcion": "Control del dolor agudo y cr\u00f3nico."
+  },
+  {
+    "categoria": "Miorrelajante",
+    "descripcion": "Medicamento terap\u00e9utico para espasmos musculares."
+  },
+  {
+    "categoria": "Agente parasimpaticol\u00edtico",
+    "descripcion": "F\u00e1rmacos aut\u00f3nomos de emergencia (ej: atropina)."
+  },
+  {
+    "categoria": "Anticolin\u00e9rgico",
+    "descripcion": "Inhibidores de receptores de acetilcolina."
+  },
+  {
+    "categoria": "Coagulante",
+    "descripcion": "Antiespasm\u00f3dicos, procoagulantes o fitomenadiona."
+  },
+  {
+    "categoria": "Antihistam\u00ednicos",
+    "descripcion": "Tratamiento de reacciones al\u00e9rgicas o prurito agudo."
+  },
+  {
+    "categoria": "Diuretico",
+    "descripcion": "F\u00e1rmacos para la remoci\u00f3n de l\u00edquidos (ej: furosemida)."
+  },
+  {
+    "categoria": "Inmunomodulador",
+    "descripcion": "Moduladores de la respuesta inmunol\u00f3gica."
+  },
+  {
+    "categoria": "Anal\u00e9ptico",
+    "descripcion": "Estimulantes cardiorrespiratorios de emergencia."
+  },
+  {
+    "categoria": "Antiinflamatorio",
+    "descripcion": "Antiinflamatorios generales (ej: meloxicam, flunixin)."
+  },
+  {
+    "categoria": "Hemat\u00ednico",
+    "descripcion": "Tratamientos para anemia (ej: hierro dextrano)."
+  },
+  {
+    "categoria": "Anticetogenico",
+    "descripcion": "Tratamiento de cetosis en vacas lecheras."
+  },
+  {
+    "categoria": "Antiulceroso",
+    "descripcion": "Protectores g\u00e1stricos de prescripci\u00f3n (ej: omeprazol)."
+  },
+  {
+    "categoria": "Hemost\u00e1tico",
+    "descripcion": "Control de hemorragias quir\u00fargicas o accidentales."
+  },
+  {
+    "categoria": "Anab\u00f3lico",
+    "descripcion": "Hormonas anab\u00f3licas sujetas a control legal y periodo de carencia."
+  },
+  {
+    "categoria": "Orex\u00edgeno",
+    "descripcion": "Estimulantes del apetito (ej: ciproheptadina)."
+  },
+  {
+    "categoria": "Desintoxicante",
+    "descripcion": "Protectores hep\u00e1ticos inyectables o agentes quelantes."
+  },
+  {
+    "categoria": "Neurolitico",
+    "descripcion": "F\u00e1rmacos para bloqueo neurol\u00edtico del dolor cr\u00f3nico."
+  },
+  {
+    "categoria": "Antiflog\u00edstico",
+    "descripcion": "Antiinflamatorios de acci\u00f3n localizada."
+  },
+  {
+    "categoria": "Antitromb\u00f3tico",
+    "descripcion": "F\u00e1rmacos anticoagulantes."
+  },
+  {
+    "categoria": "Estimulador de la actividad ov\u00e1rica",
+    "descripcion": "Hormonas gonadotr\u00f3picas de prescripci\u00f3n."
+  },
+  {
+    "categoria": "Antiprolact\u00ednico",
+    "descripcion": "Inhibidores de prolactina (ej. cabergolina en pseudopre\u00f1ez)."
+  },
+  {
+    "categoria": "Antibiotico intramamario",
+    "descripcion": "Tratamientos de mastitis. Cr\u00edtico por periodo de retiro en leche."
+  },
+  {
+    "categoria": "Inductor del parto",
+    "descripcion": "Hormonas como la oxitocina de prescripci\u00f3n."
+  },
+  {
+    "categoria": "Antidiarreico",
+    "descripcion": "Tratamientos cl\u00ednicos para diarreas severas."
+  },
+  {
+    "categoria": "Protector de la mucosa g\u00e1strica",
+    "descripcion": "Tratamientos para gastritis y \u00falceras."
+  },
+  {
+    "categoria": "Dermatol\u00f3gico",
+    "descripcion": "Cremas medicadas, ung\u00fcentos antibi\u00f3ticos/mic\u00f3ticos t\u00f3picos."
+  },
+  {
+    "categoria": "Tramiento del shock anafil\u00e1ctico",
+    "descripcion": "Adrenalina, dexametasona inyectable (emergencia)."
+  },
+  {
+    "categoria": "Antit\u00f3xico",
+    "descripcion": "Ant\u00eddotos para envenenamientos cl\u00ednicos."
+  },
+  {
+    "categoria": "Afecciones podales",
+    "descripcion": "Tratamientos locales para piet\u00edn y otras afecciones de pezu\u00f1as."
+  },
+  {
+    "categoria": "Antiarr\u00edtmico",
+    "descripcion": "F\u00e1rmacos card\u00edacos de prescripci\u00f3n (ej: digoxina)."
+  },
+  {
+    "categoria": "Antifibrinol\u00edtico",
+    "descripcion": "F\u00e1rmacos para el control del sangrado severo."
+  },
+  {
+    "categoria": "simpaticomi\u00e9tico indirecto",
+    "descripcion": "Medicamentos especializados (ej: fenilpropanolamina)."
+  },
+  {
+    "categoria": "tranquilizante/ no sedante",
+    "descripcion": "Psicotr\u00f3picos modificadores de conducta leves."
+  },
+  {
+    "categoria": "Anticoccidial",
+    "descripcion": "Tratamiento farmacol\u00f3gico de la coccidiosis en el animal."
+  }
+]
