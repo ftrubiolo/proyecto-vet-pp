@@ -122,5 +122,23 @@ Reemplazar todos los archivos CSS tradicionales en `apps/web-app` por Tailwind C
   - `src/index.css`: Definido `@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));` y tokens semánticos completos en `:root` y `[data-theme="dark"], .dark`.
   - Mapeadas variables semánticas a `@theme` (`--color-canvas`, `--color-surface-card`, `--color-surface-solid`, etc.).
   - Migrados todos los componentes (`Card`, `AppLayout`, `Sidebar`, `Header`, `Input`, `Tabs`, `Badge`, `Modal`, `Button`, `EmptyState`, `AIChatDrawer`, `LoginPage`, `RegisterPage`, `RegisterSuccessPage`, `ErrorPage`, `PerfilPage`) a variables semánticas (`bg-[var(--surface)]`, `border-[var(--border)]`, `text-[var(--text)]`, `text-[var(--text-h)]`, etc.) en lugar de clases hardcodeadas de slate que chocaban con el cambio de tema.
-  - Sincronización completa de `data-theme` y clase `.dark` en `ThemeContext.tsx`.
 - **Verificación y Deploy**: `npm run build` ejecutado y validado en `packages/shared` y `apps/web-app` con 0 errores. Cambios commiteados y pusheados a `origin main`.
+
+### Goal (Part 2) — Index.css Simplification
+Eliminar los más de 1300 estilos de componentes remanentes en `src/index.css` migrándolos a utilidades nativas de Tailwind CSS directamente en sus componentes correspondientes (`.tsx`), reduciendo `index.css` a ~260 líneas puras de tokens, resets y utilidades de animación.
+
+### Done (Part 2)
+- **Migración a utilidades Tailwind CSS de componentes**:
+  - `VetCitasView.tsx` y `OwnerCitasView.tsx`: Eliminadas todas las clases de `.planner-*`, `.metric-card`, `.hour-axis-*`, `.wizard-*`, etc.
+  - `MascotaDetailPage.tsx`: Header, hero, avatar, resumen con badges y layout de consulta.
+  - `ActiveConsultationForm.tsx`: Textareas, selectores, tags y tarjetas de consulta.
+  - `DatosTab.tsx`: Tarjetas de alertas, microchip, lista y cards de propietarios y contactos.
+  - `EditMascotaModal.tsx`, `Autocomplete.tsx`, `ProtocolCurationModal.tsx`: Dropdowns, preview de fotos, checklists y modales.
+  - `OwnerMascotas.tsx` y `VetMascotas.tsx`: Grillas de mascotas, tarjetas de pacientes y formularios de admisión.
+  - `PerfilPage.tsx`, `ProfileHeader.tsx`, `PersonalInfoTab.tsx`, `AccountSettingsTab.tsx`, `ClinicsTab.tsx`, `SubscriptionTab.tsx`: Perfil, configuraciones, switches de tema, editor de horarios semanales y tabla de planes de suscripción.
+- **Simplificación de `src/index.css`**:
+  - Reducido de 1577 líneas a exactamente 260 líneas (-1317 líneas eliminadas).
+  - Preservados únicamente `@import "tailwindcss"`, `@custom-variant dark`, tokens `@theme`, `:root`, `[data-theme="dark"]`, contextos de rol, modo compacto, resets tipográficos, scrollbars y keyframes de animación (`fadeIn`, `fadeInUp`, `slideDown`).
+- **Verificación y Deploy**:
+  - `npm run build` en `@vetvault/shared` y `apps/web-app` superado limpiamente con 0 errores.
+  - Cambios commiteados y pusheados a `origin main`.
