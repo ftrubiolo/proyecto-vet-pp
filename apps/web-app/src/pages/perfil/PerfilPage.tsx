@@ -27,7 +27,7 @@ export function PerfilPage() {
 
   if (isLoading) {
     return (
-      <div className="page" style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
+      <div className="max-w-7xl mx-auto flex justify-center p-16">
         <Spinner size={40} />
       </div>
     );
@@ -46,13 +46,13 @@ export function PerfilPage() {
     ];
 
   return (
-    <div className="page">
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 animate-fade-in">
       <ProfileHeader profile={profile || undefined} user={user} isVet={isVet} />
 
-      <div style={{ marginTop: 'var(--space-lg)' }}>
+      <div className="mt-6">
         <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-        <div className="perfil-tab-content">
+        <div className="mt-6">
           {/* PROFILE DATA TAB */}
           {activeTab === 'perfil' && profile && (
             <PersonalInfoTab

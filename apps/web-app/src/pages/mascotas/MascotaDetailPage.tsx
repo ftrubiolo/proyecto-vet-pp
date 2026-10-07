@@ -181,16 +181,19 @@ export function MascotaDetailPage() {
     }
 
     return (
-      <div className="consultation-main-col">
-        <button className="mascota-detail-back" onClick={() => navigate('/mascotas')}>
+      <div className="flex-1 min-w-0 w-full">
+        <button
+          className="inline-flex items-center gap-1.5 text-[var(--text-muted)] text-xs font-medium cursor-pointer bg-transparent border-0 mb-3 hover:text-[var(--accent)] transition-colors"
+          onClick={() => navigate('/mascotas')}
+        >
           <ArrowLeft size={16} />
           Volver a mascotas
         </button>
 
-        <Card className="mascota-detail-card">
-          <div className="mascota-detail-profile">
+        <Card className="overflow-hidden p-6 border border-[var(--border)]">
+          <div className="flex flex-col sm:flex-row sm:items-center gap-6">
             <div
-              className="mascota-detail-avatar"
+              className="w-28 h-28 rounded-2xl bg-[var(--accent-light)] flex items-center justify-center text-[var(--accent)] flex-shrink-0 overflow-hidden"
               style={hasFoto ? {
                 backgroundImage: `url(${mascota.foto_url})`,
                 backgroundSize: 'cover',
@@ -200,12 +203,12 @@ export function MascotaDetailPage() {
             >
               {!hasFoto && <PawPrint size={32} />}
             </div>
-            <div className="mascota-detail-info">
-              <h2>{mascota.nombre}</h2>
-              <div className="mascota-detail-breed">
+            <div className="flex-1 min-w-0">
+              <h2 className="text-2xl font-bold text-[var(--text-h)]">{mascota.nombre}</h2>
+              <div className="text-sm text-[var(--text-muted)] mt-0.5">
                 {mascota.raza || 'Sin raza'} · {mascota.especie || ''}
               </div>
-              <div className="mascota-detail-badges">
+              <div className="flex flex-wrap gap-1.5 mt-2.5">
                 <Badge variant="accent">{calcAge(mascota.fecha_nacimiento)}</Badge>
                 <Badge variant={mascota.sexo === 'M' ? 'accent' : 'success'}>
                   {mascota.sexo === 'M' ? 'Macho' : 'Hembra'}
@@ -213,14 +216,14 @@ export function MascotaDetailPage() {
                 {mascota.es_castrado && <Badge variant="neutral">Castrado/a</Badge>}
               </div>
             </div>
-            <div className="mascota-detail-actions" style={{ display: 'flex', gap: 8 }}>
+            <div className="flex items-center gap-2 flex-wrap">
               {!isOwner && (
-                <Button onClick={() => setIsManualConsultation(true)} variant="primary" size="sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                <Button onClick={() => setIsManualConsultation(true)} variant="primary" size="sm" className="flex items-center gap-1.5">
                   <Plus size={14} />
                   Registrar Consulta
                 </Button>
               )}
-              <Button onClick={() => setShowEditModal(true)} variant="secondary" size="sm" style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <Button onClick={() => setShowEditModal(true)} variant="secondary" size="sm" className="flex items-center gap-1.5">
                 <Edit size={14} />
                 Editar Datos
               </Button>
@@ -228,60 +231,60 @@ export function MascotaDetailPage() {
           </div>
         </Card>
 
-        <div className="mascota-clinical-summary-bar">
+        <div className="flex flex-wrap items-center gap-2 mt-4">
           {lastVisit ? (
-            <Badge variant="neutral" className="clinical-summary-badge">
+            <Badge variant="neutral" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Calendar size={12} />
               Última visita: {formatDate(lastVisit)}
             </Badge>
           ) : (
-            <Badge variant="neutral" className="clinical-summary-badge">
+            <Badge variant="neutral" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Calendar size={12} />
               Sin visitas
             </Badge>
           )}
 
           {lastWeight && (
-            <Badge variant="neutral" className="clinical-summary-badge">
+            <Badge variant="neutral" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Scale size={12} />
               {lastWeight} kg
             </Badge>
           )}
 
           {activeMedications.length > 0 ? (
-            <Badge variant="accent" className="clinical-summary-badge">
+            <Badge variant="accent" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Pill size={12} />
               {activeMedications.length} {activeMedications.length === 1 ? 'Medicación activa' : 'Medicaciones activas'}
             </Badge>
           ) : (
-            <Badge variant="neutral" className="clinical-summary-badge">
+            <Badge variant="neutral" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Pill size={12} />
               Sin medicamentos
             </Badge>
           )}
 
           {vencidasCount > 0 ? (
-            <Badge variant="danger" className="clinical-summary-badge">
+            <Badge variant="danger" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Syringe size={12} />
               {vencidasCount === 1 ? 'Vacuna vencida' : `Vacunas vencidas (${vencidasCount})`}
             </Badge>
           ) : proximasCount > 0 ? (
-            <Badge variant="warning" className="clinical-summary-badge">
+            <Badge variant="warning" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Syringe size={12} />
               {proximasCount === 1 ? 'Vacuna próxima' : `Vacunas próximas (${proximasCount})`}
             </Badge>
           ) : (
-            <Badge variant="success" className="clinical-summary-badge">
+            <Badge variant="success" className="inline-flex items-center gap-1.5 py-1 px-2.5">
               <Syringe size={12} />
               Vacunas al día
             </Badge>
           )}
         </div>
 
-        <div style={{ marginTop: 'var(--space-lg)' }}>
+        <div className="mt-6">
           <Tabs tabs={tabs} activeTab={activeTab} onChange={setActiveTab} />
 
-          <div className="mascota-tab-content">
+          <div className="mt-6">
             {activeTab === 'datos' && (
               <DatosTab
                 mascota={mascota}
@@ -304,11 +307,11 @@ export function MascotaDetailPage() {
   const hasActiveConsultation = ((atenderCitaId && clinicaId) || isManualConsultation) && !isOwner;
 
   return (
-    <div className="page">
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 animate-fade-in">
       {hasActiveConsultation ? (
-        <div className="consultation-layout">
+        <div className="flex flex-col lg:flex-row gap-6 items-start relative">
           {renderLeftPanel()}
-          <div className="consultation-sidebar-col">
+          <div className="w-full lg:w-[420px] lg:sticky lg:top-[calc(var(--header-height)+1rem)] bg-[var(--surface-solid)] border border-[var(--border)] rounded-3xl p-6 lg:max-h-[calc(100vh-var(--header-height)-2rem)] overflow-y-auto shadow-xl backdrop-blur-xl">
             <ActiveConsultationForm
               citaId={atenderCitaId || null}
               clinicaId={clinicaId || null}

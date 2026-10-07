@@ -24,10 +24,10 @@ export function ProfileHeader({ profile, user, isVet }: ProfileHeaderProps) {
   );
 
   return (
-    <Card className="perfil-detail-card">
-      <div className="perfil-detail-profile">
+    <Card className="p-6 border border-[var(--border)] overflow-hidden">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-6">
         <div
-          className="perfil-detail-avatar"
+          className="w-28 h-28 rounded-2xl bg-[var(--accent-light)] flex items-center justify-center text-[var(--accent)] flex-shrink-0 overflow-hidden"
           style={
             hasFoto
               ? {
@@ -41,17 +41,17 @@ export function ProfileHeader({ profile, user, isVet }: ProfileHeaderProps) {
         >
           {!hasFoto && <User size={40} />}
         </div>
-        <div className="perfil-detail-info">
-          <h2>{displayName}</h2>
-          <div className="perfil-detail-email">
-            <Mail size={14} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
-            {profile?.usuario?.email || user?.email}
+        <div className="flex-1 min-w-0">
+          <h2 className="text-2xl font-bold text-[var(--text-h)]">{displayName}</h2>
+          <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] mt-1">
+            <Mail size={14} />
+            <span>{profile?.usuario?.email || user?.email}</span>
           </div>
-          <div className="perfil-detail-badges">
+          <div className="flex flex-wrap gap-2 mt-3">
             <Badge variant="accent">
               {isVet ? (
                 <>
-                  <Stethoscope size={12} style={{ display: 'inline', verticalAlign: '-1px', marginRight: 4 }} />
+                  <Stethoscope size={12} className="inline mr-1" />
                   Veterinario
                 </>
               ) : (

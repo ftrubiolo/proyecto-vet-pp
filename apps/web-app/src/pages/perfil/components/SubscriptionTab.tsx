@@ -53,7 +53,7 @@ export function SubscriptionTab() {
 
   if (isLoading) {
     return (
-      <div style={{ display: 'flex', justifyContent: 'center', padding: '48px' }}>
+      <div className="flex justify-center py-12">
         <Spinner size={32} />
       </div>
     );
@@ -97,42 +97,42 @@ export function SubscriptionTab() {
   }
 
   return (
-    <div className="subscription-tab-container">
+    <div className="flex flex-col gap-6">
       {error && (
-        <div className="login-message error" style={{ marginBottom: 'var(--space-md)' }}>
+        <div className="p-3 rounded-xl text-sm font-medium border border-rose-500/30 bg-rose-500/10 text-rose-500">
           {error}
         </div>
       )}
 
       {errorMsg && (
-        <div className="login-message error" style={{ marginBottom: 'var(--space-md)' }}>
+        <div className="p-3 rounded-xl text-sm font-medium border border-rose-500/30 bg-rose-500/10 text-rose-500">
           {errorMsg}
         </div>
       )}
 
       {hasActiveSubscription ? (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+        <div className="flex flex-col gap-4">
           {/* Active Subscription Summary */}
           <Card>
-            <div className="active-sub-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="flex items-center justify-between flex-wrap gap-2">
               <div>
-                <span className="perfil-field-label">Plan Actual</span>
-                <h3 className="active-sub-title" style={{ margin: '4px 0 0 0', fontSize: '1.25rem', fontWeight: '700' }}>{getPlanLabel(sub.plan)}</h3>
+                <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Plan Actual</span>
+                <h3 className="text-xl font-bold text-[var(--text-h)] mt-0.5">{getPlanLabel(sub.plan)}</h3>
               </div>
               <div>
                 {getStatusBadge(sub.estado)}
               </div>
             </div>
 
-            <div className="active-sub-details" style={{ marginTop: 'var(--space-md)', borderTop: '1px solid var(--border)', paddingTop: 'var(--space-md)' }}>
-              <div className="sub-detail-row" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <Calendar size={16} style={{ color: 'var(--text-muted)' }} />
+            <div className="mt-4 pt-4 border-t border-[var(--border)] flex flex-col gap-2">
+              <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                <Calendar size={16} className="text-[var(--text-muted)] shrink-0" />
                 <span>
                   <strong>Vencimiento / Renovación:</strong> {sub.fecha_expiracion ? new Date(sub.fecha_expiracion).toLocaleDateString() : 'No disponible'}
                 </span>
               </div>
-              <div className="sub-detail-row" style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: 'var(--space-xs)' }}>
-                <span style={{ width: '16px', textAlign: 'center', fontWeight: 'bold', color: 'var(--text-muted)' }}>$</span>
+              <div className="flex items-center gap-2 text-sm text-[var(--text)]">
+                <span className="w-4 text-center font-bold text-[var(--text-muted)] shrink-0">$</span>
                 <span>
                   <strong>Costo:</strong> {getPlanPriceLabel(sub.plan)} (ARS)
                 </span>
@@ -140,39 +140,22 @@ export function SubscriptionTab() {
             </div>
 
             {sub.estado === 'impago' && daysLeftForGrace !== null && (
-              <div className="grace-period-alert" style={{
-                marginTop: 'var(--space-md)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 'var(--space-sm)',
-                padding: 'var(--space-sm)',
-                background: 'rgba(249, 115, 22, 0.1)',
-                border: '1px solid rgba(249, 115, 22, 0.2)',
-                borderRadius: 'var(--radius-sm)',
-                color: '#ea580c',
-                fontSize: '0.875rem'
-              }}>
-                <AlertTriangle size={18} style={{ flexShrink: 0 }} />
+              <div className="mt-4 flex items-center gap-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-xl text-amber-600 dark:text-amber-400 text-sm">
+                <AlertTriangle size={18} className="shrink-0" />
                 <div>
                   <strong>Alerta de Pago Pendiente:</strong> Tu última transacción falló. Quedan {daysLeftForGrace} días del periodo de gracia antes de que el acceso a VetVault sea suspendido.
                 </div>
               </div>
             )}
 
-            <div className="sub-management-info" style={{
-              marginTop: 'var(--space-lg)',
-              background: 'var(--surface-2)',
-              padding: 'var(--space-md)',
-              borderRadius: 'var(--radius-inner)',
-              border: '1px solid var(--border)'
-            }}>
-              <h4 style={{ margin: '0 0 var(--space-xs) 0', fontSize: '0.9375rem', fontWeight: 700 }}>¿Cómo cancelar o modificar tu suscripción?</h4>
-              <p style={{ margin: '0 0 var(--space-sm) 0', fontSize: '0.8125rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
+            <div className="mt-6 bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)]">
+              <h4 className="text-sm font-bold text-[var(--text-h)] mb-1">¿Cómo cancelar o modificar tu suscripción?</h4>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed mb-2">
                 Las suscripciones de VetVault se gestionan directamente a través de tu cuenta de Mercado Pago.
                 Para modificar el medio de pago o dar de baja el débito automático:
               </p>
-              <ol style={{ margin: 0, paddingLeft: '20px', fontSize: '0.8125rem', color: 'var(--text-muted)', lineHeight: 1.4 }}>
-                <li>Ingresa a tu cuenta en <a href="https://www.mercadopago.com.ar" target="_blank" rel="noopener noreferrer" style={{ color: 'var(--accent)', textDecoration: 'underline' }}>Mercado Pago</a>.</li>
+              <ol className="list-decimal pl-5 text-xs text-[var(--text-muted)] space-y-1">
+                <li>Ingresa a tu cuenta en <a href="https://www.mercadopago.com.ar" target="_blank" rel="noopener noreferrer" className="text-[var(--accent)] underline hover:opacity-80">Mercado Pago</a>.</li>
                 <li>Dirígete a la sección de <strong>Suscripciones</strong>.</li>
                 <li>Busca la suscripción correspondiente a <strong>VetVault</strong> para pausar o cancelar el servicio.</li>
               </ol>
@@ -180,31 +163,21 @@ export function SubscriptionTab() {
           </Card>
 
           {/* Plan upgrade options for active users */}
-          <div style={{ marginTop: 'var(--space-md)' }}>
-            <h4 className="perfil-section-title" style={{ marginBottom: '4px' }}>Cambiar Plan de Suscripción</h4>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', margin: '0 0 var(--space-md) 0' }}>
+          <div className="mt-2">
+            <h4 className="text-base font-bold text-[var(--text-h)] mb-1">Cambiar Plan de Suscripción</h4>
+            <p className="text-sm text-[var(--text-muted)]">
               Si deseas cambiar de plan, selecciona uno a continuación. El cambio se procesará iniciando una nueva pre-aprobación en Mercado Pago.
             </p>
           </div>
         </div>
       ) : (
         <Card>
-          <div style={{ textAlign: 'center', padding: 'var(--space-md) 0' }}>
-            <div style={{
-              width: '48px',
-              height: '48px',
-              borderRadius: '50%',
-              background: 'rgba(14, 165, 233, 0.1)',
-              color: 'var(--accent)',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 'var(--space-sm)'
-            }}>
+          <div className="text-center py-4">
+            <div className="w-12 h-12 rounded-full bg-sky-500/10 text-[var(--accent)] inline-flex items-center justify-center mb-3">
               <CreditCard size={24} />
             </div>
-            <h3 className="perfil-section-title" style={{ marginBottom: '4px' }}>Suscripción Inactiva</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', maxWidth: '480px', margin: '0 auto var(--space-lg)' }}>
+            <h3 className="text-lg font-bold text-[var(--text-h)] mb-1">Suscripción Inactiva</h3>
+            <p className="text-sm text-[var(--text-muted)] max-w-md mx-auto mb-2">
               No tienes una suscripción activa. Selecciona un plan a continuación para activar tu cuenta de VetVault.
             </p>
           </div>
@@ -213,39 +186,24 @@ export function SubscriptionTab() {
 
       {/* Plan Cards Row */}
       {(!hasActiveSubscription || sub?.plan !== 'enterprise') && (
-        <div className="plans-grid" style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-          gap: 'var(--space-md)',
-          marginTop: 'var(--space-md)'
-        }}>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Plan 1 */}
           <div 
-            className={`plan-option-card ${selectedPlan === 'independent' ? 'selected' : ''}`}
             onClick={() => setSelectedPlan('independent')}
-            style={{
-              background: 'var(--surface)',
-              border: `2px solid ${selectedPlan === 'independent' ? 'var(--accent)' : 'var(--border)'}`,
-              borderRadius: 'var(--radius-outer)',
-              padding: 'var(--space-lg)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '340px'
-            }}
+            className={`p-6 rounded-2xl border-2 flex flex-col justify-between min-h-[340px] cursor-pointer transition-all duration-200 bg-[var(--surface)] hover:-translate-y-1 hover:shadow-lg ${
+              selectedPlan === 'independent' ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]/20' : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+            }`}
           >
             <div>
-              <h4 className="plan-option-title" style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 700 }}>Veterinario Independiente</h4>
-              <div className="plan-option-price" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 16px 0' }}>
-                $19.000 <span className="price-suffix" style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ mes</span>
+              <h4 className="text-base font-bold text-[var(--text-h)] mb-1">Veterinario Independiente</h4>
+              <div className="text-2xl font-black text-[var(--text-h)] mb-4">
+                $19.000 <span className="text-xs font-medium text-[var(--text-muted)]">/ mes</span>
               </div>
-              <ul className="plan-option-features" style={{ margin: '0 0 var(--space-lg) 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> 1 Profesional de la salud</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Hasta 150 Mascotas</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Historias Clínicas ilimitadas</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Calendario de Vacunación</li>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> 1 Profesional de la salud</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Hasta 150 Mascotas</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Historias Clínicas ilimitadas</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Calendario de Vacunación</li>
               </ul>
             </div>
             {(!sub || sub.plan !== 'independent') && (
@@ -266,49 +224,24 @@ export function SubscriptionTab() {
 
           {/* Plan 2 */}
           <div 
-            className={`plan-option-card premium ${selectedPlan === 'clinic_pro' ? 'selected' : ''}`}
             onClick={() => setSelectedPlan('clinic_pro')}
-            style={{
-              background: 'var(--surface)',
-              border: `2px solid ${selectedPlan === 'clinic_pro' ? 'var(--accent)' : 'var(--border)'}`,
-              borderRadius: 'var(--radius-outer)',
-              padding: 'var(--space-lg)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              position: 'relative',
-              minHeight: '340px'
-            }}
+            className={`relative p-6 rounded-2xl border-2 flex flex-col justify-between min-h-[340px] cursor-pointer transition-all duration-200 bg-[var(--surface)] hover:-translate-y-1 hover:shadow-lg ${
+              selectedPlan === 'clinic_pro' ? 'border-[var(--accent)] ring-2 ring-[var(--accent)]/20' : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+            }`}
           >
-            <div className="plan-option-badge" style={{
-              position: 'absolute',
-              top: '-12px',
-              right: '16px',
-              background: 'var(--accent-gradient)',
-              color: '#fff',
-              fontSize: '0.625rem',
-              fontWeight: 800,
-              padding: '2px 8px',
-              borderRadius: '12px',
-              textTransform: 'uppercase',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px'
-            }}>
+            <div className="absolute -top-3 right-4 bg-gradient-to-r from-sky-500 to-indigo-600 text-white text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase flex items-center gap-1 shadow-sm">
               <Sparkles size={10} /> Popular
             </div>
             <div>
-              <h4 className="plan-option-title" style={{ margin: '0 0 8px 0', fontSize: '1rem', fontWeight: 700 }}>Clínica Pro</h4>
-              <div className="plan-option-price" style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 16px 0' }}>
-                $49.000 <span className="price-suffix" style={{ fontSize: '0.75rem', fontWeight: 500, color: 'var(--text-muted)' }}>/ mes</span>
+              <h4 className="text-base font-bold text-[var(--text-h)] mb-1">Clínica Pro</h4>
+              <div className="text-2xl font-black text-[var(--text-h)] mb-4">
+                $49.000 <span className="text-xs font-medium text-[var(--text-muted)]">/ mes</span>
               </div>
-              <ul className="plan-option-features" style={{ margin: '0 0 var(--space-lg) 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Cuentas ilimitadas (Vets/Recepción)</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Mascotas ilimitadas</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> IA Voice Scribe (100 min/mes)</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Dashboard Clínico Avanzado</li>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Cuentas ilimitadas (Vets/Recepción)</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Mascotas ilimitadas</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> IA Voice Scribe (100 min/mes)</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Dashboard Clínico Avanzado</li>
               </ul>
             </div>
             {(!sub || sub.plan !== 'clinic_pro') && (
@@ -321,7 +254,6 @@ export function SubscriptionTab() {
                   handleCheckout('clinic_pro');
                 }}
                 disabled={actionStatus === 'loading'}
-                style={{ background: 'var(--accent-gradient)' }}
               >
                 Suscribirse
               </Button>
@@ -330,45 +262,24 @@ export function SubscriptionTab() {
 
           {/* Plan 3 - Custom Empresarial */}
           <div 
-            className="plan-option-card enterprise"
             onClick={() => setShowContactModal(true)}
-            style={{
-              background: 'var(--surface)',
-              border: '2px solid var(--border)',
-              borderRadius: 'var(--radius-outer)',
-              padding: 'var(--space-lg)',
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '340px'
-            }}
+            className="p-6 rounded-2xl border-2 border-[var(--border)] hover:border-[var(--accent)]/50 flex flex-col justify-between min-h-[340px] cursor-pointer transition-all duration-200 bg-[var(--surface)] hover:-translate-y-1 hover:shadow-lg"
           >
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', margin: '0 0 8px 0' }}>
-                <h4 className="plan-option-title" style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Plan Empresarial</h4>
-                <div style={{
-                  color: 'var(--accent)',
-                  background: 'var(--accent-light, rgba(14, 165, 233, 0.1))',
-                  borderRadius: '50%',
-                  width: '28px',
-                  height: '28px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
+              <div className="flex items-center justify-between mb-2">
+                <h4 className="text-base font-bold text-[var(--text-h)]">Plan Empresarial</h4>
+                <div className="text-[var(--accent)] bg-sky-500/10 rounded-full w-7 h-7 flex items-center justify-center shrink-0">
                   <Building size={16} />
                 </div>
               </div>
-              <div className="plan-option-price" style={{ fontSize: '1.25rem', fontWeight: 800, margin: '4px 0 16px 0', color: 'var(--text)' }}>
+              <div className="text-xl font-black text-[var(--text-h)] mb-4">
                 Costo a convenir
               </div>
-              <ul className="plan-option-features" style={{ margin: '0 0 var(--space-lg) 0', padding: 0, listStyle: 'none', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Hospitales y Grandes Clínicas</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Integraciones con APIs & LIS</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Servidor dedicado opcional</li>
-                <li style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8125rem', color: 'var(--text)' }}><Check size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} /> Soporte técnico Prioritario 24/7</li>
+              <ul className="space-y-2 mb-6">
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Hospitales y Grandes Clínicas</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Integraciones con APIs & LIS</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Servidor dedicado opcional</li>
+                <li className="flex items-center gap-2 text-xs text-[var(--text)]"><Check size={14} className="text-[var(--accent)] shrink-0" /> Soporte técnico Prioritario 24/7</li>
               </ul>
             </div>
             <Button 
@@ -380,7 +291,7 @@ export function SubscriptionTab() {
                 setShowContactModal(true);
               }}
             >
-              <Mail size={14} style={{ marginRight: '6px', display: 'inline' }} /> Contactar Ventas
+              <Mail size={14} className="mr-1.5 inline" /> Contactar Ventas
             </Button>
           </div>
         </div>
@@ -388,8 +299,8 @@ export function SubscriptionTab() {
 
       {/* Dev Bypass Section */}
       {isDevelopment && (
-        <div style={{ marginTop: 'var(--space-xl)', borderTop: '1px dashed var(--border)', paddingTop: 'var(--space-md)' }}>
-          <span style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-muted)', display: 'block', marginBottom: '8px' }}>
+        <div className="mt-8 pt-4 border-t border-dashed border-[var(--border)]">
+          <span className="text-xs font-semibold text-[var(--text-muted)] block mb-2">
             HERRAMIENTAS DE DESARROLLO (DEV ONLY)
           </span>
           <Button 
@@ -397,7 +308,7 @@ export function SubscriptionTab() {
             size="sm" 
             onClick={handleDevBypass}
             disabled={actionStatus === 'loading'}
-            style={{ border: '1px dashed var(--accent)', color: 'var(--accent)', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            className="border border-dashed border-[var(--accent)] text-[var(--accent)] hover:bg-[var(--accent-light)] flex items-center gap-2"
           >
             <ShieldAlert size={14} />
             {actionStatus === 'loading' ? 'Procesando...' : 'Simular Pago Exitoso (Dev Bypass)'}
@@ -407,49 +318,23 @@ export function SubscriptionTab() {
 
       {/* Contact Sales Modal */}
       {showContactModal && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          background: 'rgba(0, 0, 0, 0.4)',
-          backdropFilter: 'blur(4px)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          zIndex: 1000,
-          padding: 'var(--space-md)'
-        }} onClick={() => setShowContactModal(false)}>
-          <div style={{
-            background: 'var(--surface)',
-            border: '1px solid var(--border)',
-            borderRadius: 'var(--radius-outer)',
-            padding: 'var(--space-xl)',
-            width: '100%',
-            maxWidth: '450px',
-            boxShadow: 'var(--shadow-lg)',
-            animation: 'fadeIn 0.2s ease forwards'
-          }} onClick={(e) => e.stopPropagation()}>
-            <h3 style={{ margin: '0 0 var(--space-xs) 0', fontSize: '1.25rem', fontWeight: 800 }}>¿Interesado en el Plan Empresarial?</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.875rem', lineHeight: 1.5, margin: '0 0 var(--space-md) 0' }}>
+        <div 
+          className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center z-50 p-4"
+          onClick={() => setShowContactModal(false)}
+        >
+          <div 
+            className="bg-[var(--surface)] border border-[var(--border)] rounded-2xl p-6 w-full max-w-md shadow-2xl animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="text-xl font-bold text-[var(--text-h)] mb-1">¿Interesado en el Plan Empresarial?</h3>
+            <p className="text-sm text-[var(--text-muted)] leading-relaxed mb-4">
               Para grandes centros médicos y cadenas de veterinarias, ofrecemos cotizaciones personalizadas, migración de datos sin costo y soporte técnico dedicado.
             </p>
-            <div style={{
-              background: 'var(--surface-2)',
-              border: '1px solid var(--border)',
-              borderRadius: 'var(--radius-inner)',
-              padding: 'var(--space-md)',
-              fontSize: '0.875rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '8px',
-              marginBottom: 'var(--space-md)'
-            }}>
-              <p style={{ margin: 0 }}>✉ <strong>Email:</strong> ventas@vetvault.com</p>
-              <p style={{ margin: 0 }}>📞 <strong>Teléfono:</strong> +54 9 351 123-4567</p>
+            <div className="bg-[var(--surface-2)] border border-[var(--border)] rounded-xl p-4 text-sm flex flex-col gap-2 mb-6">
+              <p className="m-0">✉ <strong>Email:</strong> ventas@vetvault.com</p>
+              <p className="m-0">📞 <strong>Teléfono:</strong> +54 9 351 123-4567</p>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="flex justify-end">
               <Button size="sm" onClick={() => setShowContactModal(false)}>Cerrar</Button>
             </div>
           </div>

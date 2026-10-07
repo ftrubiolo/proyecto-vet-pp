@@ -36,11 +36,11 @@ export function VetMascotas() {
   );
 
   return (
-    <div className="page">
-      <div className="page-header">
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 animate-fade-in">
+      <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h2 className="page-title">Pacientes</h2>
-          <p className="page-subtitle">Gestión de pacientes de la clínica</p>
+          <h2 className="text-2xl font-bold text-[var(--text-h)] font-[var(--heading)]">Pacientes</h2>
+          <p className="text-sm text-[var(--text-muted)] mt-0.5">Gestión de pacientes de la clínica</p>
         </div>
         <Button onClick={() => setShowCreate(true)}>
           <Plus size={16} />
@@ -48,26 +48,25 @@ export function VetMascotas() {
         </Button>
       </div>
 
-      <div className="mascotas-toolbar">
-        <div className="mascotas-search">
-          <Search size={16} className="mascotas-search-icon" />
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="relative flex-1 min-w-[200px]">
+          <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] pointer-events-none z-10" />
           <Input
             placeholder="Buscar por nombre, raza o especie..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="mascotas-search-input"
-            style={{ paddingLeft: 40 }}
+            className="pl-10"
           />
         </div>
         <Badge variant="neutral">{filtered.length} resultado{filtered.length !== 1 ? 's' : ''}</Badge>
       </div>
 
       {isLoading ? (
-        <div style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
+        <div className="flex justify-center p-16">
           <Spinner size={40} />
         </div>
       ) : filtered.length === 0 ? (
-        <Card>
+        <Card className="p-8 border border-[var(--border)]">
           <EmptyState
             icon={<PawPrint size={56} />}
             title={search ? 'Sin resultados' : 'Sin pacientes registrados'}
@@ -87,37 +86,37 @@ export function VetMascotas() {
           />
         </Card>
       ) : (
-        <div className="mascotas-grid">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           {filtered.map((m, i) => (
             <Card
               key={m.id}
               clickable
               onClick={() => navigate(`/mascotas/${m.id}`)}
               style={{ animationDelay: `${i * 50}ms` }}
-              className="mascota-card animate-fade-in-up"
+              className="p-4 border border-[var(--border)] hover:border-[var(--accent)]/50 transition-all"
             >
-              <div className="mascota-card-content">
-                <div className="mascota-card-avatar">
+              <div className="flex items-center gap-3.5">
+                <div className="w-14 h-14 rounded-full bg-[var(--accent-light)] flex items-center justify-center text-[var(--accent)] flex-shrink-0">
                   <PawPrint size={24} />
                 </div>
-                <div className="mascota-card-info">
-                  <div className="mascota-card-name">{m.nombre}</div>
-                  <div className="mascota-card-breed">
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-base text-[var(--text-h)] truncate">{m.nombre}</div>
+                  <div className="text-xs text-[var(--text-muted)] truncate">
                     {m.raza || 'Sin raza'} · {m.especie || ''}
                   </div>
                 </div>
               </div>
-              <div className="mascota-card-meta">
-                <span className="mascota-card-meta-item">
+              <div className="flex items-center gap-3 mt-3 pt-3 border-t border-[var(--border)] text-xs text-[var(--text-muted)]">
+                <span className="flex items-center gap-1">
                   <Calendar size={12} />
                   {calcAge(m.fecha_nacimiento)}
                 </span>
-                <span className="mascota-card-meta-item">
+                <span className="flex items-center gap-1">
                   <Tag size={12} />
                   {m.sexo === 'M' ? 'Macho' : 'Hembra'}
                 </span>
                 {m.es_castrado && (
-                  <Badge variant="accent" className="text-sm">Castrado</Badge>
+                  <Badge variant="accent" className="text-xs">Castrado</Badge>
                 )}
               </div>
             </Card>
@@ -343,7 +342,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
       </div>
 
       {mode === 'create' ? (
-        <form id="create-mascota-form" className="create-mascota-form" onSubmit={handleSubmit}>
+        <form id="create-mascota-form" className="flex flex-col gap-4" onSubmit={handleSubmit}>
           <Input
             label="Nombre"
             placeholder="Nombre de la mascota"
@@ -351,7 +350,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
             onChange={(e) => setNombre(e.target.value)}
             required
           />
-          <div className="form-row">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Fecha de Nacimiento"
               type="date"
@@ -378,28 +377,27 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
             valueName={currentRazaName}
             clearOnSelect={false}
           />
-          <div className="form-group">
-            <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+          <div className="flex flex-col gap-1.5">
+            <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[var(--text-h)]">
               <input
                 type="checkbox"
                 checked={esCastrado}
                 onChange={(e) => setEsCastrado(e.target.checked)}
-                style={{ width: 16, height: 16 }}
+                className="w-4 h-4 cursor-pointer accent-[var(--accent)]"
               />
               Castrado/a
             </label>
           </div>
 
-          <div className="sidebar-divider" style={{ margin: 'var(--space-md) 0' }}></div>
+          <div className="h-[1px] bg-[var(--border)] my-2" />
 
           {/* Owner Selection Section */}
-          <div className="form-group" style={{ position: 'relative' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
-              <span className="form-label" style={{ marginBottom: 0 }}><strong>Tutor / Propietario</strong></span>
+          <div className="relative flex flex-col gap-1.5">
+            <div className="flex justify-between items-center mb-1">
+              <span className="text-xs font-semibold text-[var(--text-h)]">Tutor / Propietario</span>
               <button
                 type="button"
-                className="forgot-password-btn"
-                style={{ fontSize: '0.8rem', padding: 0 }}
+                className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer bg-transparent border-0 p-0"
                 onClick={() => {
                   setIsNewOwnerMode(!isNewOwnerMode);
                   setSelectedOwner(null);
@@ -412,7 +410,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
             </div>
 
             {isNewOwnerMode ? (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 12, border: '1px dashed var(--border-color)', borderRadius: 8, background: 'var(--surface-2)' }}>
+              <div className="flex flex-col gap-3 p-3.5 border border-dashed border-[var(--border)] rounded-xl bg-[var(--surface-2)]">
                 <Input
                   label="Correo Electrónico *"
                   placeholder="ejemplo@email.com"
@@ -421,7 +419,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                   onChange={(e) => setOwnerEmail(e.target.value)}
                   required
                 />
-                <div className="form-row">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                   <Input
                     label="Nombre *"
                     placeholder="Nombre"
@@ -446,10 +444,10 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                 />
               </div>
             ) : selectedOwner ? (
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '12px 16px', background: 'var(--surface-2)', border: '1px solid var(--border-color)', borderRadius: 8 }}>
+              <div className="flex justify-between items-center p-3 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl">
                 <div>
-                  <div style={{ fontWeight: 600, color: 'var(--text-color)' }}>{selectedOwner.nombre} {selectedOwner.apellido}</div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>{selectedOwner.email} · Tel: {selectedOwner.telefono}</div>
+                  <div className="text-sm font-semibold text-[var(--text-h)]">{selectedOwner.nombre} {selectedOwner.apellido}</div>
+                  <div className="text-xs text-[var(--text-muted)]">{selectedOwner.email} · Tel: {selectedOwner.telefono}</div>
                 </div>
                 <Button
                   size="sm"
@@ -463,10 +461,10 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                 </Button>
               </div>
             ) : (
-              <div>
+              <div className="relative">
                 <input
                   type="text"
-                  className="form-input"
+                  className="w-full px-3.5 py-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none"
                   placeholder="Buscar por nombre, email o teléfono..."
                   value={ownerSearchQuery}
                   onChange={(e) => {
@@ -479,25 +477,10 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                   }}
                 />
                 {isSearchingOwners && (
-                  <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: 4 }}>Buscando...</div>
+                  <div className="text-xs text-[var(--text-muted)] mt-1">Buscando...</div>
                 )}
                 {showOwnerDropdown && ownerSearchResults.length > 0 && (
-                  <ul className="autocomplete-results" style={{
-                    position: 'absolute',
-                    top: '100%',
-                    left: 0,
-                    right: 0,
-                    background: 'var(--surface-solid)',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: 'var(--radius-inner)',
-                    zIndex: 1200,
-                    listStyle: 'none',
-                    padding: '4px 0',
-                    marginTop: '4px',
-                    boxShadow: 'var(--shadow)',
-                    maxHeight: '180px',
-                    overflowY: 'auto'
-                  }}>
+                  <ul className="absolute top-full left-0 right-0 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl z-[1200] list-none py-1 mt-1 shadow-xl max-h-48 overflow-y-auto">
                     {ownerSearchResults.map(owner => (
                       <li
                         key={owner.id}
@@ -508,17 +491,10 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                           setOwnerSearchResults([]);
                           setShowOwnerDropdown(false);
                         }}
-                        style={{
-                          padding: '8px 12px',
-                          cursor: 'pointer',
-                          fontSize: '0.82rem',
-                          color: 'var(--text-color)',
-                          borderBottom: '1px solid var(--border-color)'
-                        }}
-                        className="autocomplete-item"
+                        className="px-3.5 py-2 cursor-pointer border-b border-[var(--border)] last:border-b-0 hover:bg-[var(--accent-light)] hover:text-[var(--accent)] transition-colors"
                       >
-                        <div><strong>{owner.nombre} {owner.apellido}</strong></div>
-                        <div style={{ fontSize: '0.72rem', color: 'var(--text-muted)' }}>{owner.email} · {owner.telefono}</div>
+                        <div className="text-sm font-semibold text-[var(--text-h)]">{owner.nombre} {owner.apellido}</div>
+                        <div className="text-xs text-[var(--text-muted)]">{owner.email} · {owner.telefono}</div>
                       </li>
                     ))}
                   </ul>
@@ -536,13 +512,13 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
           />
 
           {error && (
-            <div className="login-message error" style={{ marginTop: 0 }}>{error}</div>
+            <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
           )}
         </form>
       ) : (
-        <div className="create-mascota-form">
-          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end', marginBottom: 'var(--space-md)' }}>
-            <div style={{ flex: 1 }}>
+        <div className="flex flex-col gap-4">
+          <div className="flex gap-2 items-end">
+            <div className="flex-1">
               <Input
                 label="Código de Mascota (UUID)"
                 placeholder="Ingrese el UUID de la mascota"
@@ -561,36 +537,29 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
               type="button"
               onClick={handleSearchPet}
               disabled={searching || !admissionCode}
-              style={{ marginBottom: 4 }}
+              className="mb-1"
             >
               {searching ? 'Buscando...' : 'Buscar'}
             </Button>
           </div>
 
           {foundPet && (
-            <div style={{
-              background: 'var(--surface-2)',
-              padding: 'var(--space-md)',
-              borderRadius: '12px',
-              border: '1px solid var(--border-color)',
-              marginBottom: 'var(--space-md)',
-              animation: 'fadeIn 0.2s ease'
-            }}>
-              <h4 style={{ margin: '0 0 var(--space-xs) 0', color: 'var(--primary-color)' }}>Mascota Encontrada</h4>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '0.9rem' }}>
-                <div><strong>Nombre:</strong> {foundPet.nombre}</div>
-                <div><strong>Sexo:</strong> {foundPet.sexo === 'M' ? 'Macho' : 'Hembra'}</div>
-                <div><strong>Especie:</strong> {foundPet.especie}</div>
-                <div><strong>Raza:</strong> {foundPet.raza}</div>
-                <div style={{ gridColumn: 'span 2', marginTop: 4 }}>
-                  <strong>Propietario:</strong> {foundPet.propietario}
+            <div className="bg-[var(--surface-2)] p-4 rounded-xl border border-[var(--border)] space-y-2 animate-fade-in">
+              <h4 className="text-sm font-bold text-[var(--accent)]">Mascota Encontrada</h4>
+              <div className="grid grid-cols-2 gap-2 text-sm text-[var(--text)]">
+                <div><strong className="text-[var(--text-h)]">Nombre:</strong> {foundPet.nombre}</div>
+                <div><strong className="text-[var(--text-h)]">Sexo:</strong> {foundPet.sexo === 'M' ? 'Macho' : 'Hembra'}</div>
+                <div><strong className="text-[var(--text-h)]">Especie:</strong> {foundPet.especie}</div>
+                <div><strong className="text-[var(--text-h)]">Raza:</strong> {foundPet.raza}</div>
+                <div className="col-span-2 mt-1">
+                  <strong className="text-[var(--text-h)]">Propietario:</strong> {foundPet.propietario}
                 </div>
               </div>
             </div>
           )}
 
           {error && (
-            <div className="login-message error" style={{ marginTop: 0, marginBottom: 'var(--space-md)' }}>{error}</div>
+            <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
           )}
         </div>
       )}

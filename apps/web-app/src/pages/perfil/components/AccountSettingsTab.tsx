@@ -138,15 +138,15 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-lg)' }}>
+    <div className="flex flex-col gap-6">
       {/* Appearance */}
-      <Card>
-        <h3 className="perfil-section-title">Apariencia</h3>
+      <Card className="p-6 border border-[var(--border)]">
+        <h3 className="text-base font-bold text-[var(--text-h)] mb-4">Apariencia</h3>
 
-        <div className="perfil-edit-form">
-          <div className="form-group">
-            <label className="form-label">Tema</label>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-[var(--text-h)]">Tema</label>
+            <div className="flex gap-2 flex-wrap">
               {themeOptions.map((opt) => {
                 const Icon = opt.icon;
                 const isActive = theme === opt.value;
@@ -155,21 +155,11 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
                     key={opt.value}
                     type="button"
                     onClick={() => setTheme(opt.value)}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 8,
-                      padding: '10px 18px',
-                      borderRadius: 'var(--radius-inner)',
-                      border: isActive ? '2px solid var(--accent, var(--accent-blue))' : '1px solid var(--border)',
-                      background: isActive ? 'var(--accent-light, rgba(14,165,233,0.1))' : 'var(--surface-solid)',
-                      color: isActive ? 'var(--accent, var(--accent-blue))' : 'var(--text)',
-                      cursor: 'pointer',
-                      fontWeight: isActive ? 600 : 400,
-                      fontSize: '0.875rem',
-                      fontFamily: 'var(--sans)',
-                      transition: 'all var(--transition)',
-                    }}
+                    className={`flex items-center gap-2 px-4 py-2.5 rounded-xl border text-sm transition-all cursor-pointer ${
+                      isActive
+                        ? 'border-2 border-[var(--accent)] bg-[var(--accent-light)] text-[var(--accent)] font-semibold'
+                        : 'border-[var(--border)] bg-[var(--surface-solid)] text-[var(--text)] hover:border-[var(--accent)]/50'
+                    }`}
                   >
                     <Icon size={16} />
                     {opt.label}
@@ -179,10 +169,10 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
             </div>
           </div>
 
-          <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="flex items-center justify-between py-2 border-t border-[var(--border)]">
             <div>
-              <label className="form-label" style={{ marginBottom: 2 }}>Modo Compacto</label>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+              <label className="text-sm font-semibold text-[var(--text-h)] block">Modo Compacto</label>
+              <p className="text-xs text-[var(--text-muted)]">
                 Reduce el espaciado y tamaño de elementos para mostrar más información
               </p>
             </div>
@@ -191,30 +181,14 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
               role="switch"
               aria-checked={compactMode}
               onClick={handleCompactToggle}
-              style={{
-                width: 44,
-                height: 24,
-                borderRadius: 12,
-                border: 'none',
-                background: compactMode ? 'var(--accent, var(--accent-blue))' : 'var(--border)',
-                cursor: 'pointer',
-                position: 'relative',
-                transition: 'background var(--transition)',
-                flexShrink: 0,
-              }}
+              className={`w-11 h-6 rounded-full relative transition-colors cursor-pointer flex-shrink-0 ${
+                compactMode ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+              }`}
             >
               <span
-                style={{
-                  position: 'absolute',
-                  top: 2,
-                  left: compactMode ? 22 : 2,
-                  width: 20,
-                  height: 20,
-                  borderRadius: '50%',
-                  background: '#fff',
-                  transition: 'left var(--transition)',
-                  boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                }}
+                className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all shadow-sm ${
+                  compactMode ? 'left-[22px]' : 'left-[2px]'
+                }`}
               />
             </button>
           </div>
@@ -223,26 +197,28 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
 
       {/* Vet preferences */}
       {isVet && (
-        <Card>
-          <h3 className="perfil-section-title">
-            <Stethoscope size={16} style={{ verticalAlign: -2, marginRight: 6 }} />
+        <Card className="p-6 border border-[var(--border)]">
+          <h3 className="text-base font-bold text-[var(--text-h)] mb-4 flex items-center gap-2">
+            <Stethoscope size={16} className="text-[var(--accent)]" />
             Preferencias de Consulta
           </h3>
 
-          <div className="perfil-edit-form">
-            <Select
-              label="Clínica por Defecto"
-              value={defaultClinic}
-              onChange={(e) => handleDefaultClinicChange(e.target.value)}
+          <div className="flex flex-col gap-4">
+            <div>
+              <Select
+                label="Clínica por Defecto"
+                value={defaultClinic}
+                onChange={(e) => handleDefaultClinicChange(e.target.value)}
                 options={
                   clinics.length > 0
                     ? clinics.map((c: { id: string; nombre_comercial: string }) => ({ value: c.id, label: c.nombre_comercial }))
                     : []
                 }
-            />
-            <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', marginTop: -8 }}>
-              Se preseleccionará esta clínica al crear turnos y consultas
-            </p>
+              />
+              <p className="text-xs text-[var(--text-muted)] mt-1">
+                Se preseleccionará esta clínica al crear turnos y consultas
+              </p>
+            </div>
 
             <Select
               label="Duración de Turno por Defecto"
@@ -255,98 +231,64 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
       )}
 
       {/* Notifications */}
-      <Card>
-        <h3 className="perfil-section-title">
-          <Bell size={16} style={{ verticalAlign: -2, marginRight: 6 }} />
+      <Card className="p-6 border border-[var(--border)]">
+        <h3 className="text-base font-bold text-[var(--text-h)] mb-4 flex items-center gap-2">
+          <Bell size={16} className="text-[var(--accent)]" />
           Notificaciones
         </h3>
 
-        <div className="perfil-edit-form">
-          <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between py-2">
             <div>
-              <label className="form-label" style={{ marginBottom: 2 }}>Recordatorio de Turnos</label>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+              <label className="text-sm font-semibold text-[var(--text-h)] block">Recordatorio de Turnos</label>
+              <p className="text-xs text-[var(--text-muted)]">
                 Notificar antes de un turno próximo
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Próximamente</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--text-muted)] italic">Próximamente</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={notifyAppointments}
                 onClick={handleNotifyApptToggle}
                 disabled
-                style={{
-                  width: 44,
-                  height: 24,
-                  borderRadius: 12,
-                  border: 'none',
-                  background: notifyAppointments ? 'var(--accent, var(--accent-blue))' : 'var(--border)',
-                  cursor: 'not-allowed',
-                  position: 'relative',
-                  transition: 'background var(--transition)',
-                  flexShrink: 0,
-                  opacity: 0.5,
-                }}
+                className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 opacity-50 cursor-not-allowed ${
+                  notifyAppointments ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+                }`}
               >
                 <span
-                  style={{
-                    position: 'absolute',
-                    top: 2,
-                    left: notifyAppointments ? 22 : 2,
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    background: '#fff',
-                    transition: 'left var(--transition)',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  }}
+                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all shadow-sm ${
+                    notifyAppointments ? 'left-[22px]' : 'left-[2px]'
+                  }`}
                 />
               </button>
             </div>
           </div>
 
-          <div className="form-group" style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <div className="flex items-center justify-between py-2 border-t border-[var(--border)]">
             <div>
-              <label className="form-label" style={{ marginBottom: 2 }}>Alertas de Vacunas</label>
-              <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
+              <label className="text-sm font-semibold text-[var(--text-h)] block">Alertas de Vacunas</label>
+              <p className="text-xs text-[var(--text-muted)]">
                 Notificar cuando una vacuna esté próxima a vencer
               </p>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontStyle: 'italic' }}>Próximamente</span>
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-[var(--text-muted)] italic">Próximamente</span>
               <button
                 type="button"
                 role="switch"
                 aria-checked={notifyVaccines}
                 onClick={handleNotifyVaccinesToggle}
                 disabled
-                style={{
-                  width: 44,
-                  height: 24,
-                  borderRadius: 12,
-                  border: 'none',
-                  background: notifyVaccines ? 'var(--accent, var(--accent-blue))' : 'var(--border)',
-                  cursor: 'not-allowed',
-                  position: 'relative',
-                  transition: 'background var(--transition)',
-                  flexShrink: 0,
-                  opacity: 0.5,
-                }}
+                className={`w-11 h-6 rounded-full relative transition-colors flex-shrink-0 opacity-50 cursor-not-allowed ${
+                  notifyVaccines ? 'bg-[var(--accent)]' : 'bg-[var(--border)]'
+                }`}
               >
                 <span
-                  style={{
-                    position: 'absolute',
-                    top: 2,
-                    left: notifyVaccines ? 22 : 2,
-                    width: 20,
-                    height: 20,
-                    borderRadius: '50%',
-                    background: '#fff',
-                    transition: 'left var(--transition)',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.2)',
-                  }}
+                  className={`absolute top-0.5 w-5 h-5 rounded-full bg-white transition-all shadow-sm ${
+                    notifyVaccines ? 'left-[22px]' : 'left-[2px]'
+                  }`}
                 />
               </button>
             </div>
@@ -355,22 +297,22 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
       </Card>
 
       {/* Account */}
-      <Card>
-        <h3 className="perfil-section-title">Ajustes de Cuenta</h3>
+      <Card className="p-6 border border-[var(--border)]">
+        <h3 className="text-base font-bold text-[var(--text-h)] mb-4">Ajustes de Cuenta</h3>
 
         {settingsSuccess && (
-          <div className="login-message success" style={{ marginBottom: 'var(--space-md)' }}>
+          <div className="p-3 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 mb-4">
             {settingsSuccess}
           </div>
         )}
 
         {settingsError && (
-          <div className="login-message error" style={{ marginBottom: 'var(--space-md)' }}>
+          <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 mb-4">
             {settingsError}
           </div>
         )}
 
-        <form onSubmit={handleUpdateSettings} className="perfil-edit-form">
+        <form onSubmit={handleUpdateSettings} className="flex flex-col gap-4">
           <Input
             label="Correo Electrónico de Cuenta"
             type="email"
@@ -379,23 +321,13 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
             required
           />
 
-          <div className="divider" style={{ margin: 'var(--space-md) 0' }} />
+          <div className="h-[1px] bg-[var(--border)] my-2" />
 
-          <h4
-            style={{
-              fontSize: '0.9rem',
-              fontWeight: 600,
-              color: 'var(--text-h)',
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              marginBottom: 'var(--space-xs)',
-            }}
-          >
-            <Key size={14} /> Cambiar Contraseña
+          <h4 className="text-sm font-semibold text-[var(--text-h)] flex items-center gap-2">
+            <Key size={14} className="text-[var(--accent)]" /> Cambiar Contraseña
           </h4>
 
-          <div className="form-row">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Nueva Contraseña"
               type="password"
@@ -414,7 +346,7 @@ export function AccountSettingsTab({ profile, user, refetch }: AccountSettingsTa
             />
           </div>
 
-          <div className="perfil-edit-actions">
+          <div className="flex justify-end gap-3 mt-2">
             <Button type="submit" disabled={savingSettings}>
               {savingSettings ? 'Guardando...' : 'Actualizar Ajustes'}
             </Button>

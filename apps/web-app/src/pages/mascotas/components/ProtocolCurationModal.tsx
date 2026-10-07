@@ -105,11 +105,11 @@ export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSa
         </div>
       }
     >
-      <form onSubmit={handleSave} className="consultation-subform" style={{ padding: '0 var(--space-md) var(--space-md) var(--space-md)', overflowY: 'auto', maxHeight: '70vh' }}>
+      <form onSubmit={handleSave} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] p-4">
         {errorMsg && (
-          <div className="error-alert" style={{ display: 'flex', alignItems: 'center', gap: 8, padding: 12, backgroundColor: 'rgba(239, 68, 68, 0.08)', border: '1px solid var(--danger)', borderRadius: 8, color: 'var(--danger)', marginBottom: 'var(--space-md)' }}>
+          <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-semibold mb-4">
             <ShieldAlert size={16} />
-            <span style={{ fontSize: '0.8rem', fontWeight: 500 }}>{errorMsg}</span>
+            <span>{errorMsg}</span>
           </div>
         )}
 
@@ -190,7 +190,7 @@ export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSa
             required
           />
 
-          <div className="form-row">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Total dosis en serie primaria *"
               type="number"

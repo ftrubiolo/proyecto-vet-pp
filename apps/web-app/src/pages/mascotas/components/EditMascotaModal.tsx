@@ -114,7 +114,7 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
         </>
       }
     >
-      <form id="edit-mascota-form" className="create-mascota-form" onSubmit={handleSubmit}>
+      <form id="edit-mascota-form" className="flex flex-col gap-4" onSubmit={handleSubmit}>
         <Input
           label="Nombre"
           placeholder="Nombre de la mascota"
@@ -122,7 +122,7 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
           onChange={(e) => setNombre(e.target.value)}
           required
         />
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Fecha de Nacimiento"
             type="date"
@@ -155,15 +155,15 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
           value={numeroMicrochip}
           onChange={(e) => setNumeroMicrochip(e.target.value)}
         />
-        <div className="form-group">
-          <label className="form-label">Foto</label>
-          <div className="upload-photo-wrapper">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-xs font-semibold text-[var(--text-h)]">Foto</label>
+          <div className="flex items-center gap-4">
             {fotoUrl ? (
-              <div className="upload-photo-preview">
-                <img src={fotoUrl} alt="Preview" />
+              <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-[var(--border)] flex-shrink-0 group">
+                <img src={fotoUrl} alt="Preview" className="w-full h-full object-cover" />
                 <button
                   type="button"
-                  className="upload-photo-remove"
+                  className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                   onClick={() => setFotoUrl('')}
                   title="Eliminar foto"
                 >
@@ -172,7 +172,7 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
               </div>
             ) : (
               <div
-                className="upload-photo-placeholder"
+                className="w-24 h-24 border-2 border-dashed border-[var(--border)] rounded-xl flex flex-col items-center justify-center gap-1 text-[var(--text-muted)] cursor-pointer hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex-shrink-0 text-xs text-center p-1"
                 onClick={() => fileInputRef.current?.click()}
               >
                 <Upload size={24} />
@@ -189,13 +189,13 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
             />
           </div>
         </div>
-        <div className="form-group">
-          <label className="form-label" style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+        <div className="flex flex-col gap-1.5">
+          <label className="flex items-center gap-2 cursor-pointer text-xs font-semibold text-[var(--text-h)]">
             <input
               type="checkbox"
               checked={esCastrado}
               onChange={(e) => setEsCastrado(e.target.checked)}
-              style={{ width: 16, height: 16 }}
+              className="w-4 h-4 cursor-pointer accent-[var(--accent)]"
             />
             Castrado/a
           </label>
@@ -203,13 +203,13 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
 
         {!isOwner && (
           <>
-            <div className="divider" style={{ margin: 'var(--space-md) 0' }}></div>
-            <h3 style={{ fontSize: '0.9375rem', marginBottom: 'var(--space-sm)' }}>Información Clínica Crítica</h3>
+            <div className="h-[1px] bg-[var(--border)] my-2" />
+            <h3 className="text-sm font-bold text-[var(--text-h)] mb-1">Información Clínica Crítica</h3>
             
-            <div className="form-group">
-              <label className="form-label">Alergias Conocidas</label>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold text-[var(--text-h)]">Alergias Conocidas</label>
               <textarea
-                className="form-input form-textarea"
+                className="w-full p-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none min-h-[60px] resize-y"
                 placeholder="Ej: Penicilina, Dipirona (o 'Ninguna')"
                 value={alergias}
                 onChange={(e) => setAlergias(e.target.value)}
@@ -217,10 +217,10 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
               />
             </div>
 
-            <div className="form-group" style={{ marginTop: 'var(--space-sm)' }}>
-              <label className="form-label">Condiciones Crónicas</label>
+            <div className="flex flex-col gap-1.5 mt-2">
+              <label className="text-xs font-semibold text-[var(--text-h)]">Condiciones Crónicas</label>
               <textarea
-                className="form-input form-textarea"
+                className="w-full p-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none min-h-[60px] resize-y"
                 placeholder="Ej: Cardiopatía congénita, Insuficiencia renal"
                 value={condicionesCronicas}
                 onChange={(e) => setCondicionesCronicas(e.target.value)}
@@ -228,10 +228,10 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
               />
             </div>
 
-            <div className="form-group" style={{ marginTop: 'var(--space-sm)' }}>
-              <label className="form-label">Contraindicaciones Medicamentosas</label>
+            <div className="flex flex-col gap-1.5 mt-2">
+              <label className="text-xs font-semibold text-[var(--text-h)]">Contraindicaciones Medicamentosas</label>
               <textarea
-                className="form-input form-textarea"
+                className="w-full p-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none min-h-[60px] resize-y"
                 placeholder="Ej: No administrar AINEs, evitar corticoides"
                 value={contraindicaciones}
                 onChange={(e) => setContraindicaciones(e.target.value)}
@@ -242,7 +242,7 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
         )}
 
         {error && (
-          <div className="login-message error" style={{ marginTop: 0 }}>{error}</div>
+          <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
         )}
       </form>
     </Modal>

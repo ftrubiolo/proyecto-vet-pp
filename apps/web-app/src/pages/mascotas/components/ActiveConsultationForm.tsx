@@ -382,10 +382,14 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
   };
 
   return (
-    <div className="consultation-form-section">
-      <div className="consultation-form-title-bar">
-        <h3>Atención Médica Activa</h3>
-        <button className="consultation-close-btn" onClick={onClose} title="Cerrar Consulta">
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+        <h3 className="text-base font-bold text-[var(--text-h)]">Atención Médica Activa</h3>
+        <button
+          className="p-1 text-[var(--text-muted)] hover:text-[var(--text-h)] hover:bg-[var(--border)] rounded-md transition-colors cursor-pointer"
+          onClick={onClose}
+          title="Cerrar Consulta"
+        >
           <X size={16} />
         </button>
       </div>
@@ -412,10 +416,10 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
         onChange={(e) => setPesoActual(e.target.value)}
       />
 
-      <div className="form-group">
-        <label className="form-label">Notas Clínicas / Anamnesis *</label>
+      <div className="flex flex-col gap-1.5">
+        <label className="text-xs font-semibold text-[var(--text-h)]">Notas Clínicas / Anamnesis *</label>
         <textarea
-          className="form-input form-textarea"
+          className="w-full p-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none min-h-[90px] resize-y"
           placeholder="Describa los síntomas, exploración física y estado general..."
           value={notasClinicas}
           onChange={(e) => setNotasClinicas(e.target.value)}
@@ -432,11 +436,14 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       />
 
       {selectedDiag.length > 0 && (
-        <div className="selected-badges-list">
+        <div className="flex flex-wrap gap-1.5 mt-1">
           {selectedDiag.map(d => (
-            <Badge key={d.id} variant="accent" className="selected-badge">
+            <Badge key={d.id} variant="accent" className="inline-flex items-center gap-1 py-1 px-2.5 rounded-full text-xs font-semibold bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]">
               {d.name}
-              <button className="selected-badge-remove" onClick={() => handleRemoveDiagnosis(d.id)}>
+              <button
+                className="bg-transparent border-0 text-inherit cursor-pointer p-0 flex items-center hover:opacity-75"
+                onClick={() => handleRemoveDiagnosis(d.id)}
+              >
                 <X size={10} />
               </button>
             </Badge>
@@ -445,9 +452,11 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       )}
 
       {/* Recetar Tratamientos */}
-      <span className="consultation-section-title">Tratamientos a Prescribir</span>
+      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mt-2 pt-2 border-b border-[var(--border)] pb-1 block">
+        Tratamientos a Prescribir
+      </span>
 
-      <div className="consultation-subform">
+      <div className="flex flex-col gap-3 p-3.5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border)]">
         <Select
           label="Tipo"
           options={[
@@ -465,12 +474,12 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           onSelect={(item) => setTProducto(item)}
         />
         {tProducto && (
-          <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
+          <span className="text-xs text-[var(--accent)] font-semibold">
             Seleccionado: {tProducto.name}
           </span>
         )}
 
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Dosis"
             placeholder="Ej: 1 comp"
@@ -485,7 +494,7 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           />
         </div>
 
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Desde"
             type="date"
@@ -513,15 +522,19 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       </div>
 
       {treatments.length > 0 && (
-        <div className="prescribed-items-list">
+        <div className="flex flex-col gap-2">
           {treatments.map((t, index) => (
-            <div key={index} className="prescribed-item-card">
-              <div className="prescribed-item-info">
-                <span className="prescribed-item-title">{t.tipoName} — {t.productoName}</span>
-                <span className="prescribed-item-details">Dosis: {t.dosis} · Frecuencia: {t.frecuencia}</span>
-                {t.fecha_fin && <span className="prescribed-item-details">Hasta: {t.fecha_fin}</span>}
+            <div key={index} className="flex items-center justify-between p-2.5 bg-[var(--surface-solid)] rounded-xl border border-[var(--border)] text-xs">
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
+                <span className="font-bold text-[var(--text-h)] truncate">{t.tipoName} — {t.productoName}</span>
+                <span className="text-[var(--text-muted)] text-[11px] truncate">Dosis: {t.dosis} · Frecuencia: {t.frecuencia}</span>
+                {t.fecha_fin && <span className="text-[var(--text-muted)] text-[11px] truncate">Hasta: {t.fecha_fin}</span>}
               </div>
-              <button className="prescribed-item-delete" type="button" onClick={() => handleRemoveTreatment(index)}>
+              <button
+                className="p-1 text-slate-400 hover:text-rose-500 rounded cursor-pointer transition-colors bg-transparent border-0"
+                type="button"
+                onClick={() => handleRemoveTreatment(index)}
+              >
                 <X size={14} />
               </button>
             </div>
@@ -530,9 +543,11 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       )}
 
       {/* Aplicar Vacunas */}
-      <span className="consultation-section-title">Vacunas Aplicadas</span>
+      <span className="text-xs font-bold uppercase tracking-wider text-[var(--text-muted)] mt-2 pt-2 border-b border-[var(--border)] pb-1 block">
+        Vacunas Aplicadas
+      </span>
 
-      <div className="consultation-subform">
+      <div className="flex flex-col gap-3 p-3.5 bg-[var(--surface-2)] rounded-2xl border border-[var(--border)]">
         <Autocomplete
           label="Vacuna"
           placeholder="Escriba para buscar vacuna..."
@@ -540,23 +555,23 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           onSelect={handleSelectVacuna}
         />
         {isValidatingProtocol && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: 8 }}>
+          <div className="flex items-center gap-1.5 text-xs text-[var(--text-muted)] mb-2">
             <Spinner size={12} />
             <span>Verificando protocolo oficial...</span>
           </div>
         )}
         {vProducto && !isValidatingProtocol && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4, marginBottom: 8 }}>
-            <span style={{ fontSize: '0.8rem', color: 'var(--accent)', fontWeight: 600 }}>
+          <div className="flex flex-col gap-1 mb-2">
+            <span className="text-xs text-[var(--accent)] font-semibold">
               Seleccionado: {vProducto.name}
             </span>
             {vValidationWarning && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '8px 12px', backgroundColor: 'rgba(239, 68, 68, 0.05)', border: '1px solid rgba(239, 68, 68, 0.2)', borderRadius: 6, margin: '4px 0', color: 'var(--danger)', fontSize: '0.75rem', fontWeight: 600 }}>
+              <div className="flex items-center gap-1.5 p-2 bg-rose-500/10 border border-rose-500/30 rounded-lg text-rose-600 dark:text-rose-400 text-xs font-semibold my-1">
                 ⚠️ {vValidationWarning}
               </div>
             )}
             {activeSerie && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 12px', backgroundColor: 'rgba(245, 158, 11, 0.05)', border: '1px solid rgba(245, 158, 11, 0.2)', borderRadius: 6, margin: '6px 0' }}>
+              <div className="flex items-center gap-2 p-2 bg-amber-500/10 border border-amber-500/30 rounded-lg my-1.5">
                 <input
                   type="checkbox"
                   id="continuarSerieCheckbox"
@@ -565,9 +580,9 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
                     setContinuarSerie(e.target.checked);
                     calculateNextDoseDate(e.target.checked, vFechaAplicacion, vProtocolo, activeSerie);
                   }}
-                  style={{ width: 14, height: 14, cursor: 'pointer' }}
+                  className="w-3.5 h-3.5 cursor-pointer accent-[var(--accent)]"
                 />
-                <label htmlFor="continuarSerieCheckbox" style={{ fontSize: '0.78rem', fontWeight: 600, color: '#d97706', cursor: 'pointer' }}>
+                <label htmlFor="continuarSerieCheckbox" className="text-xs font-semibold text-amber-700 dark:text-amber-400 cursor-pointer">
                   {activeSerie.estado_serie === 'completa'
                     ? 'Registrar como dosis de refuerzo (booster) para la serie existente'
                     : `Continuar serie en curso existente (Registrar como Dosis ${activeSerie.dosis_aplicadas + 1})`
@@ -602,7 +617,7 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
           required
         />
 
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
             label="Aplicada hoy"
             type="date"
@@ -626,17 +641,21 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       </div>
 
       {vacunasApplied.length > 0 && (
-        <div className="prescribed-items-list">
+        <div className="flex flex-col gap-2">
           {vacunasApplied.map((v, index) => (
-            <div key={index} className="prescribed-item-card">
-              <div className="prescribed-item-info">
-                <span className="prescribed-item-title">Vacuna: {v.productoName}</span>
-                <span className="prescribed-item-details">
+            <div key={index} className="flex items-center justify-between p-2.5 bg-[var(--surface-solid)] rounded-xl border border-[var(--border)] text-xs">
+              <div className="flex flex-col gap-0.5 flex-1 min-w-0 pr-2">
+                <span className="font-bold text-[var(--text-h)] truncate">Vacuna: {v.productoName}</span>
+                <span className="text-[var(--text-muted)] text-[11px] truncate">
                   Lote: {v.numero_lote} · Vía: {v.via_administracion}
                 </span>
-                {v.fecha_proxima_dosis && <span className="prescribed-item-details">Próxima: {v.fecha_proxima_dosis}</span>}
+                {v.fecha_proxima_dosis && <span className="text-[var(--text-muted)] text-[11px] truncate">Próxima: {v.fecha_proxima_dosis}</span>}
               </div>
-              <button className="prescribed-item-delete" type="button" onClick={() => handleRemoveVacuna(index)}>
+              <button
+                className="p-1 text-slate-400 hover:text-rose-500 rounded cursor-pointer transition-colors bg-transparent border-0"
+                type="button"
+                onClick={() => handleRemoveVacuna(index)}
+              >
                 <X size={14} />
               </button>
             </div>
@@ -653,11 +672,11 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
         />
       )}
 
-      <div className="consultation-actions-footer">
+      <div className="flex items-center justify-end gap-3 pt-4 border-t border-[var(--border)] mt-2">
         <Button variant="secondary" onClick={onClose} disabled={isSaving}>Cancelar</Button>
         <Button type="button" onClick={handleFinalize} disabled={isSaving}>
           {isSaving ? (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div className="flex items-center gap-2">
               <Spinner size={16} />
               <span>Guardando...</span>
             </div>

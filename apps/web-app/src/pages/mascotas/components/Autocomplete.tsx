@@ -30,11 +30,11 @@ export function Autocomplete({
     : items.filter(item => item.name.toLowerCase().includes(query.toLowerCase())).slice(0, 8);
 
   return (
-    <div className="autocomplete-container form-group" style={{ position: 'relative' }}>
-      <label className="form-label">{label}</label>
+    <div className="relative flex flex-col gap-1.5">
+      <label className="text-xs font-semibold text-[var(--text-h)]">{label}</label>
       <input
         type="text"
-        className="form-input"
+        className="w-full px-3.5 py-2.5 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl text-sm text-[var(--text-h)] focus:border-[var(--accent)] focus:ring-2 focus:ring-[var(--accent-light)] outline-none transition-all placeholder:text-[var(--text-muted)]"
         placeholder={placeholder}
         value={query}
         onChange={(e) => {
@@ -48,22 +48,7 @@ export function Autocomplete({
         }}
       />
       {isOpen && filtered.length > 0 && (
-        <ul className="autocomplete-results" style={{
-          position: 'absolute',
-          top: '100%',
-          left: 0,
-          right: 0,
-          background: 'var(--surface-solid)',
-          border: '1px solid var(--border)',
-          borderRadius: 'var(--radius-inner)',
-          zIndex: 1100,
-          listStyle: 'none',
-          padding: '4px 0',
-          marginTop: '4px',
-          boxShadow: 'var(--shadow)',
-          maxHeight: '200px',
-          overflowY: 'auto'
-        }}>
+        <ul className="absolute top-full left-0 right-0 bg-[var(--surface-solid)] border border-[var(--border)] rounded-xl z-[1100] list-none py-1 mt-1 shadow-xl max-h-48 overflow-y-auto">
           {filtered.map(item => (
             <li
               key={item.id}
@@ -72,14 +57,7 @@ export function Autocomplete({
                 setQuery(clearOnSelect ? '' : item.name);
                 setIsOpen(false);
               }}
-              style={{
-                padding: '8px 12px',
-                cursor: 'pointer',
-                fontSize: '0.875rem',
-                color: 'var(--text-h)',
-                borderBottom: '1px solid var(--border)'
-              }}
-              className="autocomplete-item"
+              className="px-3.5 py-2 text-sm text-[var(--text-h)] hover:bg-[var(--accent-light)] hover:text-[var(--accent)] cursor-pointer border-b border-[var(--border)] last:border-b-0 transition-colors"
             >
               {item.name}
             </li>

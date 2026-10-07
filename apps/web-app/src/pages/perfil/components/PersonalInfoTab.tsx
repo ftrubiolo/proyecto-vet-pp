@@ -78,9 +78,9 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
   };
 
   return (
-    <Card>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 'var(--space-md)' }}>
-        <h3 className="perfil-section-title" style={{ marginBottom: 0 }}>Información Personal</h3>
+    <Card className="p-6 border border-[var(--border)]">
+      <div className="flex justify-between items-center mb-6">
+        <h3 className="text-base font-bold text-[var(--text-h)]">Información Personal</h3>
         {!isEditing && (
           <Button
             variant="secondary"
@@ -94,28 +94,28 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
       </div>
 
       {successMsg && (
-        <div className="login-message success" style={{ marginBottom: 'var(--space-md)' }}>
+        <div className="p-3 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 mb-4">
           {successMsg}
         </div>
       )}
 
       {error && (
-        <div className="login-message error" style={{ marginBottom: 'var(--space-md)' }}>
+        <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 mb-4">
           {error}
         </div>
       )}
 
       {isEditing ? (
-        <div className="perfil-edit-form">
-          <div className="form-group">
-            <label className="form-label">Foto de perfil</label>
-            <div className="upload-photo-wrapper">
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-xs font-semibold text-[var(--text-h)]">Foto de perfil</label>
+            <div className="flex items-center gap-4">
               {fotoUrl ? (
-                <div className="upload-photo-preview">
-                  <img src={fotoUrl} alt="Preview" />
+                <div className="relative w-24 h-24 rounded-xl overflow-hidden border-2 border-[var(--border)] flex-shrink-0 group">
+                  <img src={fotoUrl} alt="Preview" className="w-full h-full object-cover" />
                   <button
                     type="button"
-                    className="upload-photo-remove"
+                    className="absolute top-1 right-1 w-5 h-5 rounded-full bg-black/60 text-white flex items-center justify-center cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
                     onClick={() => setFotoUrl('')}
                     title="Eliminar foto"
                   >
@@ -124,7 +124,7 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
                 </div>
               ) : (
                 <div
-                  className="upload-photo-placeholder"
+                  className="w-24 h-24 border-2 border-dashed border-[var(--border)] rounded-xl flex flex-col items-center justify-center gap-1 text-[var(--text-muted)] cursor-pointer hover:border-[var(--accent)] hover:text-[var(--accent)] transition-colors flex-shrink-0 text-xs text-center p-1"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Upload size={24} />
@@ -141,7 +141,7 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
               />
             </div>
           </div>
-          <div className="form-row">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <Input
               label="Nombre"
               value={nombre}
@@ -165,7 +165,7 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
               onChange={(e) => setDireccion(e.target.value)}
             />
           )}
-          <div className="perfil-edit-actions">
+          <div className="flex justify-end gap-3 mt-2">
             <Button
               variant="secondary"
               onClick={() => {
@@ -189,35 +189,35 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
           </div>
         </div>
       ) : (
-        <div className="perfil-fields">
-          <div className="perfil-field">
-            <span className="perfil-field-label">Nombre</span>
-            <span className="perfil-field-value">{profile?.nombre || '–'}</span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Nombre</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{profile?.nombre || '–'}</span>
           </div>
-          <div className="perfil-field">
-            <span className="perfil-field-label">Apellido</span>
-            <span className="perfil-field-value">{profile?.apellido || '–'}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Apellido</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{profile?.apellido || '–'}</span>
           </div>
-          <div className="perfil-field">
-            <span className="perfil-field-label">Teléfono</span>
-            <span className="perfil-field-value">{profile?.telefono || '–'}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Teléfono</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{profile?.telefono || '–'}</span>
           </div>
-          <div className="perfil-field">
-            <span className="perfil-field-label">Email</span>
-            <span className="perfil-field-value">{profile?.usuario?.email || '–'}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Email</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{profile?.usuario?.email || '–'}</span>
           </div>
           {isVet && (
-            <div className="perfil-field">
-              <span className="perfil-field-label">Matrícula</span>
-              <span className="perfil-field-value font-mono">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Matrícula</span>
+              <span className="text-sm font-semibold text-[var(--text-h)] font-mono">
                 {(profile as VetProfile)?.numero_matricula || '–'}
               </span>
             </div>
           )}
           {!isVet && (
-            <div className="perfil-field">
-              <span className="perfil-field-label">Dirección</span>
-              <span className="perfil-field-value">
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Dirección</span>
+              <span className="text-sm font-semibold text-[var(--text-h)]">
                 {(profile as OwnerProfile)?.direccion || '–'}
               </span>
             </div>

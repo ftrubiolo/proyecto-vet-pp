@@ -68,11 +68,11 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
     const alergiasText = mascota.alergias;
     if (!alergiasText || alergiasText.trim() === '') {
       return !isOwner ? (
-        <span className="alerts-value-empty" onClick={onEditClick}>
+        <button type="button" onClick={onEditClick} className="inline-flex items-center gap-1 text-xs text-[var(--accent)] hover:underline cursor-pointer">
           <Plus size={12} /> Registrar Alergia
-        </span>
+        </button>
       ) : (
-        <span className="alerts-value text-muted">Sin registrar</span>
+        <span className="text-xs text-[var(--text-muted)] italic">Sin registrar</span>
       );
     }
 
@@ -101,11 +101,11 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
     const condText = mascota.condiciones_cronicas;
     if (!condText || condText.trim() === '') {
       return !isOwner ? (
-        <span className="alerts-value-empty" onClick={onEditClick}>
+        <button type="button" onClick={onEditClick} className="inline-flex items-center gap-1 text-xs text-[var(--accent)] hover:underline cursor-pointer">
           <Plus size={12} /> Registrar Condición
-        </span>
+        </button>
       ) : (
-        <span className="alerts-value text-muted">Sin registrar</span>
+        <span className="text-xs text-[var(--text-muted)] italic">Sin registrar</span>
       );
     }
     const cleanText = condText.trim().toLowerCase();
@@ -133,11 +133,11 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
     const contraText = mascota.contraindicaciones;
     if (!contraText || contraText.trim() === '') {
       return !isOwner ? (
-        <span className="alerts-value-empty" onClick={onEditClick}>
+        <button type="button" onClick={onEditClick} className="inline-flex items-center gap-1 text-xs text-[var(--accent)] hover:underline cursor-pointer">
           <Plus size={12} /> Registrar Contraindicación
-        </span>
+        </button>
       ) : (
-        <span className="alerts-value text-muted">Sin registrar</span>
+        <span className="text-xs text-[var(--text-muted)] italic">Sin registrar</span>
       );
     }
     const cleanText = contraText.trim().toLowerCase();
@@ -162,84 +162,84 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
   };
 
   return (
-    <div>
-      <Card className={`clinical-alerts-card ${hasActiveAlerts ? 'has-active-alerts' : 'no-alerts'}`}>
-        <h3 className="datos-tab-heading">Alertas Clínicas y Seguridad</h3>
-        <div className="alerts-content-grid">
-          <div className="alerts-item">
-            <span className="alerts-label">Alergias Conocidas</span>
+    <div className="space-y-6">
+      <Card className={`p-5 border transition-all ${hasActiveAlerts ? 'border-amber-500/40 bg-amber-500/5' : 'border-[var(--border)]'}`}>
+        <h3 className="text-sm font-bold text-[var(--text-h)] mb-4">Alertas Clínicas y Seguridad</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Alergias Conocidas</span>
             {renderAllergies()}
           </div>
 
-          <div className="alerts-item">
-            <span className="alerts-label">Condiciones Crónicas</span>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Condiciones Crónicas</span>
             {renderChronicConditions()}
           </div>
 
-          <div className="alerts-item">
-            <span className="alerts-label">Contraindicaciones</span>
+          <div className="flex flex-col gap-1.5">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Contraindicaciones</span>
             {renderContraindications()}
           </div>
         </div>
       </Card>
 
-      <Card>
-        <h3 className="datos-tab-heading">Información General</h3>
-        <div className="mascota-datos-grid">
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Nombre</span>
-            <span className="mascota-dato-value">{mascota.nombre}</span>
+      <Card className="p-5 border border-[var(--border)]">
+        <h3 className="text-sm font-bold text-[var(--text-h)] mb-4">Información General</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Nombre</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{mascota.nombre}</span>
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Especie</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Especie</span>
             {mascota.especie ? (
-              <span className="mascota-dato-value">{mascota.especie}</span>
+              <span className="text-sm font-semibold text-[var(--text-h)]">{mascota.especie}</span>
             ) : (
-              <span className="mascota-dato-agregar" onClick={onEditClick}>
+              <span className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer" onClick={onEditClick}>
                 + Agregar Especie
               </span>
             )}
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Raza</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Raza</span>
             {mascota.raza ? (
-              <span className="mascota-dato-value">{mascota.raza}</span>
+              <span className="text-sm font-semibold text-[var(--text-h)]">{mascota.raza}</span>
             ) : (
-              <span className="mascota-dato-agregar" onClick={onEditClick}>
+              <span className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer" onClick={onEditClick}>
                 + Agregar Raza
               </span>
             )}
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Fecha de Nacimiento</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Fecha de Nacimiento</span>
             {mascota.fecha_nacimiento ? (
-              <span className="mascota-dato-value">{formatDate(mascota.fecha_nacimiento)}</span>
+              <span className="text-sm font-semibold text-[var(--text-h)]">{formatDate(mascota.fecha_nacimiento)}</span>
             ) : (
-              <span className="mascota-dato-agregar" onClick={onEditClick}>
+              <span className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer" onClick={onEditClick}>
                 + Agregar Fecha de Nacimiento
               </span>
             )}
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Edad</span>
-            <span className="mascota-dato-value">
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Edad</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">
               {mascota.fecha_nacimiento ? calcAge(mascota.fecha_nacimiento) : '—'}
             </span>
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Sexo</span>
-            <span className="mascota-dato-value">{mascota.sexo === 'M' ? 'Macho' : 'Hembra'}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Sexo</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{mascota.sexo === 'M' ? 'Macho' : 'Hembra'}</span>
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Castrado/a</span>
-            <span className="mascota-dato-value">{mascota.es_castrado ? 'Sí' : 'No'}</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Castrado/a</span>
+            <span className="text-sm font-semibold text-[var(--text-h)]">{mascota.es_castrado ? 'Sí' : 'No'}</span>
           </div>
-          <div className="mascota-dato-item">
-            <span className="mascota-dato-label">Microchip</span>
+          <div className="flex flex-col gap-1">
+            <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Microchip</span>
             {mascota.numero_microchip ? (
-              <span className="mascota-dato-value font-mono">{mascota.numero_microchip}</span>
+              <span className="text-sm font-semibold text-[var(--text-h)] font-mono">{mascota.numero_microchip}</span>
             ) : (
-              <span className="mascota-dato-agregar font-mono" onClick={onEditClick}>
+              <span className="text-xs font-semibold text-[var(--accent)] hover:underline cursor-pointer font-mono" onClick={onEditClick}>
                 + Agregar microchip
               </span>
             )}
@@ -248,36 +248,36 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
       </Card>
 
       {mascota.propietarios && mascota.propietarios.length > 0 && (
-        <Card style={{ marginTop: 'var(--space-md)' }}>
-          <h3 className="datos-tab-heading">Propietarios</h3>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)' }}>
+        <Card className="p-5 border border-[var(--border)]">
+          <h3 className="text-sm font-bold text-[var(--text-h)] mb-4">Propietarios</h3>
+          <div className="flex flex-col gap-4">
             {mascota.propietarios.map((p) => (
-              <div key={p.id} className="propietario-item-detail">
-                <div className="mascota-datos-grid">
-                  <div className="mascota-dato-item">
-                    <span className="mascota-dato-label">Nombre</span>
-                    <span className="mascota-dato-value">
+              <div key={p.id} className="p-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Nombre</span>
+                    <span className="text-sm font-semibold text-[var(--text-h)]">
                       {p.nombre} {p.apellido} {p.razon_social ? `(${p.razon_social})` : ''}
                     </span>
                   </div>
-                  <div className="mascota-dato-item">
-                    <span className="mascota-dato-label">Relación</span>
-                    <span className="mascota-dato-value">
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Relación</span>
+                    <div>
                       <Badge variant={p.activo ? 'success' : 'neutral'}>
                         {p.relacion} {p.activo ? '(Activo)' : '(Inactivo)'}
                       </Badge>
-                    </span>
+                    </div>
                   </div>
                   {p.telefono && (
-                    <div className="mascota-dato-item">
-                      <span className="mascota-dato-label">Teléfono</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Teléfono</span>
                       {!isOwner ? (
-                        <div className="contact-action-wrapper">
-                          <span className="mascota-dato-value">{p.telefono}</span>
-                          <div className="contact-buttons-group">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-[var(--text-h)]">{p.telefono}</span>
+                          <div className="flex items-center gap-1">
                             <a
                               href={`tel:${p.telefono}`}
-                              className="contact-btn phone-btn"
+                              className="p-1 rounded-md bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-h)] transition"
                               title={`Llamar a ${p.nombre}`}
                             >
                               <Phone size={13} />
@@ -289,7 +289,7 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
                               )}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="contact-btn whatsapp-btn"
+                              className="p-1 rounded-md bg-[var(--surface-solid)] border border-[var(--border)] text-emerald-600 dark:text-emerald-400 hover:opacity-80 transition"
                               title={`Enviar WhatsApp a ${p.nombre}`}
                             >
                               <MessageCircle size={13} />
@@ -297,14 +297,14 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
                           </div>
                         </div>
                       ) : (
-                        <span className="mascota-dato-value">{p.telefono}</span>
+                        <span className="text-sm font-semibold text-[var(--text-h)]">{p.telefono}</span>
                       )}
                     </div>
                   )}
                   {p.direccion && (
-                    <div className="mascota-dato-item">
-                      <span className="mascota-dato-label">Dirección</span>
-                      <span className="mascota-dato-value">{p.direccion}</span>
+                    <div className="flex flex-col gap-1">
+                      <span className="text-xs font-semibold text-[var(--text-muted)] uppercase tracking-wider">Dirección</span>
+                      <span className="text-sm font-semibold text-[var(--text-h)]">{p.direccion}</span>
                     </div>
                   )}
                 </div>
@@ -315,25 +315,25 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
       )}
 
       {isOwner && (contactVets.length > 0 || contactClinics.length > 0) && (
-        <Card style={{ marginTop: 'var(--space-md)' }}>
-          <h3 className="datos-tab-heading">Contactos de Atención</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 'var(--space-md)' }}>
+        <Card className="p-5 border border-[var(--border)]">
+          <h3 className="text-sm font-bold text-[var(--text-h)] mb-1">Contactos de Atención</h3>
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Comunícate directamente con los profesionales o clínicas que atendieron a tu mascota.
           </p>
 
-          <div className="vet-contacts-grid">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {contactVets.map((vet: any) => (
-              <div key={vet.id} className="vet-contact-card">
-                <div className="vet-contact-info">
-                  <span className="vet-contact-name">Dr. {vet.nombre} {vet.apellido}</span>
-                  <span className="vet-contact-sub">Médico Veterinario</span>
+              <div key={vet.id} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+                <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-2">
+                  <span className="text-sm font-semibold text-[var(--text-h)] truncate">Dr. {vet.nombre} {vet.apellido}</span>
+                  <span className="text-xs text-[var(--text-muted)] truncate">Médico Veterinario</span>
                 </div>
-                <div className="vet-contact-actions">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   {vet.telefono && (
                     <>
                       <a
                         href={`tel:${vet.telefono}`}
-                        className="contact-icon-link phone"
+                        className="p-1.5 rounded-lg bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-h)] transition"
                         title={`Llamar a Dr. ${vet.nombre}`}
                       >
                         <Phone size={14} />
@@ -345,7 +345,7 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
                         )}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="contact-icon-link whatsapp"
+                        className="p-1.5 rounded-lg bg-[var(--surface-solid)] border border-[var(--border)] text-emerald-600 dark:text-emerald-400 hover:opacity-80 transition"
                         title={`WhatsApp a Dr. ${vet.nombre}`}
                       >
                         <MessageCircle size={14} />
@@ -355,7 +355,7 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
                   {vet.usuario?.email && (
                     <a
                       href={`mailto:${vet.usuario.email}?subject=Consulta sobre ${mascota.nombre}`}
-                      className="contact-icon-link email"
+                      className="p-1.5 rounded-lg bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-h)] transition"
                       title={`Email a Dr. ${vet.nombre}`}
                     >
                       <Mail size={14} />
@@ -366,16 +366,16 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
             ))}
 
             {contactClinics.map((clinic: any) => (
-              <div key={clinic.id} className="vet-contact-card clinic">
-                <div className="vet-contact-info">
-                  <span className="vet-contact-name">{clinic.nombre_comercial}</span>
-                  <span className="vet-contact-sub">{clinic.direccion || 'Clínica Veterinaria'}</span>
+              <div key={clinic.id} className="flex items-center justify-between p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+                <div className="flex flex-col gap-0.5 min-w-0 flex-1 pr-2">
+                  <span className="text-sm font-semibold text-[var(--text-h)] truncate">{clinic.nombre_comercial}</span>
+                  <span className="text-xs text-[var(--text-muted)] truncate">{clinic.direccion || 'Clínica Veterinaria'}</span>
                 </div>
-                <div className="vet-contact-actions">
+                <div className="flex items-center gap-1.5 flex-shrink-0">
                   {clinic.telefono && (
                     <a
                       href={`tel:${clinic.telefono}`}
-                      className="contact-icon-link phone"
+                      className="p-1.5 rounded-lg bg-[var(--surface-solid)] border border-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-h)] transition"
                       title={`Llamar a ${clinic.nombre_comercial}`}
                     >
                       <Phone size={14} />
@@ -388,49 +388,31 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
         </Card>
       )}
 
-      <Card className="weight-graph-card">
-        <div className="weight-graph-header">
-          <h3 className="datos-tab-heading" style={{ margin: 0 }}>Evolución de Peso</h3>
-        </div>
+      <Card className="p-5 border border-[var(--border)]">
+        <h3 className="text-sm font-bold text-[var(--text-h)] mb-4">Evolución de Peso</h3>
         <WeightChart atenciones={atenciones} />
       </Card>
 
       {isOwner && (
-        <Card style={{ marginTop: 'var(--space-md)' }}>
-          <h3 className="datos-tab-heading">Código de Admisión</h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: 'var(--space-md)' }}>
+        <Card className="p-5 border border-[var(--border)]">
+          <h3 className="text-sm font-bold text-[var(--text-h)] mb-1">Código de Admisión</h3>
+          <p className="text-xs text-[var(--text-muted)] mb-4">
             Compartí este código o el código QR con tu veterinario para que pueda admitir a tu mascota como paciente.
           </p>
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
-            <div style={{
-              background: '#fff',
-              padding: '12px',
-              borderRadius: '16px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.05)',
-              display: 'inline-block'
-            }}>
+          <div className="flex flex-col items-center gap-4">
+            <div className="bg-white p-3 rounded-2xl shadow-sm inline-block">
               <img
                 src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${mascota.id}`}
                 alt="Código QR de Admisión"
-                style={{ width: 150, height: 150, display: 'block' }}
+                className="w-[150px] h-[150px] block"
               />
             </div>
-            <div style={{ display: 'flex', gap: 8, width: '100%', maxWidth: 350 }}>
+            <div className="flex gap-2 w-full max-w-sm">
               <input
                 type="text"
                 readOnly
                 value={mascota.id}
-                style={{
-                  flex: 1,
-                  background: 'var(--surface-2)',
-                  border: '1px solid var(--border-color)',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  fontSize: '0.8rem',
-                  fontFamily: 'monospace',
-                  textAlign: 'center',
-                  color: 'var(--text-color)'
-                }}
+                className="flex-1 bg-[var(--surface-2)] border border-[var(--border)] rounded-xl px-3 py-2 text-xs font-mono text-center text-[var(--text-h)] outline-none"
               />
               <Button
                 onClick={() => {

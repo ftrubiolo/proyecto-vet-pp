@@ -183,54 +183,103 @@ export function VetCitasView() {
 
   const hourSlots = Array.from({ length: 13 }, (_, i) => 8 + i); // 8:00 to 20:00
 
+  const getStatusBlockClass = (estado: string) => {
+    switch (estado) {
+      case 'Pendiente':
+        return 'bg-amber-500/15 border-amber-500/40 text-amber-700 dark:text-amber-400';
+      case 'Confirmada':
+        return 'bg-sky-500/15 border-sky-500/40 text-sky-700 dark:text-sky-400';
+      case 'Completada':
+        return 'bg-emerald-500/15 border-emerald-500/40 text-emerald-700 dark:text-emerald-400';
+      case 'Cancelada':
+        return 'bg-rose-500/15 border-rose-500/40 text-rose-700 dark:text-rose-400';
+      default:
+        return 'bg-slate-500/15 border-slate-500/40 text-slate-700 dark:text-slate-300';
+    }
+  };
+
   return (
-    <div className="page planner-page">
+    <div className="max-w-7xl mx-auto flex flex-col gap-6 animate-fade-in">
       {/* Metrics Row */}
-      <div className="planner-metrics-grid">
-        <Card className={`metric-card ${activeFilter === 'Todas' ? 'selected' : ''}`} clickable onClick={() => setActiveFilter('Todas')}>
-          <div className="metric-header">
-            <span className="metric-title">Turnos totales</span>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card
+          className={`p-4 transition-all cursor-pointer border ${
+            activeFilter === 'Todas'
+              ? 'border-[var(--accent)] bg-[var(--accent-light)] ring-2 ring-[var(--accent-light)]'
+              : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+          }`}
+          clickable
+          onClick={() => setActiveFilter('Todas')}
+        >
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Turnos totales</span>
           </div>
-          <div className="metric-value">{getMetricCount('Todas')}</div>
-          <span className="metric-link">Ver todos</span>
+          <div className="text-2xl font-extrabold text-[var(--text-h)] leading-tight">{getMetricCount('Todas')}</div>
+          <span className="text-xs font-semibold text-[var(--accent)] mt-2 inline-block">Ver todos</span>
         </Card>
-        <Card className={`metric-card ${activeFilter === 'Completada' ? 'selected' : ''}`} clickable onClick={() => setActiveFilter('Completada')}>
-          <div className="metric-header">
-            <span className="metric-title">Completados</span>
+        <Card
+          className={`p-4 transition-all cursor-pointer border ${
+            activeFilter === 'Completada'
+              ? 'border-[var(--accent)] bg-[var(--accent-light)] ring-2 ring-[var(--accent-light)]'
+              : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+          }`}
+          clickable
+          onClick={() => setActiveFilter('Completada')}
+        >
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Completados</span>
           </div>
-          <div className="metric-value">{getMetricCount('Completada')}</div>
-          <span className="metric-subtext">
+          <div className="text-2xl font-extrabold text-[var(--text-h)] leading-tight">{getMetricCount('Completada')}</div>
+          <span className="text-xs text-[var(--text-muted)] mt-2 inline-block">
             {getMetricCount('Todas') > 0 ? `${Math.round((getMetricCount('Completada') / getMetricCount('Todas')) * 100)}%` : '0%'} del total
           </span>
         </Card>
-        <Card className={`metric-card ${activeFilter === 'Pendiente' ? 'selected' : ''}`} clickable onClick={() => setActiveFilter('Pendiente')}>
-          <div className="metric-header">
-            <span className="metric-title">Pendientes</span>
+        <Card
+          className={`p-4 transition-all cursor-pointer border ${
+            activeFilter === 'Pendiente'
+              ? 'border-[var(--accent)] bg-[var(--accent-light)] ring-2 ring-[var(--accent-light)]'
+              : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+          }`}
+          clickable
+          onClick={() => setActiveFilter('Pendiente')}
+        >
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Pendientes</span>
           </div>
-          <div className="metric-value">{getMetricCount('Pendiente')}</div>
-          <span className="metric-link">Ver detalles</span>
+          <div className="text-2xl font-extrabold text-[var(--text-h)] leading-tight">{getMetricCount('Pendiente')}</div>
+          <span className="text-xs font-semibold text-[var(--accent)] mt-2 inline-block">Ver detalles</span>
         </Card>
-        <Card className={`metric-card ${activeFilter === 'Cancelada' ? 'selected' : ''}`} clickable onClick={() => setActiveFilter('Cancelada')}>
-          <div className="metric-header">
-            <span className="metric-title">Cancelados</span>
+        <Card
+          className={`p-4 transition-all cursor-pointer border ${
+            activeFilter === 'Cancelada'
+              ? 'border-[var(--accent)] bg-[var(--accent-light)] ring-2 ring-[var(--accent-light)]'
+              : 'border-[var(--border)] hover:border-[var(--accent)]/50'
+          }`}
+          clickable
+          onClick={() => setActiveFilter('Cancelada')}
+        >
+          <div className="flex justify-between items-center mb-1">
+            <span className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">Cancelados</span>
           </div>
-          <div className="metric-value">{getMetricCount('Cancelada')}</div>
-          <span className="metric-link">Ver detalles</span>
+          <div className="text-2xl font-extrabold text-[var(--text-h)] leading-tight">{getMetricCount('Cancelada')}</div>
+          <span className="text-xs font-semibold text-[var(--accent)] mt-2 inline-block">Ver detalles</span>
         </Card>
       </div>
 
-      {/* Two-Column Grid */}
-      <div className="planner-body-layout">
-        {/* Left Column: Grid schedule */}
-        <div className="planner-schedule-section">
+      {/* Schedule & Controls */}
+      <div className="flex flex-col gap-6">
+        <div>
           {/* Navigation and View Controls */}
-          <div className="planner-controls">
-            <div className="planner-date-nav">
-              <button className="btn-nav-arrow" onClick={() => changeDay(-1)}>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <button
+                className="w-9 h-9 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] flex items-center justify-center text-[var(--text)] hover:bg-[var(--border)] hover:text-[var(--text-h)] transition-all cursor-pointer"
+                onClick={() => changeDay(-1)}
+              >
                 <ChevronLeft size={18} />
               </button>
               <div
-                className="planner-current-date"
+                className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] text-sm font-semibold text-[var(--text-h)] cursor-pointer relative"
                 onClick={() => dateInputRef.current?.showPicker()}
               >
                 <Calendar size={16} />
@@ -238,12 +287,15 @@ export function VetCitasView() {
                 <input
                   ref={dateInputRef}
                   type="date"
-                  className="planner-hidden-datepicker"
+                  className="absolute opacity-0 pointer-events-none w-0 h-0"
                   value={currentDate.toISOString().split('T')[0]}
                   onChange={(e) => setCurrentDate(new Date(e.target.value + 'T12:00:00'))}
                 />
               </div>
-              <button className="btn-nav-arrow" onClick={() => changeDay(1)}>
+              <button
+                className="w-9 h-9 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] flex items-center justify-center text-[var(--text)] hover:bg-[var(--border)] hover:text-[var(--text-h)] transition-all cursor-pointer"
+                onClick={() => changeDay(1)}
+              >
                 <ChevronRight size={18} />
               </button>
               <Button variant="secondary" size="sm" onClick={() => setCurrentDate(new Date())}>
@@ -251,16 +303,24 @@ export function VetCitasView() {
               </Button>
             </div>
 
-            <div className="planner-controls-right" style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-md)' }}>
-              <div className="planner-view-toggle">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center bg-[var(--border)] p-1 rounded-xl gap-1">
                 <button
-                  className={`toggle-btn ${viewMode === 'day' ? 'active' : ''}`}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'day'
+                      ? 'bg-[var(--surface-solid)] text-[var(--text-h)] shadow-sm'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-h)]'
+                  }`}
                   onClick={() => setViewMode('day')}
                 >
                   Día
                 </button>
                 <button
-                  className={`toggle-btn ${viewMode === 'week' ? 'active' : ''}`}
+                  className={`px-3 py-1 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                    viewMode === 'week'
+                      ? 'bg-[var(--surface-solid)] text-[var(--text-h)] shadow-sm'
+                      : 'text-[var(--text-muted)] hover:text-[var(--text-h)]'
+                  }`}
                   onClick={() => setViewMode('week')}
                 >
                   Semana
@@ -268,66 +328,80 @@ export function VetCitasView() {
               </div>
             </div>
           </div>
+
           {isLoading ? (
-            <Card style={{ display: 'flex', justifyContent: 'center', padding: '64px' }}>
-              <p>Cargando citas de la agenda...</p>
+            <Card className="flex justify-center p-16">
+              <p className="text-[var(--text-muted)]">Cargando citas de la agenda...</p>
             </Card>
           ) : activeFilter !== 'Todas' ? (
-            <div className="planner-filtered-list">
-              <div className="filtered-list-header">
-                <h3>Turnos: {activeFilter} ({sorted.length})</h3>
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-base font-bold text-[var(--text-h)]">Turnos: {activeFilter} ({sorted.length})</h3>
                 <Button variant="secondary" size="sm" onClick={() => setActiveFilter('Todas')}>
                   Volver a la Agenda
                 </Button>
               </div>
 
               {sorted.length === 0 ? (
-                <div className="planner-empty-day-state">
-                  <Smile size={48} style={{ color: 'var(--text-muted)' }} />
+                <div className="h-64 flex flex-col items-center justify-center text-[var(--text-muted)] gap-3 text-sm p-8 text-center bg-[var(--surface-2)] border border-[var(--border)] rounded-2xl">
+                  <Smile size={48} className="text-[var(--text-muted)]" />
                   <p>No hay citas programadas con estado "{activeFilter}" en este período.</p>
                 </div>
               ) : (
-                <div className="filtered-appointments-stack">
+                <div className="flex flex-col gap-3">
                   {sorted.map(cita => (
-                    <Card key={cita.id} className="filtered-appointment-card">
-                      <div className="filtered-card-left">
-                        <div className="filtered-card-time">
+                    <Card key={cita.id} className="flex items-center justify-between p-4 gap-4 flex-wrap border border-[var(--border)]">
+                      <div className="flex flex-col min-w-[90px]">
+                        <div className="flex items-center gap-1 text-sm font-bold text-[var(--text-h)]">
                           <Clock size={14} />
-                          <strong>
+                          <span>
                             {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs
-                          </strong>
+                          </span>
                         </div>
-                        <span className="filtered-card-date">
+                        <span className="text-xs text-[var(--text-muted)]">
                           {cita.fecha.toLocaleDateString('es-AR', { weekday: 'short', day: 'numeric', month: 'short' })}
                         </span>
                       </div>
 
-                      <div className="filtered-card-info">
-                        <div className="filtered-card-pet" onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}>
+                      <div className="flex-1 min-w-[180px]">
+                        <div
+                          className="flex items-center gap-1.5 text-sm font-bold text-[var(--accent)] cursor-pointer hover:underline"
+                          onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}
+                        >
                           <PawPrint size={14} />
-                          <strong>{cita.mascota}</strong>
+                          <span>{cita.mascota}</span>
                         </div>
-                        <span className="filtered-card-meta">
+                        <span className="text-xs text-[var(--text-muted)] block mt-0.5">
                           {cita.motivo} · {cita.clinica}
                         </span>
-                        <span className="filtered-card-vet">Médico: {cita.veterinario}</span>
+                        <span className="text-[11px] text-[var(--text-muted)] block">Médico: {cita.veterinario}</span>
                       </div>
 
-                      <div className="filtered-card-actions">
+                      <div className="flex items-center gap-3">
                         <Badge variant={getEstadoBadgeVariant(cita.estado)}>{cita.estado}</Badge>
-                        <div className="filtered-actions-buttons">
+                        <div className="flex items-center gap-1.5">
                           {cita.estado === 'Pendiente' && (
-                            <button className="btn-action-confirm" onClick={() => handleStatusChange(cita.id, 'Confirmada')}>
+                            <button
+                              className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-sky-600 hover:bg-sky-700 transition cursor-pointer"
+                              onClick={() => handleStatusChange(cita.id, 'Confirmada')}
+                            >
                               Confirmar
                             </button>
                           )}
                           {cita.estado === 'Confirmada' && (
-                            <button className="btn-action-attend" onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}>
+                            <button
+                              className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition cursor-pointer"
+                              onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}
+                            >
                               Atender
                             </button>
                           )}
                           {(cita.estado === 'Confirmada' || cita.estado === 'Pendiente') && (
-                            <button className="btn-action-cancel" onClick={() => handleStatusChange(cita.id, 'Cancelada')} title="Cancelar Turno">
+                            <button
+                              className="px-2.5 py-1 rounded-md text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer"
+                              onClick={() => handleStatusChange(cita.id, 'Cancelada')}
+                              title="Cancelar Turno"
+                            >
                               Cancelar
                             </button>
                           )}
@@ -339,29 +413,33 @@ export function VetCitasView() {
               )}
             </div>
           ) : viewMode === 'week' ? (
-            <div className="weekly-agenda-list">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-7 gap-3">
               {Array.from({ length: 7 }, (_, i) => {
                 const dayDate = new Date(start);
                 dayDate.setDate(dayDate.getDate() + i);
                 const dayCitas = filtered.filter(c => c.fecha.getDate() === dayDate.getDate() && c.fecha.getMonth() === dayDate.getMonth());
 
                 return (
-                  <Card key={i} className="weekly-day-card">
-                    <h4 className="weekly-day-title">
+                  <Card key={i} className="p-3 min-h-[140px] border border-[var(--border)]">
+                    <h4 className="text-xs font-bold capitalize mb-2 text-[var(--text-h)]">
                       {dayDate.toLocaleDateString('es-AR', { weekday: 'long', day: 'numeric', month: 'short' })}
                     </h4>
                     {dayCitas.length === 0 ? (
-                      <p className="no-citas-sub">Sin turnos</p>
+                      <p className="text-[11px] text-[var(--text-muted)] italic">Sin turnos</p>
                     ) : (
-                      <div className="weekly-day-citas-list">
+                      <div className="flex flex-col gap-1.5">
                         {dayCitas.map(cita => (
-                          <div key={cita.id} className="weekly-cita-item" onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}>
-                            <strong>{cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</strong>
-                            <span style={{ flex: 1 }}>{cita.mascota} ({cita.motivo})</span>
+                          <div
+                            key={cita.id}
+                            className="p-1.5 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[11px] flex items-center gap-1.5 cursor-pointer hover:border-[var(--accent)] transition"
+                            onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}
+                          >
+                            <strong className="text-[var(--text-h)]">{cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</strong>
+                            <span className="flex-1 truncate">{cita.mascota} ({cita.motivo})</span>
                             <Badge variant={getEstadoBadgeVariant(cita.estado)}>{cita.estado}</Badge>
                             {(cita.estado === 'Confirmada' || cita.estado === 'Pendiente') && (
                               <button
-                                className="btn-action-cancel"
+                                className="p-1 rounded text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleStatusChange(cita.id, 'Cancelada');
@@ -380,8 +458,8 @@ export function VetCitasView() {
               })}
             </div>
           ) : (
-            <div className="planner-time-grid">
-              <div className="planner-grid-hours-axis">
+            <div className="grid grid-cols-[50px_1fr] h-[720px] border border-[var(--border)] rounded-2xl bg-[var(--surface-solid)] overflow-hidden relative">
+              <div className="relative h-full border-r border-[var(--border)]">
                 {hourSlots.map(h => {
                   const pct = ((h - 8) / 12) * 100;
                   let transform = 'translateY(-50%)';
@@ -390,7 +468,7 @@ export function VetCitasView() {
                   return (
                     <div
                       key={h}
-                      className="hour-axis-label"
+                      className="absolute right-2 text-[11px] font-semibold text-[var(--text-muted)]"
                       style={{
                         top: `${pct}%`,
                         transform
@@ -402,17 +480,17 @@ export function VetCitasView() {
                 })}
               </div>
 
-              <div className="planner-grid-timeline-content">
+              <div className="relative h-full">
                 {/* Hourly horizontal lines */}
                 {hourSlots.map(h => (
-                  <div key={h} className="hour-grid-row-line" style={{ top: `${((h - 8) / 12) * 100}%` }} />
+                  <div key={h} className="absolute left-0 right-0 h-[1px] bg-[var(--border)] opacity-60" style={{ top: `${((h - 8) / 12) * 100}%` }} />
                 ))}
 
                 {/* Current Time Red Line */}
                 {timeOffset >= 0 && (
-                  <div className="current-time-indicator" style={{ top: `${timeOffset}%` }}>
-                    <div className="indicator-dot" />
-                    <div className="indicator-line" />
+                  <div className="absolute left-0 right-0 z-10 flex items-center" style={{ top: `${timeOffset}%` }}>
+                    <div className="w-2 h-2 rounded-full bg-rose-500 -ml-1" />
+                    <div className="flex-1 h-[2px] bg-rose-500" />
                   </div>
                 )}
 
@@ -429,35 +507,47 @@ export function VetCitasView() {
                     return (
                       <div
                         key={cita.id}
-                        className={`planner-appointment-block status-${cita.estado.toLowerCase()}`}
+                        className={`absolute left-3 right-3 rounded-xl px-3 py-1.5 flex items-center justify-between text-xs z-5 border transition-all ${getStatusBlockClass(cita.estado)}`}
                         style={{
                           top: `${top}%`,
                           height: `calc(${height}% - 4px)`,
                         }}
                       >
-                        <div className="appointment-block-info">
-                          <span className="app-time">
+                        <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
+                          <span className="font-bold">
                             {cita.fecha.toLocaleTimeString('es-AR', { hour: 'numeric', minute: '2-digit' })}
                           </span>
-                          <span className="app-pet" onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}>
+                          <span
+                            className="font-bold underline cursor-pointer hover:opacity-80"
+                            onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}
+                          >
                             {cita.mascota}
                           </span>
-                          <span className="app-motivo">· {cita.motivo}</span>
+                          <span className="opacity-80">· {cita.motivo}</span>
                         </div>
 
-                        <div className="appointment-block-actions">
+                        <div className="flex items-center gap-1.5 flex-shrink-0">
                           {cita.estado === 'Pendiente' && (
-                            <button className="btn-action-confirm" onClick={() => handleStatusChange(cita.id, 'Confirmada')}>
+                            <button
+                              className="px-2 py-0.5 rounded text-[11px] font-semibold text-white bg-sky-600 hover:bg-sky-700 transition cursor-pointer"
+                              onClick={() => handleStatusChange(cita.id, 'Confirmada')}
+                            >
                               Confirmar
                             </button>
                           )}
                           {cita.estado === 'Confirmada' && (
-                            <button className="btn-action-attend" onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}>
+                            <button
+                              className="px-2 py-0.5 rounded text-[11px] font-semibold text-white bg-emerald-600 hover:bg-emerald-700 transition cursor-pointer"
+                              onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}
+                            >
                               Atender
                             </button>
                           )}
                           {(cita.estado === 'Confirmada' || cita.estado === 'Pendiente') && (
-                            <button className="btn-action-cancel" onClick={() => handleStatusChange(cita.id, 'Cancelada')}>
+                            <button
+                              className="px-1.5 py-0.5 rounded text-[11px] font-semibold text-white bg-rose-600 hover:bg-rose-700 transition cursor-pointer"
+                              onClick={() => handleStatusChange(cita.id, 'Cancelada')}
+                            >
                               <X size={12} />
                             </button>
                           )}
@@ -467,8 +557,8 @@ export function VetCitasView() {
                   })}
 
                 {sorted.length === 0 && (
-                  <div className="planner-empty-day-state">
-                    <Smile size={48} style={{ color: 'var(--text-muted)' }} />
+                  <div className="h-full flex flex-col items-center justify-center text-[var(--text-muted)] gap-3 text-sm p-8 text-center">
+                    <Smile size={48} className="text-[var(--text-muted)]" />
                     <p>No hay citas programadas que coincidan con los filtros seleccionados.</p>
                   </div>
                 )}
@@ -477,25 +567,25 @@ export function VetCitasView() {
           )}
         </div>
 
-        {/* Right Column: Dynamic Side Panels */}
-        <div className="planner-side-panels">
+        {/* Dynamic Side Panels */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mt-2">
           {/* Active consultation panel */}
-          <Card className="side-panel-card active-consultation-panel">
-            <h3 className="panel-title">
-              <Activity size={16} /> Paciente actual
+          <Card className="p-5 border border-[var(--border)]">
+            <h3 className="text-sm font-bold text-[var(--text-h)] flex items-center gap-2 mb-3">
+              <Activity size={16} className="text-[var(--accent)]" /> Paciente actual
             </h3>
             {activeCita ? (
-              <div className="active-patient-box">
-                <div className="active-patient-avatar">
-                  <PawPrint size={32} />
+              <div className="flex flex-col items-center text-center p-4 gap-3 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
+                <div className="w-14 h-14 rounded-full bg-[var(--accent-light)] text-[var(--accent)] flex items-center justify-center flex-shrink-0">
+                  <PawPrint size={30} />
                 </div>
-                <div className="active-patient-details">
-                  <h4>{activeCita.mascota}</h4>
-                  <p className="patient-reason">Motivo: {activeCita.motivo}</p>
-                  <p className="patient-time">Hora: {activeCita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</p>
-                  <p className="patient-vet">Médico: {activeCita.veterinario}</p>
+                <div className="space-y-1">
+                  <h4 className="font-bold text-base text-[var(--text-h)]">{activeCita.mascota}</h4>
+                  <p className="text-xs text-[var(--text-muted)]">Motivo: {activeCita.motivo}</p>
+                  <p className="text-xs text-[var(--text-muted)]">Hora: {activeCita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className="text-xs text-[var(--text-muted)]">Médico: {activeCita.veterinario}</p>
                 </div>
-                <div className="active-patient-actions" style={{ marginTop: 'var(--space-md)', width: '100%' }}>
+                <div className="w-full mt-2">
                   {activeCita.estado === 'Confirmada' ? (
                     <Button
                       fullWidth
@@ -504,39 +594,39 @@ export function VetCitasView() {
                       <FileText size={14} style={{ marginRight: 6 }} /> Iniciar Atención
                     </Button>
                   ) : (
-                    <div className="consultation-completed-badge">
-                      <CheckCircle2 size={16} style={{ color: 'var(--success)' }} />
+                    <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-600 dark:text-emerald-400 py-1">
+                      <CheckCircle2 size={16} />
                       <span>Consulta completada</span>
                     </div>
                   )}
                 </div>
               </div>
             ) : (
-              <div className="empty-panel-state">
+              <div className="h-32 flex items-center justify-center text-xs text-[var(--text-muted)] text-center p-4 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
                 <p>No hay ningún paciente en consulta activa en este momento.</p>
               </div>
             )}
           </Card>
 
           {/* Upcoming appointments queue panel */}
-          <Card className="side-panel-card upcoming-queue-card">
-            <h3 className="panel-title">
-              <Clock size={16} /> Próximos turnos
+          <Card className="p-5 border border-[var(--border)]">
+            <h3 className="text-sm font-bold text-[var(--text-h)] flex items-center gap-2 mb-3">
+              <Clock size={16} className="text-[var(--accent)]" /> Próximos turnos
             </h3>
             {upcomingCitas.length === 0 ? (
-              <div className="empty-panel-state">
+              <div className="h-32 flex items-center justify-center text-xs text-[var(--text-muted)] text-center p-4 bg-[var(--surface-2)] rounded-xl border border-[var(--border)]">
                 <p>No quedan turnos programados para el resto del día.</p>
               </div>
             ) : (
-              <div className="upcoming-queue-list">
+              <div className="flex flex-col gap-2">
                 {upcomingCitas.slice(0, 5).map(cita => (
-                  <div key={cita.id} className="queue-item">
-                    <div className="queue-item-time">
+                  <div key={cita.id} className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-xs">
+                    <div className="font-bold text-[var(--text-h)] min-w-[55px]">
                       {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
                     </div>
-                    <div className="queue-item-info">
-                      <strong>{cita.mascota}</strong>
-                      <span>{cita.motivo}</span>
+                    <div className="flex-1 min-w-0 px-2">
+                      <strong className="text-[var(--text-h)] block truncate">{cita.mascota}</strong>
+                      <span className="text-[11px] text-[var(--text-muted)] block truncate">{cita.motivo}</span>
                     </div>
                     <Badge variant={getEstadoBadgeVariant(cita.estado)}>{cita.estado}</Badge>
                   </div>
