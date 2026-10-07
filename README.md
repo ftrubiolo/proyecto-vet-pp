@@ -56,11 +56,46 @@ proyecto-vet-pp/
 
 ## ⚙️ Instalación y Arranque Rápido
 
-### Requisitos Previos
-- **Node.js** (v22 o superior)
-- **PostgreSQL** local o remoto
+### Opción A: Despliegue Automatizado con Docker Compose (Recomendado)
 
-### Paso 1: Clonar e Instalar Backend
+Con un solo comando se compila e inicia todo el ecosistema (PostgreSQL 16, MinIO S3, Backend Fastify y Frontend React):
+
+```bash
+docker compose up --build
+```
+
+#### Servicios Disponibles:
+- **Frontend Web**: [http://localhost:8080](http://localhost:8080)
+- **Backend API**: [http://localhost:8000](http://localhost:8000)
+- **Documentación OpenAPI / Swagger**: [http://localhost:8000/documentation](http://localhost:8000/documentation)
+- **Consola Web de MinIO (S3)**: [http://localhost:9001](http://localhost:9001) *(Usuario: `vetvault`, Contraseña: `vetvault-secret`)*
+- **API S3 MinIO**: [http://localhost:9000](http://localhost:9000)
+- **Base de Datos PostgreSQL**: Puerto `5433` (externo / host) y `5432` (interno de red Docker)
+
+#### Comandos Útiles de Docker:
+```bash
+# Cargar datos clínicos de prueba (veterinarios, tutores, mascotas y citas ficticias)
+docker exec -it vetvault-api npm run db:seed-mock
+
+# Resetear tablas y repoblar catálogos oficiales (Vets Córdoba / SENASA)
+docker exec -it vetvault-api npm run db:setup
+
+# Ver logs en tiempo real de todos los servicios
+docker compose logs -f
+
+# Detener los contenedores
+docker compose down
+```
+
+---
+
+### Opción B: Ejecución Local en Entorno de Desarrollo (Manual)
+
+#### Requisitos Previos:
+- **Node.js** (v22 o superior)
+- **PostgreSQL 16** y **MinIO** corriendo en la máquina host
+
+#### Paso 1: Configurar e Iniciar Backend
 1. Navega al directorio del backend:
    ```bash
    cd services/api-backend
@@ -86,7 +121,7 @@ proyecto-vet-pp/
    npm run dev             # Levantará el servidor en http://localhost:8000
    ```
 
-### Paso 2: Construir el Paquete Compartido
+#### Paso 2: Construir el Paquete Compartido
 El frontend web depende del paquete `@vetvault/shared`, por lo que debe compilarse primero:
 
 1. Navega al directorio del paquete compartido:
@@ -99,7 +134,7 @@ El frontend web depende del paquete `@vetvault/shared`, por lo que debe compilar
    npm run build            # Genera los archivos en dist/
    ```
 
-### Paso 3: Instalar y Correr Frontend Web
+#### Paso 3: Instalar y Correr Frontend Web
 1. Abre una nueva terminal y dirígete al directorio de la app web:
    ```bash
    cd apps/web-app
@@ -109,6 +144,20 @@ El frontend web depende del paquete `@vetvault/shared`, por lo que debe compilar
    npm install
    npm run dev             # Levantará la interfaz web en http://localhost:8080
    ```
+
+---
+
+### 🔑 Cuentas de Prueba Pre-configuradas (`npm run db:seed-mock`)
+
+Todas las cuentas de prueba comparten la contraseña: **`Password123`**
+
+| Rol | Correo Electrónico | Contraseña | Descripción |
+| :--- | :--- | :--- | :--- |
+| **Veterinario** | `dante.abate@vetvault.com` | `Password123` | Matrícula habilitada 1265 (Colegio de Córdoba), con turnos y consultas asociadas |
+| **Veterinario** | `veronica.abad@vetvault.com` | `Password123` | Matrícula habilitada 1592 |
+| **Tutor / Propietario** | `juan.perez@email.com` | `Password123` | Propietario con paciente asignado (Toby - Golden Retriever) |
+| **Tutor / Propietario** | `maria.gomez@email.com` | `Password123` | Propietaria con paciente felino (Luna - Siamés) |
+| **Administrador** | `admin@vetvault.com` | `Password123` | Rol de administración del sistema |
 
 ---
 
