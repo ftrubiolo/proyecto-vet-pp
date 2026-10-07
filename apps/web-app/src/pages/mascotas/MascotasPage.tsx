@@ -1,8 +1,6 @@
 import { useAuth } from '../../hooks/useAuth';
 import { VetMascotas } from './VetMascotas';
 import { OwnerMascotas } from './OwnerMascotas';
-import './MascotasPage.css';
-
 export function MascotasPage() {
   const { user } = useAuth();
 

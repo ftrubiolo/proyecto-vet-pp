@@ -25,6 +25,11 @@ function applyTheme(mode: ThemeMode) {
   const effective = mode === 'system' ? getSystemTheme() : mode;
   document.documentElement.setAttribute('data-theme', effective);
   document.documentElement.style.colorScheme = effective;
+  if (effective === 'dark') {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
 }
 
 function getInitialTheme(): ThemeMode {
@@ -71,7 +76,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const handler = () => {
       const sys = getSystemTheme();
       setEffectiveTheme(sys);
-      document.documentElement.setAttribute('data-theme', sys);
+      applyTheme('system');
     };
     mq.addEventListener('change', handler);
     return () => mq.removeEventListener('change', handler);

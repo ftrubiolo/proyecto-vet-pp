@@ -16,7 +16,7 @@ export function Tabs({ tabs, activeTab, onChange, className = '' }: TabsProps) {
   return (
     <div
       className={cn(
-        'inline-flex items-center gap-1 p-1 rounded-2xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-800 overflow-x-auto max-w-full',
+        'inline-flex items-center gap-1 p-1 rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] overflow-x-auto max-w-full',
         className
       )}
     >
@@ -29,8 +29,8 @@ export function Tabs({ tabs, activeTab, onChange, className = '' }: TabsProps) {
             className={cn(
               'px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-150 cursor-pointer whitespace-nowrap select-none',
               isActive
-                ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-white shadow-sm border border-slate-200/60 dark:border-slate-700'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200/50 dark:hover:bg-slate-700/50'
+                ? 'bg-[var(--surface-solid)] text-[var(--text-h)] shadow-sm border border-[var(--border)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-h)] hover:bg-[var(--surface-solid)]/60'
             )}
             onClick={() => onChange(tab.id)}
           >

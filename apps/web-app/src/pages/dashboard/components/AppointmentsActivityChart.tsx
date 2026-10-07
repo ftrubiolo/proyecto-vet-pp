@@ -11,8 +11,15 @@ import {
 } from 'recharts';
 import { CalendarDays } from 'lucide-react';
 
+interface CitaRecord {
+  fecha_hora: string;
+  estado_cita?: { estado?: string };
+  estado?: string;
+  [key: string]: unknown;
+}
+
 interface AppointmentsActivityChartProps {
-  citas: any[];
+  citas: CitaRecord[];
 }
 
 export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityChartProps) {
@@ -60,13 +67,13 @@ export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityCh
     <div className="w-full space-y-3">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <CalendarDays size={18} className="text-sky-500" />
-          <h4 className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+          <CalendarDays size={18} className="text-[var(--accent)]" />
+          <h4 className="text-sm font-semibold text-[var(--text-h)]">
             Citas últimos 7 días
           </h4>
         </div>
-        <span className="text-xs font-medium text-slate-500 dark:text-slate-400">
-          Total: <strong className="text-slate-800 dark:text-slate-200">{totalWeekly}</strong>
+        <span className="text-xs font-medium text-[var(--text-muted)]">
+          Total: <strong className="text-[var(--text-h)]">{totalWeekly}</strong>
         </span>
       </div>
 
@@ -80,35 +87,35 @@ export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityCh
               strokeDasharray="3 3"
               vertical={false}
               stroke="currentColor"
-              className="text-slate-200 dark:text-slate-800"
+              className="text-[var(--border)]"
             />
             <XAxis
               dataKey="dayLabel"
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 11, fill: 'currentColor' }}
-              className="text-slate-500 dark:text-slate-400"
+              className="text-[var(--text-muted)]"
             />
             <YAxis
               allowDecimals={false}
               tickLine={false}
               axisLine={false}
               tick={{ fontSize: 11, fill: 'currentColor' }}
-              className="text-slate-500 dark:text-slate-400"
+              className="text-[var(--text-muted)]"
             />
             <Tooltip
-              content={({ active, payload }: any) => {
+              content={({ active, payload }: { active?: boolean; payload?: Array<{ payload: { dayLabel: string; total: number; completadas: number } }> }) => {
                 if (!active || !payload || !payload.length) return null;
                 const data = payload[0].payload;
                 return (
-                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2.5 shadow-xl text-xs space-y-1">
-                    <p className="font-semibold text-slate-900 dark:text-slate-100">
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-solid)]/95 backdrop-blur-md p-2.5 shadow-xl text-xs space-y-1">
+                    <p className="font-semibold text-[var(--text-h)]">
                       {data.dayLabel}
                     </p>
-                    <p className="text-sky-600 dark:text-sky-400">
+                    <p className="text-[var(--accent)]">
                       Total citas: <strong>{data.total}</strong>
                     </p>
-                    <p className="text-emerald-600 dark:text-emerald-400">
+                    <p className="text-emerald-500">
                       Completadas: <strong>{data.completadas}</strong>
                     </p>
                   </div>

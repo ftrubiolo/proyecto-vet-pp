@@ -35,23 +35,23 @@ export function Modal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       onClick={onClose}
     >
       <div
         className={cn(
-          'w-full rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-2xl p-6 max-h-[90vh] overflow-y-auto animate-fade-in-up flex flex-col gap-4',
+          'w-full rounded-3xl border border-[var(--border)] bg-[var(--surface-solid)] shadow-2xl p-6 max-h-[90vh] overflow-y-auto animate-fade-in-up flex flex-col gap-4 text-[var(--text)]',
           widthStyles[maxWidth] || widthStyles.lg,
           className
         )}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-slate-100 m-0">
+        <div className="flex items-center justify-between pb-3 border-b border-[var(--border)]">
+          <h2 className="text-lg font-bold text-[var(--text-h)] m-0">
             {title}
           </h2>
           <button
-            className="p-1.5 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors cursor-pointer"
+            className="p-1.5 rounded-full text-[var(--text-muted)] hover:text-[var(--text-h)] hover:bg-[var(--surface-2)] transition-colors cursor-pointer"
             onClick={onClose}
             aria-label="Cerrar"
           >
@@ -60,7 +60,7 @@ export function Modal({
         </div>
         <div className="flex-1">{children}</div>
         {footer && (
-          <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-slate-800">
+          <div className="flex items-center justify-end gap-3 pt-3 border-t border-[var(--border)]">
             {footer}
           </div>
         )}

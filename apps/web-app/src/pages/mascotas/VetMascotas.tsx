@@ -12,7 +12,6 @@ import { Modal } from '../../components/ui/Modal';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
 import { Autocomplete } from './components/Autocomplete';
-import './MascotasPage.css';
 
 import { type Mascota, type MascotasResponse, type Especie, calcAge } from '@vetvault/shared';
 

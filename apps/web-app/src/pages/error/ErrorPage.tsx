@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useRouteError, isRouteErrorResponse, Link } from 'react-router-dom';
 import { AlertTriangle, Home, RotateCcw, ChevronDown, ChevronUp, FileQuestion } from 'lucide-react';
-import './ErrorPage.css';
+import { Button } from '../../components/ui/Button';
 
 export function ErrorPage() {
   const error = useRouteError();
@@ -31,49 +31,59 @@ export function ErrorPage() {
   };
 
   return (
-    <div className="error-page">
-      <div className="error-card">
-        <div className="error-icon-container">
-          <div className={`error-icon-wrapper ${is404 ? 'warning' : 'danger'}`}>
-            {is404 ? <FileQuestion size={48} /> : <AlertTriangle size={48} />}
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg)] font-sans">
+      <div className="w-full max-w-md p-8 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] shadow-2xl backdrop-blur-xl text-center space-y-4 animate-fade-in text-[var(--text)]">
+        <div className="flex justify-center">
+          <div
+            className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner ${
+              is404
+                ? 'bg-amber-500/10 text-amber-500'
+                : 'bg-red-500/10 text-red-500'
+            }`}
+          >
+            {is404 ? <FileQuestion size={36} /> : <AlertTriangle size={36} />}
           </div>
         </div>
 
-        <h1 className="error-title">{title}</h1>
-        <p className="error-message">{message}</p>
+        <h1 className="font-heading font-bold text-2xl text-[var(--text-h)]">
+          {title}
+        </h1>
+        <p className="text-sm text-[var(--text-muted)] leading-relaxed">
+          {message}
+        </p>
 
         {status !== 404 && !!error && (
-          <div className="error-details-section">
+          <div className="text-left rounded-2xl bg-[var(--surface-2)] border border-[var(--border)] p-3 space-y-2">
             <button
               type="button"
-              className="error-details-toggle"
+              className="flex items-center justify-between w-full text-xs font-semibold text-[var(--text-h)] cursor-pointer"
               onClick={() => setShowDetails(!showDetails)}
             >
               <span>Detalles técnicos</span>
-              {showDetails ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {showDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
-            
+
             {showDetails && (
-              <pre className="error-details-content">
-                {error instanceof Error ? error.stack || error.message : JSON.stringify(error, null, 2)}
+              <pre className="text-[11px] font-mono text-[var(--text)] overflow-x-auto p-2 bg-[var(--surface-solid)] rounded-xl max-h-48 whitespace-pre-wrap">
+                {error instanceof Error
+                  ? error.stack || error.message
+                  : JSON.stringify(error, null, 2)}
               </pre>
             )}
           </div>
         )}
 
-        <div className="error-actions">
-          <button
-            type="button"
-            className="error-btn secondary"
-            onClick={handleReload}
-          >
-            <RotateCcw size={18} />
-            Recargar
-          </button>
-          
-          <Link to="/" className="error-btn primary">
-            <Home size={18} />
-            Ir al Inicio
+        <div className="flex items-center justify-center gap-3 pt-4">
+          <Button variant="secondary" onClick={handleReload}>
+            <RotateCcw size={16} />
+            <span>Recargar</span>
+          </Button>
+
+          <Link to="/">
+            <Button>
+              <Home size={16} />
+              <span>Ir al Inicio</span>
+            </Button>
           </Link>
         </div>
       </div>

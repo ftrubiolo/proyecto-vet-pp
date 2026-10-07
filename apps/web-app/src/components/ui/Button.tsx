@@ -12,11 +12,11 @@ const variantStyles: Record<string, string> = {
   primary:
     'text-white bg-[image:var(--accent-gradient-role,var(--accent-gradient))] shadow-[0_4px_12px_var(--accent-light,rgba(14,165,233,0.2))] hover:shadow-[0_6px_20px_var(--accent-light,rgba(14,165,233,0.35))] hover:-translate-y-0.5 active:translate-y-0',
   secondary:
-    'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 border border-slate-200 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/80 shadow-sm',
+    'bg-[var(--surface-solid)] text-[var(--text-h)] border border-[var(--border)] hover:bg-[var(--surface-2)] shadow-sm',
   danger:
-    'bg-red-50 dark:bg-red-950/40 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-900/50 hover:bg-red-100 dark:hover:bg-red-900/60',
+    'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20',
   ghost:
-    'bg-transparent text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/60 hover:text-slate-900 dark:hover:text-white',
+    'bg-transparent text-[var(--text)] hover:bg-[var(--accent-light)] hover:text-[var(--accent)]',
 };
 
 const sizeStyles: Record<string, string> = {

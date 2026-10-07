@@ -9,7 +9,6 @@ import { PersonalInfoTab } from './components/PersonalInfoTab';
 import { ClinicsTab } from './components/ClinicsTab';
 import { SubscriptionTab } from './components/SubscriptionTab';
 import { AccountSettingsTab } from './components/AccountSettingsTab';
-import './PerfilPage.css';
 
 export function PerfilPage() {
   const { user } = useAuth();

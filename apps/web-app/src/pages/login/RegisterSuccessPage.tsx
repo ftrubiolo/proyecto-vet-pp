@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Check, ShieldAlert, Loader } from 'lucide-react';
 import { api } from '../../api/client';
 import { useAuth } from '../../hooks/useAuth';
-import './RegisterPage.css';
+import { Button } from '../../components/ui/Button';
 
 export function RegisterSuccessPage() {
   const navigate = useNavigate();
@@ -30,7 +30,7 @@ export function RegisterSuccessPage() {
         } else {
           setRetryCount((prev) => prev + 1);
         }
-      } catch (err) {
+      } catch {
         // Session not yet updated or error loading
         setRetryCount((prev) => prev + 1);
       }
@@ -62,65 +62,56 @@ export function RegisterSuccessPage() {
   };
 
   return (
-    <div className="register-page">
-      <div className="register-card" style={{ maxWidth: '500px' }}>
-        <div className="success-card">
-          {status === 'polling' && (
-            <>
-              <div className="success-icon-wrapper" style={{ background: 'rgba(14, 165, 233, 0.1)', color: 'var(--accent-blue, #0ea5e9)' }}>
-                <Loader size={36} className="animate-spin" style={{ animation: 'spin 1.5s linear infinite' }} />
-              </div>
-              <h2 className="success-title">Procesando Pago</h2>
-              <p className="success-message">
-                Mercado Pago está confirmando tu transacción. Esto puede demorar unos segundos. Por favor no cierres esta ventana...
-              </p>
-            </>
-          )}
+    <div className="min-h-screen flex items-center justify-center p-4 bg-[var(--bg)] font-sans">
+      <div className="w-full max-w-md p-8 rounded-3xl bg-[var(--surface-solid)] border border-[var(--border)] shadow-2xl backdrop-blur-xl animate-fade-in text-center space-y-4">
+        {status === 'polling' && (
+          <div className="space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-sky-50 dark:bg-sky-950/50 text-sky-500 flex items-center justify-center">
+              <Loader size={36} className="animate-spin text-sky-500" />
+            </div>
+            <h2 className="text-xl font-bold text-[var(--text-h)]">
+              Procesando Pago
+            </h2>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Mercado Pago está confirmando tu transacción. Esto puede demorar unos segundos. Por favor no cierres esta ventana...
+            </p>
+          </div>
+        )}
 
-          {status === 'success' && (
-            <>
-              <div className="success-icon-wrapper">
-                <Check size={36} />
-              </div>
-              <h2 className="success-title">¡Suscripción Activada!</h2>
-              <p className="success-message">
-                Tu pago fue procesado correctamente y tu cuenta se encuentra activa. Redirigiéndote a tu panel de gestión...
-              </p>
-            </>
-          )}
+        {status === 'success' && (
+          <div className="space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-500 flex items-center justify-center">
+              <Check size={36} />
+            </div>
+            <h2 className="text-xl font-bold text-[var(--text-h)]">
+              ¡Suscripción Activada!
+            </h2>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Tu pago fue procesado correctamente y tu cuenta se encuentra activa. Redirigiéndote a tu panel de gestión...
+            </p>
+          </div>
+        )}
 
-          {status === 'delay' && (
-            <>
-              <div className="success-icon-wrapper" style={{ background: 'rgba(245, 158, 11, 0.1)', color: '#f59e0b' }}>
-                <ShieldAlert size={36} />
-              </div>
-              <h2 className="success-title">Demora en la acreditación</h2>
-              <p className="success-message">
-                Mercado Pago está tardando un poco más de lo habitual en reportar el pago. Puedes verificar el estado manualmente o ingresar directamente.
-              </p>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
-                <button className="btn-next" onClick={handleManualCheck}>
-                  Re-verificar Estado
-                </button>
-                <button className="btn-back" onClick={handleGoToDashboard}>
-                  Ir al Dashboard
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+        {status === 'delay' && (
+          <div className="space-y-4">
+            <div className="w-16 h-16 mx-auto rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-500 flex items-center justify-center">
+              <ShieldAlert size={36} />
+            </div>
+            <h2 className="text-xl font-bold text-[var(--text-h)]">
+              Demora en la acreditación
+            </h2>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+              Mercado Pago está tardando un poco más de lo habitual en reportar el pago. Puedes verificar el estado manualmente o ingresar directamente.
+            </p>
+            <div className="flex flex-col gap-2 pt-2">
+              <Button onClick={handleManualCheck}>Re-verificar Estado</Button>
+              <Button variant="secondary" onClick={handleGoToDashboard}>
+                Ir al Dashboard
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
-      
-      {/* Inject custom spin animation to CSS without modifying global files */}
-      <style>{`
-        @keyframes spin {
-          0% { transform: rotate(0deg); }
-          100% { transform: rotate(360deg); }
-        }
-        .animate-spin {
-          animation: spin 1s linear infinite;
-        }
-      `}</style>
     </div>
   );
 }

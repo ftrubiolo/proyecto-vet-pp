@@ -375,36 +375,62 @@ export function AIChatDrawer() {
   };
 
   return (
-    <div className={`ai-chat-drawer ${isAIChatOpen ? 'open' : ''}`} ref={drawerRef}>
+    <div
+      className={cn(
+        'fixed top-0 right-0 bottom-0 w-full sm:w-[420px] bg-[var(--surface-solid)] backdrop-blur-2xl border-l border-[var(--border)] shadow-2xl z-50 flex flex-col transition-transform duration-300 ease-in-out',
+        isAIChatOpen ? 'translate-x-0' : 'translate-x-full'
+      )}
+      ref={drawerRef}
+    >
       {/* Header */}
-      <div className="ai-chat-header">
-        <div className="ai-chat-title-group">
+      <div className="p-4 border-b border-[var(--border)] flex items-center justify-between bg-[var(--surface-2)]">
+        <div className="flex items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-emerald-500 flex items-center justify-center text-white shadow-xs">
+            <Sparkles size={16} />
+          </div>
           <div>
-            <h3>Vet<span>Vault</span> Copilot</h3>
-            <div className="ai-chat-subtitle">
+            <h3 className="font-heading font-bold text-base text-[var(--text-h)] leading-tight">
+              Vet<span className="text-[var(--accent)]">Vault</span> Copilot
+            </h3>
+            <div className="text-[11px] text-[var(--text-muted)] font-medium">
               <span>{isVet ? 'Asistente Clínico Profesional' : 'Asistente de Cuidado Animal'}</span>
             </div>
           </div>
         </div>
-        {activePet && (
-          <span className="context-badge">
-            Paciente: {activePet.nombre}
-          </span>
-        )}
+        <div className="flex items-center gap-2">
+          {activePet && (
+            <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[var(--accent-light)] text-[var(--accent)] border border-[var(--accent)]/40">
+              {activePet.nombre}
+            </span>
+          )}
+          <button
+            type="button"
+            className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-h)] hover:bg-[var(--surface-solid)] cursor-pointer transition-colors"
+            onClick={() => setIsAIChatOpen(false)}
+            title="Cerrar Copilot"
+          >
+            <X size={18} />
+          </button>
+        </div>
       </div>
 
       {/* Tabs Bar */}
-      <div className="ai-chat-tabs-bar">
+      <div className="flex items-center gap-1.5 px-3 py-2 border-b border-[var(--border)] bg-[var(--surface-2)] overflow-x-auto">
         {tabs.map((tab) => (
           <div
             key={tab.id}
-            className={`ai-chat-tab-pill ${tab.id === activeTabId ? 'active' : ''}`}
+            className={cn(
+              'flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-medium cursor-pointer transition-colors border select-none whitespace-nowrap',
+              tab.id === activeTabId
+                ? 'bg-[var(--surface-solid)] text-[var(--accent)] border-[var(--accent)]/40 shadow-xs'
+                : 'text-[var(--text-muted)] border-transparent hover:bg-[var(--surface-solid)]/60'
+            )}
             onClick={() => setActiveTabId(tab.id)}
           >
             {tab.id === editingTabId ? (
               <input
                 type="text"
-                className="tab-name-input"
+                className="bg-transparent border-none text-xs outline-none p-0 w-20 text-[var(--text-h)]"
                 value={editingText}
                 onChange={(e) => setEditingText(e.target.value)}
                 onBlur={handleFinishRename}
@@ -417,7 +443,6 @@ export function AIChatDrawer() {
               />
             ) : (
               <span
-                className="tab-name"
                 onDoubleClick={(e) => handleStartRename(tab.id, tab.name, e)}
                 title="Doble clic para renombrar"
               >
@@ -426,7 +451,7 @@ export function AIChatDrawer() {
             )}
             {tab.id !== 'general' && (
               <button
-                className="tab-close-btn"
+                className="p-0.5 rounded hover:bg-[var(--border)] text-[var(--text-muted)] hover:text-[var(--text-h)] cursor-pointer"
                 onClick={(e) => handleCloseTab(tab.id, e)}
                 title="Cerrar pestaña"
               >
@@ -436,7 +461,7 @@ export function AIChatDrawer() {
           </div>
         ))}
         <button
-          className="ai-chat-new-tab-btn"
+          className="p-1 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-h)] hover:bg-[var(--surface-solid)] cursor-pointer transition-colors"
           onClick={handleCreateNewTab}
           title="Nueva conversación"
         >
@@ -445,65 +470,75 @@ export function AIChatDrawer() {
       </div>
 
       {/* Messages List */}
-      <div className="ai-chat-messages">
+      <div className="flex-1 p-4 overflow-y-auto space-y-4">
         {messages.length === 0 ? (
-          <div className="ai-welcome-panel">
-            <div className="ai-welcome-icon">
-              <Sparkles size={28} />
+          <div className="flex flex-col items-center justify-center p-6 text-center space-y-3">
+            <div className="w-12 h-12 rounded-2xl bg-[var(--accent-light)] text-[var(--accent)] flex items-center justify-center mb-1">
+              <Sparkles size={24} />
             </div>
-            <h4>¡Hola, {user?.nombre || 'usuario'}!</h4>
-            <p>
+            <h4 className="font-heading font-bold text-base text-[var(--text-h)]">
+              ¡Hola, {user?.nombre || 'usuario'}!
+            </h4>
+            <p className="text-xs text-[var(--text-muted)] leading-relaxed max-w-xs">
               {isVet
                 ? 'Soy tu copiloto clínico. Puedo ayudarte a resumir el historial de tus pacientes, consultar contraindicaciones, buscar medicamentos en el catálogo de SENASA o agendar turnos rápidos.'
                 : 'Soy tu asistente de cuidado. Puedo ayudarte a comprender las notas de las visitas de tu mascota, hacer un triaje básico de síntomas o sugerirte turnos para vacunación.'}
             </p>
-            <div className="ai-suggestions-container">
+            <div className="w-full space-y-2 pt-2">
               {suggestions.map((suggestion, idx) => (
                 <button
                   key={idx}
-                  className="ai-suggestion-chip"
+                  className="w-full text-left text-xs p-2.5 rounded-xl border border-[var(--border)] bg-[var(--surface-solid)] hover:border-[var(--accent)] hover:bg-[var(--surface-2)] transition-all cursor-pointer text-[var(--text-h)] shadow-xs"
                   onClick={() => handleSend(suggestion)}
                 >
-                  {suggestion}
+                  💡 {suggestion}
                 </button>
               ))}
             </div>
           </div>
         ) : (
           messages.map((msg) => (
-            <div key={msg.id} className={`ai-message-wrapper ${msg.sender}`}>
-              <div className="ai-message-icon">
+            <div
+              key={msg.id}
+              className={cn(
+                'flex gap-2.5 max-w-[88%]',
+                msg.sender === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'
+              )}
+            >
+              <div
+                className={cn(
+                  'w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 text-white',
+                  msg.sender === 'user'
+                    ? 'bg-emerald-500'
+                    : 'bg-gradient-to-tr from-sky-500 to-blue-600'
+                )}
+              >
                 {msg.sender === 'ai' ? <Sparkles size={14} /> : <PawPrint size={14} />}
               </div>
-              <div className="ai-message-bubble">
-                {formatMessageText(msg.text)}
+              <div
+                className={cn(
+                  'rounded-2xl px-3.5 py-2.5 text-xs leading-relaxed space-y-1',
+                  msg.sender === 'user'
+                    ? 'bg-sky-500 text-white rounded-tr-xs shadow-xs'
+                    : 'bg-[var(--surface-2)] text-[var(--text-h)] rounded-tl-xs shadow-xs border border-[var(--border)]'
+                )}
+              >
+                <div>{formatMessageText(msg.text)}</div>
                 {msg.technicalError && (
-                  <details className="ai-chat-tech-details">
-                    <summary>Detalles técnicos (Desarrollador)</summary>
-                    <pre>{msg.technicalError}</pre>
+                  <details className="mt-2 p-2 rounded-lg bg-red-500/10 border border-red-500/30 text-[11px] text-red-500">
+                    <summary className="font-semibold cursor-pointer">Detalles técnicos</summary>
+                    <pre className="mt-1 whitespace-pre-wrap font-mono text-[10px] overflow-x-auto">{msg.technicalError}</pre>
                   </details>
                 )}
                 {msg.sender === 'ai' && !msg.technicalError && (
-                  <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 8 }}>
+                  <div className="flex justify-end pt-1">
                     <button
                       onClick={() => handleDownloadMessagePdf(msg)}
                       disabled={isDownloadingMsg === msg.id}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--color-primary-light, #2563eb)',
-                        fontSize: '11px',
-                        cursor: 'pointer',
-                        alignItems: 'center',
-                        gap: 4,
-                        padding: '2px 6px',
-                        borderRadius: '4px',
-                        transition: 'background 0.2s',
-                        display: 'none',
-                      }}
+                      className="hidden text-[10px] text-sky-600 hover:underline cursor-pointer"
                       title="Descargar respuesta como PDF"
                     >
-                      <FileDown size={12} />
+                      <FileDown size={11} className="inline mr-1" />
                       {isDownloadingMsg === msg.id ? 'Descargando...' : 'Descargar PDF'}
                     </button>
                   </div>
@@ -514,16 +549,14 @@ export function AIChatDrawer() {
         )}
 
         {isLoading && (
-          <div className="ai-message-wrapper ai">
-            <div className="ai-message-icon">
+          <div className="flex gap-2.5 max-w-[88%] mr-auto">
+            <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center flex-shrink-0 text-white">
               <Sparkles size={14} />
             </div>
-            <div className="ai-message-bubble">
-              <div className="ai-typing-loader">
-                <span></span>
-                <span></span>
-                <span></span>
-              </div>
+            <div className="bg-[var(--surface-2)] rounded-2xl rounded-tl-xs px-4 py-3 shadow-xs border border-[var(--border)] flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0.2s]" />
+              <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent)] animate-bounce [animation-delay:0.4s]" />
             </div>
           </div>
         )}
@@ -531,11 +564,11 @@ export function AIChatDrawer() {
       </div>
 
       {/* Footer & Text Area */}
-      <div className="ai-chat-footer">
-        <div className="ai-input-wrapper">
+      <div className="p-3 border-t border-[var(--border)] bg-[var(--surface-solid)] backdrop-blur-md space-y-2">
+        <div className="relative flex items-center bg-[var(--surface-2)] rounded-2xl p-1.5 border border-[var(--border)] focus-within:ring-2 focus-within:ring-[var(--accent)]/20 focus-within:border-[var(--accent)] transition-all">
           <textarea
             ref={inputRef}
-            className="ai-chat-input"
+            className="w-full bg-transparent border-none text-[var(--text-h)] text-xs placeholder-[var(--text-muted)] p-2 focus:outline-none resize-none min-h-[44px] max-h-24"
             placeholder="Pregúntale a VetVault AI..."
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
@@ -543,15 +576,16 @@ export function AIChatDrawer() {
             disabled={isLoading}
           />
           <button
-            className="ai-send-btn"
+            type="button"
+            className="w-8 h-8 rounded-xl bg-sky-500 text-white flex items-center justify-center disabled:opacity-40 hover:bg-sky-600 transition-colors cursor-pointer flex-shrink-0 shadow-xs ml-1"
             onClick={() => handleSend(inputValue)}
             disabled={!inputValue.trim() || isLoading}
             title="Enviar mensaje"
           >
-            <Send size={14} />
+            <Send size={13} />
           </button>
         </div>
-        <p className="ai-disclaimer">
+        <p className="text-[10px] text-center text-slate-400 dark:text-slate-500 leading-tight">
           {isVet
             ? 'Las sugerencias del Copiloto son de carácter orientativo. Valide dosis clínicamente.'
             : 'Las respuestas son informativas y preventivas. No reemplazan la consulta veterinaria.'}
@@ -560,3 +594,4 @@ export function AIChatDrawer() {
     </div>
   );
 }
+

@@ -20,9 +20,6 @@ import { TratamientosTab } from './components/TratamientosTab';
 import { EditMascotaModal } from './components/EditMascotaModal';
 import { ActiveConsultationForm } from './components/ActiveConsultationForm';
 
-import './MascotaDetailPage.css';
-import './ConsultationForm.css';
-
 const tabs = [
   { id: 'datos', label: 'Datos' },
   { id: 'historial', label: 'Historial' },

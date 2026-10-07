@@ -9,8 +9,15 @@ import {
 } from 'recharts';
 import { Scale, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
+interface AtencionRecord {
+  fecha_atencion: string;
+  peso_actual?: number | string | null;
+  diagnostico?: string | null;
+  [key: string]: unknown;
+}
+
 interface WeightChartProps {
-  atenciones: any[];
+  atenciones: AtencionRecord[];
 }
 
 export function WeightChart({ atenciones }: WeightChartProps) {
@@ -69,35 +76,35 @@ export function WeightChart({ atenciones }: WeightChartProps) {
     <div className="w-full space-y-4">
       {/* Stat indicators */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+        <div className="p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider block">
             Actual
           </span>
-          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
-            {currentWeight} <span className="text-xs font-normal text-slate-500">kg</span>
+          <span className="text-lg font-bold text-[var(--text-h)]">
+            {currentWeight} <span className="text-xs font-normal text-[var(--text-muted)]">kg</span>
           </span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+        <div className="p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider block">
             Mínimo
           </span>
-          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
-            {minWeight} <span className="text-xs font-normal text-slate-500">kg</span>
+          <span className="text-lg font-bold text-[var(--text-h)]">
+            {minWeight} <span className="text-xs font-normal text-[var(--text-muted)]">kg</span>
           </span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+        <div className="p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider block">
             Máximo
           </span>
-          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
-            {maxWeight} <span className="text-xs font-normal text-slate-500">kg</span>
+          <span className="text-lg font-bold text-[var(--text-h)]">
+            {maxWeight} <span className="text-xs font-normal text-[var(--text-muted)]">kg</span>
           </span>
         </div>
 
-        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
-          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+        <div className="p-3 rounded-xl bg-[var(--surface-2)] border border-[var(--border)]">
+          <span className="text-[11px] font-medium text-[var(--text-muted)] uppercase tracking-wider block">
             Variación
           </span>
           <div className="flex items-center gap-1.5">
@@ -117,8 +124,8 @@ export function WeightChart({ atenciones }: WeightChartProps) {
               </>
             ) : (
               <>
-                <Minus size={16} className="text-slate-400" />
-                <span className="text-lg font-bold text-slate-600 dark:text-slate-300">
+                <Minus size={16} className="text-[var(--text-muted)]" />
+                <span className="text-lg font-bold text-[var(--text-h)]">
                   0 <span className="text-xs font-normal">kg</span>
                 </span>
               </>
@@ -162,19 +169,19 @@ export function WeightChart({ atenciones }: WeightChartProps) {
               unit=" kg"
             />
             <Tooltip
-              content={({ active, payload }: any) => {
+              content={({ active, payload }: { active?: boolean; payload?: Array<{ payload: { fullDate: string; weight: number; diagnostico?: string } }> }) => {
                 if (!active || !payload || !payload.length) return null;
                 const data = payload[0].payload;
                 return (
-                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3 shadow-xl text-xs space-y-1 z-50">
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center justify-between gap-4">
+                  <div className="rounded-xl border border-[var(--border)] bg-[var(--surface-solid)]/95 backdrop-blur-md p-3 shadow-xl text-xs space-y-1 z-50">
+                    <div className="font-semibold text-[var(--text-h)] flex items-center justify-between gap-4">
                       <span>{data.fullDate}</span>
-                      <span className="text-sm font-bold text-sky-600 dark:text-sky-400">
+                      <span className="text-sm font-bold text-[var(--accent)]">
                         {data.weight} kg
                       </span>
                     </div>
                     {data.diagnostico && (
-                      <p className="text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                      <p className="text-[var(--text-muted)] truncate max-w-[200px]">
                         {data.diagnostico}
                       </p>
                     )}
