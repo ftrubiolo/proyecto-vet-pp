@@ -1,11 +1,10 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { TokenPayload } from "@vetvault/shared";
 import { buildClinicalContext, buildGeneralContext } from "./context";
 import { getSystemPrompt } from "./prompts";
 import { runChatSession } from "./session";
 import type { ChatMessage } from "./types";
 
-const MODEL_NAME = "gemini-3.1-flash-lite";
+const MODEL_NAME = process.env.OPENROUTER_MODEL || "z-ai/glm-5.3-flash";
 
 export class AiChatService {
     static async processMessage(
@@ -14,9 +13,9 @@ export class AiChatService {
         history: ChatMessage[],
         context?: { activeMascotaId?: string }
     ): Promise<string> {
-        const apiKey = process.env.GEMINI_API_KEY;
+        const apiKey = process.env.OPENROUTER_API_KEY;
         if (!apiKey) {
-            throw new Error("La API Key de Gemini no está configurada en el servidor");
+            throw new Error("La API Key de OpenRouter no está configurada en el servidor");
         }
 
         let clinicalContext: string | undefined;
@@ -35,7 +34,6 @@ export class AiChatService {
             generalContext
         );
 
-        const genAI = new GoogleGenerativeAI(apiKey);
-        return runChatSession(genAI, MODEL_NAME, systemInstruction, message, history, user);
+        return runChatSession(apiKey, MODEL_NAME, systemInstruction, message, history, user);
     }
 }

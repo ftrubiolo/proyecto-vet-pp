@@ -6,7 +6,7 @@ import { useAIChat } from '../../hooks/useAIChat';
 import { Search, Sparkles, Plus, PawPrint } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { CreateCitaModal } from '../appointments/CreateCitaModal';
-import './Header.css';
+import { cn } from '../../utils/cn';
 
 const pageTitles: Record<string, string> = {
   '/dashboard': 'Dashboard',
@@ -60,27 +60,34 @@ export function Header() {
     ? mascotasData
     : (mascotasData as any)?.mascotas || [];
 
-  const filteredMascotas = searchQuery.trim() === ''
-    ? []
-    : rawMascotas.filter((m: any) =>
-      m.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.raza?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      m.especie?.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+  const filteredMascotas =
+    searchQuery.trim() === ''
+      ? []
+      : rawMascotas.filter(
+          (m: any) =>
+            m.nombre?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            m.raza?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            m.especie?.toLowerCase().includes(searchQuery.toLowerCase())
+        );
 
   return (
-    <header className="header">
+    <header className="fixed top-0 left-0 md:left-64 right-0 h-[68px] z-30 flex items-center justify-between px-4 sm:px-6 lg:px-8 border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl gap-4">
       {/* Page Title */}
-      <div className="header-left">
-        <h1 className="header-title">{pageTitle}</h1>
+      <div className="flex items-center flex-shrink-0">
+        <h1 className="font-heading font-bold text-lg text-slate-900 dark:text-slate-100">
+          {pageTitle}
+        </h1>
       </div>
 
       {/* Global Searchbar */}
-      <div className="header-search-container" ref={searchRef}>
-        <Search className="header-search-icon" size={18} />
+      <div
+        className="relative flex items-center bg-slate-100/90 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700/80 rounded-xl px-3.5 h-10 w-full max-w-xs sm:max-w-sm transition-all focus-within:ring-2 focus-within:ring-sky-500/20 focus-within:border-sky-500 focus-within:max-w-md hidden sm:flex"
+        ref={searchRef}
+      >
+        <Search className="text-slate-400 mr-2 flex-shrink-0" size={17} />
         <input
           type="text"
-          className="header-search-input"
+          className="w-full bg-transparent border-none text-slate-800 dark:text-slate-100 text-sm placeholder-slate-400 focus:outline-none"
           placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -89,28 +96,32 @@ export function Header() {
 
         {/* Search Results Dropdown */}
         {isSearchFocused && searchQuery.trim().length > 0 && (
-          <div className="search-results-dropdown">
+          <div className="absolute top-12 left-0 right-0 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl max-h-72 overflow-y-auto p-1.5 z-50 animate-slide-down">
             {isLoading ? (
-              <div className="search-results-loading">Cargando pacientes...</div>
+              <div className="p-4 text-center text-xs text-slate-400">
+                Cargando pacientes...
+              </div>
             ) : filteredMascotas.length === 0 ? (
-              <div className="search-results-empty">
+              <div className="p-4 text-center text-xs text-slate-400">
                 No se encontraron resultados para "{searchQuery}"
               </div>
             ) : (
               filteredMascotas.slice(0, 5).map((m: any) => (
                 <div
                   key={m.id}
-                  className="search-result-item"
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-colors"
                   onClick={() => {
                     navigate(`/mascotas/${m.id}`);
                     setSearchQuery('');
                     setIsSearchFocused(false);
                   }}
                 >
-                  <PawPrint size={16} className="search-result-pet-icon" />
-                  <div className="search-result-pet-info">
-                    <span className="search-result-pet-name">{m.nombre}</span>
-                    <span className="search-result-pet-details">
+                  <PawPrint size={16} className="text-sky-500 flex-shrink-0" />
+                  <div className="flex flex-col min-w-0">
+                    <span className="text-sm font-semibold text-slate-800 dark:text-slate-100 truncate">
+                      {m.nombre}
+                    </span>
+                    <span className="text-xs text-slate-400 truncate">
                       {m.raza || 'Sin raza'} · {m.especie || ''}
                     </span>
                   </div>
@@ -122,27 +133,30 @@ export function Header() {
       </div>
 
       {/* Action Buttons */}
-      <div className="header-right">
+      <div className="flex items-center gap-3">
         {/* AI Copilot Button */}
         <button
-          className={`header-action-btn ai-btn ${isAIChatOpen ? 'active' : ''}`}
+          type="button"
+          className={cn(
+            'w-10 h-10 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-white dark:bg-slate-900 flex items-center justify-center text-sky-500 shadow-sm transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer hover:border-sky-400',
+            isAIChatOpen && 'border-sky-500 bg-sky-50 dark:bg-sky-950/50 shadow-md ring-2 ring-sky-500/20'
+          )}
           onClick={() => setIsAIChatOpen(!isAIChatOpen)}
           title="VetVault Copilot"
         >
-          <Sparkles className="ai-icon" size={18} />
+          <Sparkles size={18} className="animate-pulse" />
         </button>
 
         {/* Nueva Cita Action */}
         <Button
-          className="header-new-cita-btn"
           onClick={() => {
             user?.rol === 'Veterinario'
               ? setShowCreateCita(true)
-              : navigate('/citas')
+              : navigate('/citas');
           }}
         >
           <Plus size={16} />
-          <span className="btn-text-desktop">Nueva Cita</span>
+          <span className="hidden sm:inline">Nueva Cita</span>
         </Button>
       </div>
 
@@ -152,7 +166,6 @@ export function Header() {
           onClose={() => setShowCreateCita(false)}
           onCreate={() => {
             setShowCreateCita(false);
-            // Notify current page to refresh data if necessary
             window.dispatchEvent(new CustomEvent('appointment-created'));
           }}
         />

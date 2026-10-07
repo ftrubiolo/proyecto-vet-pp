@@ -1,0 +1,4124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VetVault — Presentación PIN 2026 | AI-Powered SaaS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0F1119;
+      --bg-card: rgba(255, 255, 255, 0.045);
+      --bg-card-hover: rgba(255, 255, 255, 0.08);
+      --bg-card-active: rgba(255, 255, 255, 0.12);
+      --border-card: rgba(255, 255, 255, 0.09);
+      --border-card-hover: rgba(255, 255, 255, 0.22);
+      
+      --accent-vet: #0EA5E9;
+      --accent-vet-glow: rgba(14, 165, 233, 0.35);
+      --accent-vet-light: #38BDF8;
+      
+      --accent-tutor: #22C55E;
+      --accent-tutor-glow: rgba(34, 197, 94, 0.35);
+      --accent-tutor-light: #4ADE80;
+      
+      --accent-purple: #A855F7;
+      --accent-purple-glow: rgba(168, 85, 247, 0.35);
+      
+      --accent-amber: #F59E0B;
+      --accent-red: #EF4444;
+      
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --text-dim: #64748B;
+      
+      --font-title: 'Manrope', -apple-system, sans-serif;
+      --font-body: 'Inter', -apple-system, sans-serif;
+      
+      --glass-blur: blur(16px);
+      --shadow-elevation: 0 16px 40px -8px rgba(0, 0, 0, 0.5);
+      --transition-smooth: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: var(--font-body);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      user-select: none;
+    }
+
+    /* Ambient Background Mesh */
+    .bg-mesh {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .mesh-blob {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(120px);
+      opacity: 0.18;
+      transition: all 1.2s ease;
+    }
+    .mesh-1 {
+      width: 650px;
+      height: 650px;
+      background: radial-gradient(circle, var(--accent-vet), transparent 70%);
+      top: -150px;
+      left: -150px;
+    }
+    .mesh-2 {
+      width: 700px;
+      height: 700px;
+      background: radial-gradient(circle, var(--accent-tutor), transparent 70%);
+      bottom: -200px;
+      right: -150px;
+    }
+    .mesh-3 {
+      width: 450px;
+      height: 450px;
+      background: radial-gradient(circle, var(--accent-purple), transparent 70%);
+      top: 40%;
+      left: 55%;
+      opacity: 0.1;
+    }
+    .grid-overlay {
+      position: absolute;
+      inset: 0;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 32px 32px;
+      opacity: 0.45;
+    }
+
+    /* App Shell */
+    .app-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      z-index: 1;
+    }
+
+    /* Top Navigation Header */
+    .top-header {
+      height: 64px;
+      padding: 0 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-card);
+      backdrop-filter: var(--glass-blur);
+      background: rgba(15, 17, 25, 0.7);
+      z-index: 20;
+    }
+    .brand-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+    }
+    .brand-logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-vet), #0369a1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 16px var(--accent-vet-glow);
+    }
+    .brand-text-title {
+      font-family: var(--font-title);
+      font-size: 19px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(120deg, #FFFFFF, #E2E8F0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .brand-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      letter-spacing: 0.05em;
+    }
+
+    .slide-current-info {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .slide-category-pill {
+      background: rgba(255, 255, 255, 0.06);
+      padding: 4px 12px;
+      border-radius: 12px;
+      color: var(--text-main);
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .action-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .action-btn:hover {
+      background: var(--bg-card-hover);
+      color: var(--text-main);
+      border-color: var(--border-card-hover);
+    }
+    .action-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* Main Deck Container */
+    .deck-container {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      padding: 32px 48px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      transform: scale(0.97) translateY(14px);
+      pointer-events: none;
+      transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow-y: auto;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+    }
+    .slide.active {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+      pointer-events: auto;
+      z-index: 10;
+    }
+
+    /* Slide Typography & Headers */
+    .slide-header {
+      margin-bottom: 24px;
+    }
+    .slide-eyebrow {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent-vet-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+    .slide-title {
+      font-family: var(--font-title);
+      font-size: 32px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+    }
+    .slide-subtitle {
+      font-size: 15px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      max-width: 860px;
+      line-height: 1.45;
+    }
+
+    /* Glass Cards Generic */
+    .glass-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-card);
+      border-radius: 18px;
+      box-shadow: var(--shadow-elevation);
+      transition: var(--transition-smooth);
+    }
+    .glass-card:hover {
+      border-color: var(--border-card-hover);
+      background: var(--bg-card-hover);
+    }
+
+    /* Bottom Control Bar */
+    .bottom-bar {
+      height: 68px;
+      padding: 0 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid var(--border-card);
+      backdrop-filter: var(--glass-blur);
+      background: rgba(15, 17, 25, 0.75);
+      z-index: 20;
+    }
+
+    .nav-btn {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-card);
+      color: var(--text-main);
+      padding: 10px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: rgba(14, 165, 233, 0.18);
+      border-color: var(--accent-vet);
+      color: #FFFFFF;
+      box-shadow: 0 0 15px var(--accent-vet-glow);
+    }
+    .nav-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: transparent;
+    }
+    .kbd-tag {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 4px;
+      padding: 2px 6px;
+      font-size: 11px;
+      font-family: monospace;
+      color: var(--text-muted);
+    }
+
+    .deck-progress-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+    .indicators-row {
+      display: flex;
+      gap: 8px;
+    }
+    .indicator-dot {
+      width: 28px;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.15);
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .indicator-dot:hover {
+      background: rgba(255, 255, 255, 0.35);
+    }
+    .indicator-dot.active {
+      width: 48px;
+      background: linear-gradient(90deg, var(--accent-vet), var(--accent-tutor));
+      box-shadow: 0 0 10px var(--accent-vet-glow);
+    }
+    .slide-counter-badge {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+    }
+    .slide-counter-badge .cur {
+      color: #FFFFFF;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* Global Progress Line */
+    .top-progress-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-vet), var(--accent-tutor));
+      box-shadow: 0 0 8px var(--accent-vet-glow);
+      z-index: 50;
+      transition: width 0.35s ease;
+    }
+
+    /* ========================================================
+       SLIDE 1: PORTADA INSTITUCIONAL
+       ======================================================== */
+    .slide-1-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      height: 100%;
+      align-items: center;
+    }
+    .hero-meta-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      color: var(--accent-vet-light);
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      margin-bottom: 16px;
+    }
+    .hero-title {
+      font-family: var(--font-title);
+      font-size: 50px;
+      font-weight: 800;
+      line-height: 1.05;
+      letter-spacing: -0.035em;
+      margin-bottom: 16px;
+    }
+    .hero-title .glow-gradient {
+      background: linear-gradient(135deg, #38BDF8 0%, #22C55E 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .hero-description {
+      font-size: 18px;
+      line-height: 1.5;
+      color: #CBD5E1;
+      margin-bottom: 26px;
+      max-width: 580px;
+    }
+    .tech-badges-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 30px;
+    }
+    .tech-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      color: #E2E8F0;
+    }
+    .tech-pill svg {
+      width: 14px;
+      height: 14px;
+    }
+    .hero-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 28px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent-vet), #0284c7);
+      color: #FFFFFF;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      box-shadow: 0 0 25px var(--accent-vet-glow);
+      transition: var(--transition-smooth);
+    }
+    .hero-cta-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 35px rgba(14, 165, 233, 0.55);
+    }
+
+    .meta-cards-col {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .institution-card {
+      padding: 22px;
+      border-left: 4px solid var(--accent-vet);
+    }
+    .inst-label {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--accent-vet-light);
+      letter-spacing: 0.08em;
+      margin-bottom: 6px;
+    }
+    .inst-name {
+      font-family: var(--font-title);
+      font-size: 17px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .inst-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .team-card {
+      padding: 22px;
+      border-left: 4px solid var(--accent-tutor);
+    }
+    .team-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .team-member {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .member-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.03));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+      color: var(--accent-tutor-light);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .member-info h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #FFFFFF;
+    }
+    .member-info span {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ========================================================
+       SLIDE 2: DIAGNÓSTICO DEL PROBLEMA Y KPIS
+       ======================================================== */
+    .slide-2-kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+      margin-bottom: 28px;
+    }
+    .kpi-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      position: relative;
+      overflow: hidden;
+    }
+    .kpi-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--accent-color, var(--accent-vet));
+      box-shadow: 0 0 10px var(--accent-color, var(--accent-vet));
+    }
+    .kpi-num-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+      margin: 10px 0 8px;
+    }
+    .kpi-number {
+      font-family: var(--font-title);
+      font-size: 44px;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      color: #FFFFFF;
+    }
+    .kpi-unit {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .kpi-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+    .kpi-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    .problem-analysis-container {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 22px;
+      flex: 1;
+    }
+    .problem-bullets-card {
+      padding: 24px;
+    }
+    .bullet-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .bullet-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--accent-red);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 700;
+      font-size: 14px;
+    }
+    .bullet-text h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 2px;
+    }
+    .bullet-text p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .comparative-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .comp-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+    .comp-table th {
+      text-align: left;
+      padding: 10px 12px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-card);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .comp-table td {
+      padding: 11px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+      vertical-align: middle;
+    }
+    .badge-bad {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(239, 68, 68, 0.12);
+      color: #F87171;
+      font-weight: 600;
+      border: 1px solid rgba(239, 68, 68, 0.25);
+    }
+    .badge-good {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 6px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #4ADE80;
+      font-weight: 600;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    /* ========================================================
+       SLIDE 3: PROPUESTA DE VALOR (B2B vs B2C)
+       ======================================================== */
+    .slide-3-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      height: 100%;
+    }
+    .value-prop-card {
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .value-prop-card.b2b-card {
+      border-top: 3px solid var(--accent-vet);
+    }
+    .value-prop-card.b2c-card {
+      border-top: 3px solid var(--accent-tutor);
+    }
+    .col-badge {
+      align-self: flex-start;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+    .b2b-badge {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    .b2c-badge {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-tutor-light);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .col-title {
+      font-family: var(--font-title);
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+    .col-subtitle {
+      font-size: 13px;
+      color: var(--text-muted);
+      margin-bottom: 20px;
+    }
+
+    .prop-list {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      flex: 1;
+    }
+    .prop-item {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 16px;
+      display: flex;
+      gap: 14px;
+      transition: var(--transition-smooth);
+    }
+    .prop-item:hover {
+      background: var(--bg-card-hover);
+      transform: translateX(4px);
+    }
+    .prop-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 14px;
+      color: #FFFFFF;
+      flex-shrink: 0;
+    }
+    .b2b-card .prop-num {
+      color: var(--accent-vet-light);
+      background: rgba(14, 165, 233, 0.12);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+    }
+    .b2c-card .prop-num {
+      color: var(--accent-tutor-light);
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+    .prop-content h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .prop-content p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* ========================================================
+       SLIDE 4: BUSINESS MODEL CANVAS (9 BLOQUES)
+       ======================================================== */
+    .canvas-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(3, minmax(130px, auto));
+      gap: 14px;
+      flex: 1;
+    }
+    .canvas-block {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .canvas-block:hover {
+      border-color: var(--accent-vet);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.18);
+    }
+    .canvas-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    .canvas-tag {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--accent-vet-light);
+    }
+    .canvas-icon {
+      font-size: 14px;
+      opacity: 0.7;
+    }
+    .canvas-title {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 8px;
+    }
+    .canvas-items {
+      list-style: none;
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .canvas-items li {
+      margin-bottom: 4px;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .canvas-items li::before {
+      content: '•';
+      color: var(--accent-vet);
+    }
+
+    /* Canvas Grid Placements */
+    .b-partners { grid-column: 1 / 2; grid-row: 1 / 3; }
+    .b-activities { grid-column: 2 / 3; grid-row: 1 / 2; }
+    .b-resources { grid-column: 2 / 3; grid-row: 2 / 3; }
+    .b-propositions { grid-column: 3 / 4; grid-row: 1 / 3; border-color: rgba(14, 165, 233, 0.4); background: rgba(14, 165, 233, 0.06); }
+    .b-relationships { grid-column: 4 / 5; grid-row: 1 / 2; }
+    .b-channels { grid-column: 4 / 5; grid-row: 2 / 3; }
+    .b-segments { grid-column: 5 / 6; grid-row: 1 / 3; }
+    .b-cost { grid-column: 1 / 3; grid-row: 3 / 4; border-top: 2px solid var(--accent-red); }
+    .b-revenue { grid-column: 3 / 6; grid-row: 3 / 4; border-top: 2px solid var(--accent-tutor); }
+
+    /* ========================================================
+       SLIDE 5: ARQUITECTURA TÉCNICA Y STACK
+       ======================================================== */
+    .arch-layout {
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 24px;
+      flex: 1;
+    }
+    .arch-diagram-card {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+    }
+    .arch-layer-box {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 14px 18px;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+    }
+    .arch-layer-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .arch-layer-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .arch-connector {
+      text-align: center;
+      color: var(--text-dim);
+      font-size: 12px;
+      margin: -6px 0 6px;
+    }
+
+    .stack-cards-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .stack-item-card {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+    }
+    .stack-badge {
+      display: inline-block;
+      align-self: flex-start;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    .stack-tech-name {
+      font-family: var(--font-title);
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .stack-tech-bullets {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .perf-kpi-bar {
+      margin-top: 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .perf-chip {
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(14, 165, 233, 0.08);
+      border: 1px solid rgba(14, 165, 233, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .perf-chip.green {
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.25);
+    }
+    .perf-chip span {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+    .perf-chip strong {
+      font-family: var(--font-title);
+      font-size: 18px;
+      color: #FFFFFF;
+    }
+
+    /* ========================================================
+       SLIDE 6: COPILOTO CLÍNICO INTELIGENTE (GEMINI 3.1)
+       ======================================================== */
+    .ai-pipeline-strip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 7px 14px;
+      margin-bottom: 10px;
+      backdrop-filter: blur(12px);
+    }
+    .pipeline-step {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex: 1;
+    }
+    .pipeline-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .pipeline-text {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.15;
+    }
+    .pipeline-label {
+      font-size: 9px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+    .pipeline-val {
+      font-size: 11px;
+      color: #FFFFFF;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .pipeline-arrow {
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .ai-slide-dashboard {
+      display: grid;
+      grid-template-columns: 1.12fr 0.88fr;
+      gap: 14px;
+      flex: 1;
+      min-height: 0;
+    }
+
+    .ai-tools-panel {
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .panel-section-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+
+    /* Donut Chart Row */
+    .donut-chart-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 10px;
+      padding: 8px 12px;
+      margin-bottom: 8px;
+    }
+    .donut-svg-wrap {
+      position: relative;
+      width: 90px;
+      height: 90px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .donut-svg {
+      transform: rotate(-90deg);
+    }
+    .donut-center-info {
+      position: absolute;
+      text-align: center;
+      pointer-events: none;
+    }
+    .donut-center-num {
+      font-family: var(--font-title);
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1;
+      color: #FFFFFF;
+    }
+    .donut-center-lbl {
+      font-size: 8px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--accent-vet-light);
+    }
+
+    .donut-legend-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4px 12px;
+      flex: 1;
+    }
+    .donut-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      cursor: pointer;
+      padding: 2px 5px;
+      border-radius: 5px;
+      transition: var(--transition-smooth);
+    }
+    .donut-legend-item:hover {
+      background: rgba(255, 255, 255, 0.05);
+    }
+    .legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .legend-name {
+      color: var(--text-muted);
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .legend-val {
+      font-weight: 700;
+      font-size: 10px;
+      white-space: nowrap;
+    }
+
+    /* Filter Pills */
+    .tools-filter-bar {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 7px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+    .filter-pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      padding: 3px 9px;
+      border-radius: 14px;
+      font-size: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+    .filter-pill:hover, .filter-pill.active {
+      background: rgba(14, 165, 233, 0.2);
+      border-color: var(--accent-vet);
+      color: #FFFFFF;
+    }
+
+    /* Compact Tools Grid */
+    .tools-grid-compact {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5px;
+      flex: 1;
+      min-height: 0;
+    }
+    .tool-compact-pill {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 7px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      gap: 6px;
+    }
+    .tool-compact-pill:hover {
+      background: rgba(14, 165, 233, 0.12);
+      border-color: var(--accent-vet);
+      transform: translateY(-1px);
+    }
+    .tool-pill-left {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+    }
+    .tool-pill-fn {
+      font-family: monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: #E2E8F0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tool-compact-pill:hover .tool-pill-fn {
+      color: var(--accent-vet-light);
+    }
+    .tool-pill-role {
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1px 5px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .tool-pill-role.role-vet {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    .tool-pill-role.role-both {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-tutor-light);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+
+    /* Right Panel: Future Implementations & Roadmap */
+    .ai-roadmap-panel {
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* Cron Engine Box */
+    .cron-engine-box {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .cron-engine-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .cron-title-tag {
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--accent-vet-light);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .pulse-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #4ADE80;
+      background: rgba(74, 222, 128, 0.12);
+      border: 1px solid rgba(74, 222, 128, 0.3);
+      padding: 2px 7px;
+      border-radius: 12px;
+    }
+    .pulse-dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: #4ADE80;
+      box-shadow: 0 0 8px #4ADE80;
+      animation: pulse-dot-anim 1.5s infinite;
+    }
+    @keyframes pulse-dot-anim {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.85); }
+    }
+
+    .cron-timeline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .cron-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      transition: var(--transition-smooth);
+    }
+    .cron-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(14, 165, 233, 0.3);
+    }
+    .cron-time-chip {
+      font-family: monospace;
+      font-size: 9.5px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: rgba(15, 17, 25, 0.7);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #F8FAFC;
+      flex-shrink: 0;
+    }
+    .cron-info {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      flex: 1;
+      min-width: 0;
+    }
+    .cron-info strong {
+      font-size: 10.5px;
+      color: #FFFFFF;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cron-info span {
+      font-size: 8.5px;
+      color: var(--text-muted);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .cron-tag-pill {
+      font-size: 8.5px;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      flex-shrink: 0;
+    }
+    .cron-blue {
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+    }
+    .cron-green {
+      background: rgba(34, 197, 94, 0.15);
+      color: var(--accent-tutor-light);
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .cron-purple {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--accent-purple);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    /* AI Gauges Row */
+    .ai-gauges-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .ai-gauge-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 10px;
+      padding: 7px 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .gauge-svg-wrap {
+      position: relative;
+      width: 52px;
+      height: 52px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .gauge-center-text {
+      position: absolute;
+      text-align: center;
+      line-height: 1;
+    }
+    .gauge-center-text strong {
+      font-size: 12px;
+      font-weight: 800;
+      color: #FFFFFF;
+      display: block;
+    }
+    .gauge-center-text small {
+      font-size: 7.5px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .gauge-desc {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+    }
+    .gauge-desc strong {
+      font-size: 10.5px;
+      color: #FFFFFF;
+    }
+    .gauge-desc span {
+      font-size: 8.5px;
+      color: var(--text-muted);
+      line-height: 1.2;
+    }
+
+    /* Roadmap 2x2 Grid */
+    .roadmap-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+    }
+    .roadmap-item {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 8px;
+      padding: 6px 8px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      transition: var(--transition-smooth);
+    }
+    .roadmap-item:hover {
+      background: rgba(255, 255, 255, 0.04);
+      border-color: rgba(14, 165, 233, 0.25);
+      transform: translateY(-1px);
+    }
+    .roadmap-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .roadmap-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      min-width: 0;
+      flex: 1;
+    }
+    .roadmap-title {
+      font-size: 9.5px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.15;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .roadmap-status {
+      font-size: 8px;
+      font-weight: 700;
+      color: var(--accent-vet-light);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    /* ========================================================
+       SLIDE 7: FLUJOS CLÍNICOS Y BUCLE OPERATIVO
+       ======================================================== */
+    .flow-stepper-card {
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+    .stepper-steps-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      position: relative;
+    }
+    .step-item {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 18px;
+      position: relative;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .step-item:hover, .step-item.active {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-vet);
+      transform: translateY(-2px);
+    }
+    .step-badge {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 12px;
+      margin-bottom: 12px;
+    }
+    .step-title {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 6px;
+    }
+    .step-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .monetization-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .mp-card {
+      padding: 20px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      border-left: 4px solid #009EE3;
+    }
+    .mp-logo {
+      width: 48px;
+      height: 48px;
+      background: rgba(0, 158, 227, 0.15);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-weight: 800;
+      color: #009EE3;
+      font-size: 18px;
+    }
+    .mp-details h4 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 4px;
+    }
+    .mp-details p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ========================================================
+       SLIDE 8: MATRIZ DE PRUEBAS Y VALIDACIÓN (CP-01 a CP-10)
+       ======================================================== */
+    .test-matrix-layout {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      overflow: hidden;
+    }
+    .matrix-top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .test-score-banner {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 6px 16px;
+      border-radius: 12px;
+      background: rgba(34, 197, 94, 0.12);
+      border: 1px solid rgba(34, 197, 94, 0.35);
+      color: var(--accent-tutor-light);
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .test-tabs {
+      display: flex;
+      gap: 6px;
+    }
+    .test-tab-btn {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-card);
+      color: var(--text-muted);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .test-tab-btn.active {
+      background: rgba(14, 165, 233, 0.2);
+      border-color: var(--accent-vet);
+      color: #FFFFFF;
+    }
+
+    .test-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      overflow-y: auto;
+      max-height: 420px;
+      padding-right: 6px;
+    }
+    .test-card {
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+    .test-card:hover {
+      border-color: var(--border-card-hover);
+      transform: translateX(4px);
+    }
+    .test-code-badge {
+      font-family: monospace;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(14, 165, 233, 0.15);
+      color: var(--accent-vet-light);
+      border: 1px solid rgba(14, 165, 233, 0.3);
+      flex-shrink: 0;
+    }
+    .test-content-area {
+      flex: 1;
+    }
+    .test-header-line {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .test-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+    }
+    .test-status-ok {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-tutor-light);
+      background: rgba(34, 197, 94, 0.12);
+      padding: 2px 8px;
+      border-radius: 12px;
+      border: 1px solid rgba(34, 197, 94, 0.3);
+    }
+    .test-desc {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Modals & Overlays */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+      padding: 20px;
+    }
+    .modal-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .modal-box {
+      background: #141824;
+      border: 1px solid var(--border-card-hover);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 600px;
+      padding: 28px;
+      box-shadow: var(--shadow-elevation);
+      transform: scale(0.95);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .modal-backdrop.open .modal-box {
+      transform: scale(1);
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-title {
+      font-family: var(--font-title);
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .modal-close-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: none;
+      color: var(--text-muted);
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      transition: var(--transition-smooth);
+    }
+    .modal-close-btn:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #FFFFFF;
+    }
+    .modal-body {
+      font-size: 13px;
+      color: #CBD5E1;
+      line-height: 1.6;
+    }
+    .modal-field {
+      margin-bottom: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+    .modal-field strong {
+      color: var(--accent-vet-light);
+      display: block;
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 4px;
+    }
+
+    /* Index Menu Drawer */
+    .index-drawer {
+      position: fixed;
+      top: 64px;
+      right: 28px;
+      width: 340px;
+      background: #141824;
+      border: 1px solid var(--border-card-hover);
+      border-radius: 16px;
+      padding: 16px;
+      box-shadow: var(--shadow-elevation);
+      z-index: 100;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-10px);
+      transition: var(--transition-smooth);
+    }
+    .index-drawer.open {
+      opacity: 1;
+      pointer-events: auto;
+      transform: translateY(0);
+    }
+    .index-drawer-header {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .index-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      color: #CBD5E1;
+      transition: var(--transition-smooth);
+    }
+    .index-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+      color: #FFFFFF;
+    }
+    .index-item.active {
+      background: rgba(14, 165, 233, 0.18);
+      color: var(--accent-vet-light);
+      font-weight: 700;
+    }
+    .index-num {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* ========================================================
+       SLIDE 2 & 3: ADVANCED VISUAL CHARTS & METRICS
+       ======================================================== */
+    .charts-grid-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      margin-top: 18px;
+    }
+    .chart-box-card {
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .chart-box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .chart-box-title {
+      font-family: var(--font-title);
+      font-size: 14px;
+      font-weight: 700;
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .chart-box-tag {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    /* Stacked Time Bars */
+    .time-bar-group {
+      margin-bottom: 14px;
+    }
+    .time-bar-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+      font-weight: 600;
+    }
+    .time-bar-label strong {
+      color: #FFFFFF;
+    }
+    .stacked-bar-container {
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      position: relative;
+    }
+    .bar-segment {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      transition: width 1s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 0 4px;
+    }
+    .bar-segment:hover {
+      filter: brightness(1.25);
+      z-index: 2;
+    }
+
+    /* Chart Legends & Badges */
+    .chart-legend-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 10px;
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+    .legend-dot-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 3px;
+      flex-shrink: 0;
+    }
+
+    /* SVG Vector Line & Radar Charts */
+    .svg-chart-container {
+      width: 100%;
+      height: 175px;
+      position: relative;
+    }
+    .svg-chart-container svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+    .chart-axis-text {
+      font-size: 10px;
+      fill: #94A3B8;
+      font-family: var(--font-body);
+      font-weight: 500;
+    }
+    .chart-grid-line {
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-dasharray: 4 4;
+    }
+    .radar-polygon-vet {
+      fill: rgba(14, 165, 233, 0.22);
+      stroke: #38BDF8;
+      stroke-width: 2.2;
+      filter: drop-shadow(0 0 8px rgba(14, 165, 233, 0.45));
+      transition: all 0.8s ease;
+    }
+    .radar-polygon-trad {
+      fill: rgba(239, 68, 68, 0.12);
+      stroke: #F87171;
+      stroke-width: 1.8;
+      stroke-dasharray: 4 3;
+      transition: all 0.8s ease;
+    }
+    .radar-vertex {
+      cursor: pointer;
+      transition: r 0.2s ease, filter 0.2s ease;
+    }
+    .radar-vertex:hover {
+      r: 6;
+      filter: drop-shadow(0 0 6px #FFFFFF);
+    }
+
+    /* Circular Gauges (Slide 3) */
+    .gauges-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .gauge-card {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      transition: var(--transition-smooth);
+    }
+    .gauge-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-card-hover);
+      transform: translateY(-2px);
+    }
+    .gauge-circle-wrap {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      margin-bottom: 8px;
+    }
+    .gauge-circle-wrap svg {
+      width: 100%;
+      height: 100%;
+      transform: rotate(-90deg);
+    }
+    .gauge-circle-bg {
+      fill: none;
+      stroke: rgba(255, 255, 255, 0.08);
+      stroke-width: 8;
+    }
+    .gauge-circle-bar {
+      fill: none;
+      stroke-width: 8;
+      stroke-linecap: round;
+      transition: stroke-dashoffset 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .gauge-center-val {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-size: 13px;
+      font-weight: 800;
+      color: #FFFFFF;
+    }
+    .gauge-title {
+      font-size: 11px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 2px;
+    }
+    .gauge-sub {
+      font-size: 10px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    /* Slide 2 Single-Screen Chart-Centric Layout */
+    .slide-2-kpis-strip {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+    .kpi-strip-card {
+      background: var(--bg-card);
+      backdrop-filter: var(--glass-blur);
+      border: 1px solid var(--border-card);
+      border-radius: 14px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-smooth);
+    }
+    .kpi-strip-card:hover {
+      border-color: var(--border-card-hover);
+      transform: translateY(-2px);
+    }
+    .kpi-strip-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      background: var(--accent-color, var(--accent-vet));
+      box-shadow: 0 0 10px var(--accent-color, var(--accent-vet));
+    }
+    .kpi-strip-num-wrap {
+      display: flex;
+      align-items: baseline;
+      gap: 2px;
+      flex-shrink: 0;
+    }
+    .kpi-strip-num-wrap .kpi-number {
+      font-family: var(--font-title);
+      font-size: 28px;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1;
+    }
+    .kpi-strip-unit {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .kpi-strip-info h4 {
+      font-size: 12px;
+      font-weight: 700;
+      color: #FFFFFF;
+      line-height: 1.2;
+      margin-bottom: 2px;
+    }
+    .kpi-strip-info p {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.25;
+    }
+
+    .slide-2-hero-charts {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+      flex: 1;
+      min-height: 0;
+    }
+    .slide-2-hero-charts .chart-box-card {
+      height: 100%;
+      justify-content: space-between;
+      padding: 18px 22px;
+    }
+
+    /* Slide 3 Single-Screen Triptych Layout */
+    .slide-3-triptych {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr 1fr;
+      gap: 16px;
+      flex: 1;
+      min-height: 0;
+      align-items: stretch;
+    }
+    .triptych-side-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .triptych-center-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .triptych-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+    .prop-mini-item {
+      background: rgba(255, 255, 255, 0.025);
+      border: 1px solid var(--border-card);
+      border-radius: 12px;
+      padding: 11px 13px;
+      display: flex;
+      gap: 10px;
+      transition: var(--transition-smooth);
+    }
+    .prop-mini-item:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--border-card-hover);
+      transform: translateX(3px);
+    }
+    .prop-mini-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-title);
+      font-weight: 800;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+    .prop-mini-content h4 {
+      font-size: 13px;
+      font-weight: 700;
+      color: #FFFFFF;
+      margin-bottom: 2px;
+      line-height: 1.2;
+    }
+    .prop-mini-content p {
+      font-size: 11px;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 1100px) {
+      .slide-1-layout, .arch-layout, .ai-slide-layout, .ai-slide-dashboard, .slide-3-columns, .problem-analysis-container, .charts-grid-row, .slide-2-hero-charts, .slide-3-triptych {
+        grid-template-columns: 1fr;
+      }
+      .ai-pipeline-strip {
+        flex-wrap: wrap;
+      }
+      .slide-2-kpi-grid, .slide-2-kpis-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .canvas-grid {
+        display: flex;
+        flex-direction: column;
+      }
+      .stepper-steps-row {
+        grid-template-columns: 1fr;
+      }
+      .test-cards-grid {
+        grid-template-columns: 1fr;
+      }
+      .gauges-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Mesh Background -->
+  <div class="bg-mesh">
+    <div class="mesh-blob mesh-1" id="meshVet"></div>
+    <div class="mesh-blob mesh-2" id="meshTutor"></div>
+    <div class="mesh-blob mesh-3"></div>
+    <div class="grid-overlay"></div>
+  </div>
+
+  <div class="app-viewport">
+    <!-- Top Progress Indicator Line -->
+    <div class="top-progress-line" id="topProgressBar" style="width: 12.5%;"></div>
+
+    <!-- Top Navigation Header -->
+    <header class="top-header">
+      <div class="brand-wrap" onclick="deck.goTo(0)">
+        <div class="brand-logo-icon">
+          <!-- VetVault Custom SVG Paw/Shield Emblem -->
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            <circle cx="9" cy="9" r="1" fill="#FFFFFF"/>
+            <circle cx="15" cy="9" r="1" fill="#FFFFFF"/>
+            <path d="M10 14a2 2 0 0 0 4 0"/>
+          </svg>
+        </div>
+        <div>
+          <span class="brand-text-title">VetVault</span>
+        </div>
+        <span class="brand-badge">PIN 2026</span>
+      </div>
+
+      <div class="slide-current-info">
+        <span class="slide-category-pill" id="categoryPill">Portada Institucional</span>
+        <span id="slideTitleHeader">Visión General</span>
+      </div>
+
+      <div class="header-actions">
+        <button class="action-btn" onclick="deck.toggleIndexDrawer()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+          Índice
+        </button>
+        <button class="action-btn" onclick="deck.toggleFullscreen()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+          Pantalla Completa
+        </button>
+        <button class="action-btn" onclick="deck.openHelpModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Atajos <span class="kbd-tag">?</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Slide Deck Workspace -->
+    <main class="deck-container" id="deckContainer">
+
+      <!-- ==========================================================
+           SLIDE 1: PORTADA INSTITUCIONAL
+           ========================================================== -->
+      <section class="slide active" data-title="Visión General" data-category="Portada Institucional">
+        <div class="slide-1-layout">
+          <div class="hero-text-col">
+            <div class="hero-meta-badge">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              PROYECTO INTEGRADOR FINAL — PIN 2026
+            </div>
+            <h1 class="hero-title">
+              VetVault<br>
+              <span class="glow-gradient">AI-Powered SaaS</span><br>
+              Clinical Management
+            </h1>
+            <p class="hero-description">
+              Modernización de la Gestión Clínica y Seguimiento Mascota-Veterinario con validación oficial de matrículas, vademécum SENASA y copiloto clínico inteligente con Function Calling.
+            </p>
+
+            <div class="tech-badges-grid">
+              <div class="tech-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-vet)" stroke-width="2.5"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                TypeScript Monorepo
+              </div>
+              <div class="tech-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#61DAFB" stroke-width="2.5"><circle cx="12" cy="12" r="2"/><ellipse cx="12" cy="12" rx="10" ry="4"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)"/><ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(120 12 12)"/></svg>
+                React 19 + Fastify 5
+              </div>
+              <div class="tech-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="#336791" stroke-width="2.5"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                PostgreSQL 16 + Drizzle
+              </div>
+              <div class="tech-pill">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                Gemini 3.1 Flash Lite
+              </div>
+            </div>
+
+            <button class="hero-cta-btn" onclick="deck.next()">
+              <span>Comenzar Presentación</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+
+          <div class="meta-cards-col">
+            <div class="glass-card institution-card">
+              <div class="inst-label">Marco Académico</div>
+              <div class="inst-name">Instituto Superior Villa del Rosario</div>
+              <div class="inst-sub">Córdoba, Argentina • Práctica Profesionalizante I y II</div>
+              <div style="margin-top: 10px; font-size: 13px; color: #CBD5E1;">
+                <strong>Docente Responsable:</strong> Mgter. Lic. Enzo Varela
+              </div>
+            </div>
+
+            <div class="glass-card team-card">
+              <div class="inst-label" style="color: var(--accent-tutor-light);">Equipo de Desarrollo</div>
+              <div class="inst-name">Técnicos Superiores en Desarrollo Web y Software</div>
+              <div class="team-grid">
+                <div class="team-member">
+                  <div class="member-avatar">FR</div>
+                  <div class="member-info">
+                    <h4>Facundo Rubiolo</h4>
+                    <span>Fullstack & AI Lead</span>
+                  </div>
+                </div>
+                <div class="team-member">
+                  <div class="member-avatar">TT</div>
+                  <div class="member-info">
+                    <h4>Tomás Taborda</h4>
+                    <span>Frontend & UI/UX</span>
+                  </div>
+                </div>
+                <div class="team-member">
+                  <div class="member-avatar">VH</div>
+                  <div class="member-info">
+                    <h4>Valentín Hinojosa</h4>
+                    <span>Backend & Database</span>
+                  </div>
+                </div>
+                <div class="team-member">
+                  <div class="member-avatar">IB</div>
+                  <div class="member-info">
+                    <h4>Ismael Botella</h4>
+                    <span>QA & Integrations</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 2: DIAGNÓSTICO DEL PROBLEMA Y KPIS
+           ========================================================== -->
+      <section class="slide" data-title="Diagnóstico y Métricas" data-category="Problema & Oportunidad" style="justify-content: flex-start;">
+        <div class="slide-header" style="margin-bottom: 12px;">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            ENFOQUE CUANTITATIVO Y OPERATIVO
+          </div>
+          <h2 class="slide-title" style="font-size: 26px;">Diagnóstico Clínico & Métricas de Impacto</h2>
+          <p class="slide-subtitle" style="font-size: 13px; margin-top: 3px;">
+            Cuantificación del cuello de botella en clínicas tradicionales: horas administrativas perdidas frente a tiempo médico recuperado y prevención de deserción vacunal.
+          </p>
+        </div>
+
+        <!-- 4 KPI Horizontal Strip -->
+        <div class="slide-2-kpis-strip">
+          <div class="kpi-strip-card" style="--accent-color: var(--accent-red);">
+            <div class="kpi-strip-num-wrap">
+              <div class="kpi-number" data-target="3">0</div>
+              <div class="kpi-strip-unit">hs/día</div>
+            </div>
+            <div class="kpi-strip-info">
+              <h4>Sobrecarga Admin</h4>
+              <p>Búsqueda manual de fichas y turnos</p>
+            </div>
+          </div>
+
+          <div class="kpi-strip-card" style="--accent-color: var(--accent-amber);">
+            <div class="kpi-strip-num-wrap">
+              <div class="kpi-number" data-target="35">0</div>
+              <div class="kpi-strip-unit">%</div>
+            </div>
+            <div class="kpi-strip-info">
+              <h4>Deserción Vacunal</h4>
+              <p>Pérdida de pacientes en refuerzos</p>
+            </div>
+          </div>
+
+          <div class="kpi-strip-card" style="--accent-color: var(--accent-tutor);">
+            <div class="kpi-strip-num-wrap">
+              <div class="kpi-number" data-target="-60">0</div>
+              <div class="kpi-strip-unit">%</div>
+            </div>
+            <div class="kpi-strip-info">
+              <h4>Tiempo de Consulta</h4>
+              <p>Reducción en preparación previa con IA</p>
+            </div>
+          </div>
+
+          <div class="kpi-strip-card" style="--accent-color: var(--accent-vet);">
+            <div class="kpi-strip-num-wrap">
+              <div class="kpi-number" data-target="100">0</div>
+              <div class="kpi-strip-unit">%</div>
+            </div>
+            <div class="kpi-strip-info">
+              <h4>Trazabilidad Sanitaria</h4>
+              <p>Padrón oficial Cba y SENASA</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- HERO CHARTS: 2 Columns Side-by-Side -->
+        <div class="slide-2-hero-charts">
+          <!-- Chart 1: Time Breakdown -->
+          <div class="glass-card chart-box-card">
+            <div class="chart-box-header">
+              <div class="chart-box-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-vet)" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                <span>Desglose de la Jornada Veterinaria (8 hs/día)</span>
+              </div>
+              <span class="chart-box-tag" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light); border: 1px solid rgba(34, 197, 94, 0.3);">
+                +133% Tiempo Médico
+              </span>
+            </div>
+
+            <div class="time-bar-group">
+              <div class="time-bar-label">
+                <span>Clínica Tradicional (Papel / Manual)</span>
+                <strong>3 hs médicas / 8 hs</strong>
+              </div>
+              <div class="stacked-bar-container">
+                <div class="bar-segment" style="width: 37.5%; background: #EF4444;" title="Búsqueda de Fichas & Turnos: 3.0 hs (37.5%)">
+                  Fichas: 3.0h (38%)
+                </div>
+                <div class="bar-segment" style="width: 25%; background: #F59E0B;" title="Recetas & WhatsApp: 2.0 hs (25%)">
+                  Recetas: 2.0h (25%)
+                </div>
+                <div class="bar-segment" style="width: 37.5%; background: #0284C7;" title="Atención Clínica Efectiva: 3.0 hs (37.5%)">
+                  Clínica: 3.0h (38%)
+                </div>
+              </div>
+            </div>
+
+            <div class="time-bar-group" style="margin-bottom: 8px;">
+              <div class="time-bar-label">
+                <span>Con Ecosistema VetVault (Cloud + IA)</span>
+                <strong style="color: var(--accent-tutor-light);">7 hs médicas / 8 hs</strong>
+              </div>
+              <div class="stacked-bar-container">
+                <div class="bar-segment" style="width: 6.25%; background: rgba(239, 68, 68, 0.7);" title="Gestión Digital: 0.5 hs (6.25%)">
+                  0.5h
+                </div>
+                <div class="bar-segment" style="width: 6.25%; background: rgba(245, 158, 11, 0.7);" title="Prescripción SENASA: 0.5 hs (6.25%)">
+                  0.5h
+                </div>
+                <div class="bar-segment" style="width: 87.5%; background: linear-gradient(90deg, #0EA5E9, #22C55E); box-shadow: inset 0 0 10px rgba(255,255,255,0.2);" title="Atención Médica, Diagnóstico & Cirugía: 7.0 hs (87.5%)">
+                  Atención Médica Directa & Cirugía: 7.0h (88%)
+                </div>
+              </div>
+            </div>
+
+            <div class="chart-legend-row" style="margin-top: 6px;">
+              <div class="legend-dot-item">
+                <div class="legend-dot" style="background: #EF4444;"></div>
+                <span>Búsqueda de Fichas / Agenda</span>
+              </div>
+              <div class="legend-dot-item">
+                <div class="legend-dot" style="background: #F59E0B;"></div>
+                <span>Recetas & Mensajería</span>
+              </div>
+              <div class="legend-dot-item">
+                <div class="legend-dot" style="background: var(--accent-vet);"></div>
+                <span>Atención Clínica Asistida</span>
+              </div>
+            </div>
+
+            <div style="margin-top: 10px; padding: 8px 12px; border-radius: 8px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.06); font-size: 11px; color: #CBD5E1; display: flex; justify-content: space-between;">
+              <span>📉 <strong>-83%</strong> en carga de archivo</span>
+              <span>⚡ <strong>1 clic</strong> vademécum SENASA</span>
+              <span style="color: #4ADE80;">🩺 <strong>+4 horas netas</strong> de consulta</span>
+            </div>
+          </div>
+
+          <!-- Chart 2: Retention Curve SVG -->
+          <div class="glass-card chart-box-card">
+            <div class="chart-box-header">
+              <div class="chart-box-title">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-tutor)" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span>Curva de Retención en Revacunación y Antiparasitarios</span>
+              </div>
+              <span class="chart-box-tag" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light); border: 1px solid rgba(14, 165, 233, 0.3);">
+                Δ +47% Retención
+              </span>
+            </div>
+
+            <div class="svg-chart-container" style="flex: 1; min-height: 140px;">
+              <svg viewBox="0 0 460 160" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="gradVetCurve" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#0EA5E9" stop-opacity="0.35"/>
+                    <stop offset="100%" stop-color="#22C55E" stop-opacity="0.0"/>
+                  </linearGradient>
+                  <linearGradient id="gradTradCurve" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" stop-color="#EF4444" stop-opacity="0.18"/>
+                    <stop offset="100%" stop-color="#EF4444" stop-opacity="0.0"/>
+                  </linearGradient>
+                </defs>
+
+                <!-- Grid Horizontal Lines (Linear 25% scale from 0% to 100%) -->
+                <line x1="48" y1="22" x2="440" y2="22" class="chart-grid-line"/>
+                <text x="42" y="25" class="chart-axis-text" text-anchor="end">100%</text>
+
+                <line x1="48" y1="49.5" x2="440" y2="49.5" class="chart-grid-line"/>
+                <text x="42" y="52.5" class="chart-axis-text" text-anchor="end">75%</text>
+
+                <line x1="48" y1="77" x2="440" y2="77" class="chart-grid-line"/>
+                <text x="42" y="80" class="chart-axis-text" text-anchor="end">50%</text>
+
+                <line x1="48" y1="104.5" x2="440" y2="104.5" class="chart-grid-line"/>
+                <text x="42" y="107.5" class="chart-axis-text" text-anchor="end">25%</text>
+
+                <line x1="48" y1="132" x2="440" y2="132" stroke="rgba(255,255,255,0.15)"/>
+                <text x="42" y="135" class="chart-axis-text" text-anchor="end">0%</text>
+
+                <!-- Area Fills -->
+                <path d="M 70,22 C 155,22 180,25.3 245,25.3 C 320,25.3 355,34.1 415,34.1 L 415,132 L 70,132 Z" fill="url(#gradVetCurve)"/>
+                <path d="M 70,22 C 155,22 185,42 245,46.2 C 310,52 355,82 415,85.8 L 415,132 L 70,132 Z" fill="url(#gradTradCurve)"/>
+
+                <!-- Tradicional Curve (Red dashed) -->
+                <path d="M 70,22 C 155,22 185,42 245,46.2 C 310,52 355,82 415,85.8" fill="none" stroke="#F87171" stroke-width="2" stroke-dasharray="5 4"/>
+                <!-- VetVault Curve (Cyan solid glow) -->
+                <path d="M 70,22 C 155,22 180,25.3 245,25.3 C 320,25.3 355,34.1 415,34.1" fill="none" stroke="#38BDF8" stroke-width="2.6" filter="drop-shadow(0 0 6px rgba(14,165,233,0.6))"/>
+
+                <!-- Data Dots -->
+                <!-- Dose 1: 100% -->
+                <circle cx="70" cy="22" r="4.5" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+                <text x="70" y="148" class="chart-axis-text" text-anchor="middle">1° Dosis (Cachorro)</text>
+
+                <!-- Dose 2: 97% vs 78% -->
+                <circle cx="245" cy="25.3" r="4.5" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1.5"/>
+                <circle cx="245" cy="46.2" r="4" fill="#EF4444" stroke="#FFFFFF" stroke-width="1"/>
+                <text x="245" y="148" class="chart-axis-text" text-anchor="middle">2° Refuerzo (21d)</text>
+                <text x="245" y="16" class="chart-axis-text" fill="#38BDF8" font-weight="700" text-anchor="middle">97%</text>
+                <text x="245" y="60" class="chart-axis-text" fill="#F87171" font-weight="600" text-anchor="middle">78%</text>
+
+                <!-- Dose 3: 89% vs 42% -->
+                <circle cx="415" cy="34.1" r="5" fill="#22C55E" stroke="#FFFFFF" stroke-width="2"/>
+                <circle cx="415" cy="85.8" r="4.5" fill="#EF4444" stroke="#FFFFFF" stroke-width="1"/>
+                <text x="415" y="148" class="chart-axis-text" text-anchor="middle">Refuerzo Anual</text>
+                <text x="415" y="24" class="chart-axis-text" fill="#4ADE80" font-weight="700" text-anchor="middle">89% (VetVault)</text>
+                <text x="415" y="100" class="chart-axis-text" fill="#F87171" font-weight="700" text-anchor="middle">42% (Papel: -35% fuga)</text>
+
+                <!-- Delta Retention Indicator Bracket -->
+                <line x1="428" y1="34.1" x2="428" y2="85.8" stroke="#38BDF8" stroke-width="1.5" stroke-dasharray="2 2"/>
+                <line x1="424" y1="34.1" x2="430" y2="34.1" stroke="#38BDF8" stroke-width="1.5"/>
+                <line x1="424" y1="85.8" x2="430" y2="85.8" stroke="#38BDF8" stroke-width="1.5"/>
+                <text x="434" y="62" class="chart-axis-text" fill="#38BDF8" font-weight="700" font-size="9" text-anchor="start">Δ 47%</text>
+              </svg>
+            </div>
+
+            <div class="chart-legend-row" style="margin-top: 6px;">
+              <div class="legend-dot-item">
+                <div class="legend-dot" style="background: #38BDF8;"></div>
+                <span><strong>VetVault (89%):</strong> Alertas predictivas según SENASA</span>
+              </div>
+              <div class="legend-dot-item">
+                <div class="legend-dot" style="background: #EF4444;"></div>
+                <span><strong>Tradicional (42%):</strong> 35% deserción por olvido</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 3: PROPUESTA DE VALOR Y DIFERENCIALES
+           ========================================================== -->
+      <section class="slide" data-title="Propuesta de Valor" data-category="Diferenciales Competitivos" style="justify-content: flex-start;">
+        <div class="slide-header" style="margin-bottom: 12px;">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            ECOSISTEMA INTEGRAL B2B & B2C
+          </div>
+          <h2 class="slide-title" style="font-size: 26px;">Propuesta de Valor & Benchmark Competitivo</h2>
+          <p class="slide-subtitle" style="font-size: 13px; margin-top: 3px;">
+            Diferenciales exclusivos de VetVault: blindaje legal con el Colegio de Córdoba, vademécum SENASA y copiloto IA integrados frente a soluciones genéricas.
+          </p>
+        </div>
+
+        <!-- TRIPTYCH DASHBOARD: B2B | HERO RADAR + GAUGES | B2C -->
+        <div class="slide-3-triptych">
+          <!-- Col 1: B2B Pillars -->
+          <div class="glass-card triptych-side-col" style="padding: 18px; border-top: 3px solid var(--accent-vet);">
+            <div class="triptych-header">
+              <span class="col-badge b2b-badge" style="margin-bottom: 0;">B2B • Clínicas</span>
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-vet-light);">Gestión Médica</span>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light); border: 1px solid rgba(14, 165, 233, 0.3);">1</div>
+              <div class="prop-mini-content">
+                <h4>Validación Matrícula Cba</h4>
+                <p>Padrón oficial del Colegio de Médicos Veterinarios (bloqueo preventivo si no es Cat A).</p>
+              </div>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light); border: 1px solid rgba(14, 165, 233, 0.3);">2</div>
+              <div class="prop-mini-content">
+                <h4>Vademécum Oficial SENASA</h4>
+                <p>Fármacos con dosis, lote, vías de administración y certificado nacional oficial.</p>
+              </div>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light); border: 1px solid rgba(14, 165, 233, 0.3);">3</div>
+              <div class="prop-mini-content">
+                <h4>Copiloto Clínico IA</h4>
+                <p>14 tools activas conectadas a PostgreSQL para turnos, historiales y resúmenes clínicos.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2: CENTER HERO CHARTS (Radar + Gauges) -->
+          <div class="glass-card triptych-center-col" style="padding: 16px 20px;">
+            <div class="chart-box-header" style="margin-bottom: 4px;">
+              <div class="chart-box-title">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--accent-vet)" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+                <span>Radar de Diferenciales (Benchmark)</span>
+              </div>
+              <span class="chart-box-tag" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light); border: 1px solid rgba(14, 165, 233, 0.3);">
+                Índice: 97 / 100
+              </span>
+            </div>
+
+            <!-- Radar SVG (compact, sharp) -->
+            <div class="svg-chart-container" style="height: 180px; display: flex; justify-content: center; align-items: center;">
+              <svg viewBox="0 0 360 230" style="max-width: 340px; height: 100%; overflow: visible;">
+                <!-- Concentric Web Rings -->
+                <polygon points="180,30 275.1,99.1 238.8,210.9 121.2,210.9 84.9,99.1" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="1"/>
+                <polygon points="180,55 251.3,106.8 224.1,190.7 135.9,190.7 108.7,106.8" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+                <polygon points="180,80 227.5,114.5 209.4,170.5 150.6,170.5 132.5,114.5" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+                <polygon points="180,105 203.8,122.3 194.7,150.2 165.3,150.2 156.2,122.3" fill="none" stroke="rgba(255,255,255,0.04)" stroke-width="1"/>
+
+                <!-- 5 Axes Radial Lines -->
+                <line x1="180" y1="130" x2="180" y2="30" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="180" y1="130" x2="275.1" y2="99.1" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="180" y1="130" x2="238.8" y2="210.9" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="180" y1="130" x2="121.2" y2="210.9" stroke="rgba(255,255,255,0.15)"/>
+                <line x1="180" y1="130" x2="84.9" y2="99.1" stroke="rgba(255,255,255,0.15)"/>
+
+                <!-- Axis Labels -->
+                <text x="180" y="20" class="chart-axis-text" fill="#FFFFFF" font-weight="700" text-anchor="middle">Matrícula Cba</text>
+                <text x="282" y="102" class="chart-axis-text" fill="#FFFFFF" font-weight="700" text-anchor="start">SENASA</text>
+                <text x="246" y="224" class="chart-axis-text" fill="#FFFFFF" font-weight="700" text-anchor="start">Copiloto IA</text>
+                <text x="114" y="224" class="chart-axis-text" fill="#FFFFFF" font-weight="700" text-anchor="end">Carné 24/7</text>
+                <text x="78" y="102" class="chart-axis-text" fill="#FFFFFF" font-weight="700" text-anchor="end">Alertas Refuerzo</text>
+
+                <!-- Polygon Tradicional (0.05, 0.15, 0.05, 0.20, 0.30) -->
+                <polygon points="180,125 194.3,125.4 182.9,134.0 168.2,146.2 151.5,120.7" class="radar-polygon-trad"/>
+
+                <!-- Polygon VetVault (1.0, 1.0, 0.95, 1.0, 0.92) -->
+                <polygon points="180,30 275.1,99.1 235.9,206.9 121.2,210.9 92.5,101.6" class="radar-polygon-vet"/>
+
+                <!-- Vertices VetVault -->
+                <circle cx="180" cy="30" r="4" fill="#38BDF8" class="radar-vertex" title="Matrícula: 100%"/>
+                <circle cx="275.1" cy="99.1" r="4" fill="#38BDF8" class="radar-vertex" title="SENASA: 100%"/>
+                <circle cx="235.9" cy="206.9" r="4" fill="#A855F7" class="radar-vertex" title="Copiloto IA: 95%"/>
+                <circle cx="121.2" cy="210.9" r="4" fill="#22C55E" class="radar-vertex" title="Carné 24/7: 100%"/>
+                <circle cx="92.5" cy="101.6" r="4" fill="#22C55E" class="radar-vertex" title="Alertas: 92%"/>
+              </svg>
+            </div>
+
+            <!-- 3 Gauges Strip inside Center Column -->
+            <div class="gauges-grid" style="margin-top: 4px;">
+              <div class="gauge-card" style="padding: 8px 10px;">
+                <div class="gauge-circle-wrap" style="width: 58px; height: 58px; margin-bottom: 4px;">
+                  <svg viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bg"/>
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bar" id="gaugeBar1" stroke="var(--accent-vet)" stroke-dasharray="201.06" stroke-dashoffset="24.1"/>
+                  </svg>
+                  <div class="gauge-center-val" style="color: var(--accent-vet-light); font-size: 11px;">+133%</div>
+                </div>
+                <div class="gauge-title" style="font-size: 10px;">Tiempo Médico</div>
+                <div class="gauge-sub" style="font-size: 9px;">Atención neta</div>
+              </div>
+
+              <div class="gauge-card" style="padding: 8px 10px;">
+                <div class="gauge-circle-wrap" style="width: 58px; height: 58px; margin-bottom: 4px;">
+                  <svg viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bg"/>
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bar" id="gaugeBar2" stroke="var(--accent-tutor)" stroke-dasharray="201.06" stroke-dashoffset="22.1"/>
+                  </svg>
+                  <div class="gauge-center-val" style="color: var(--accent-tutor-light); font-size: 11px;">89%</div>
+                </div>
+                <div class="gauge-title" style="font-size: 10px;">Adherencia</div>
+                <div class="gauge-sub" style="font-size: 9px;">Vacunas al día</div>
+              </div>
+
+              <div class="gauge-card" style="padding: 8px 10px;">
+                <div class="gauge-circle-wrap" style="width: 58px; height: 58px; margin-bottom: 4px;">
+                  <svg viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bg"/>
+                    <circle cx="40" cy="40" r="32" class="gauge-circle-bar" id="gaugeBar3" stroke="var(--accent-purple)" stroke-dasharray="201.06" stroke-dashoffset="0"/>
+                  </svg>
+                  <div class="gauge-center-val" style="color: #C084FC; font-size: 11px;">100%</div>
+                </div>
+                <div class="gauge-title" style="font-size: 10px;">Trazabilidad</div>
+                <div class="gauge-sub" style="font-size: 9px;">SENASA y Colegio</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 3: B2C Pillars -->
+          <div class="glass-card triptych-side-col" style="padding: 18px; border-top: 3px solid var(--accent-tutor);">
+            <div class="triptych-header">
+              <span class="col-badge b2c-badge" style="margin-bottom: 0;">B2C • Tutores</span>
+              <span style="font-size: 11px; font-weight: 700; color: var(--accent-tutor-light);">Cuidado Continuo</span>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light); border: 1px solid rgba(34, 197, 94, 0.3);">1</div>
+              <div class="prop-mini-content">
+                <h4>Carné Sanitario 24/7</h4>
+                <p>Historial vacunal completo y exportación oficial en PDF descargable desde el teléfono.</p>
+              </div>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light); border: 1px solid rgba(34, 197, 94, 0.3);">2</div>
+              <div class="prop-mini-content">
+                <h4>Alertas Automatizadas</h4>
+                <p>Notificaciones sobre próximas dosis calculadas por intervalos homologados de SENASA.</p>
+              </div>
+            </div>
+
+            <div class="prop-mini-item">
+              <div class="prop-mini-num" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light); border: 1px solid rgba(34, 197, 94, 0.3);">3</div>
+              <div class="prop-mini-content">
+                <h4>Asistente Preventivo IA</h4>
+                <p>Orientación primaria ante síntomas no urgentes con guardrails de seguridad médica.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 4: BUSINESS MODEL CANVAS
+           ========================================================== -->
+      <section class="slide" data-title="Modelo de Negocio" data-category="Lienzo Canvas">
+        <div class="slide-header" style="margin-bottom: 16px;">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            VIABILIDAD COMERCIAL Y ESTRATÉGICA
+          </div>
+          <h2 class="slide-title">Lienzo de Modelo de Negocio (Canvas)</h2>
+          <p class="slide-subtitle">
+            Estructura sustentable de 9 bloques diseñada para monetización SaaS B2B y adopción masiva B2C. Haz clic en cualquier bloque para ver detalles.
+          </p>
+        </div>
+
+        <div class="canvas-grid">
+          <!-- 1. Socios Clave -->
+          <div class="glass-card canvas-block b-partners" onclick="deck.showCanvasDetail('Socios Clave', 'Colegio de Médicos Veterinarios de Córdoba (fuente oficial de matrícula), SENASA (vademécum y vacunas), Mercado Pago (pasarela recurrente de cobros), Google Cloud / AI (Gemini 3.1 Flash Lite) e Instituto Superior Villa del Rosario (marco académico de validación).')">
+            <div class="canvas-header">
+              <span class="canvas-tag">8. Socios Clave</span>
+              <span class="canvas-icon">🤝</span>
+            </div>
+            <div class="canvas-title">Alianzas Clave</div>
+            <ul class="canvas-items">
+              <li>Col. Veterinarios de Cba</li>
+              <li>SENASA (Vademécum)</li>
+              <li>Mercado Pago (Checkout)</li>
+              <li>Google AI (Gemini API)</li>
+              <li>ISVR (Marco académico)</li>
+            </ul>
+          </div>
+
+          <!-- 2. Actividades Clave -->
+          <div class="glass-card canvas-block b-activities" onclick="deck.showCanvasDetail('Actividades Clave', 'Desarrollo y mantenimiento continuo del monorrepitorio TypeScript, ingeniería de prompts clínicos y guardrails de seguridad, cumplimiento de normativas sanitarias, mantenimiento de esquemas Drizzle/Postgres.')">
+            <div class="canvas-header">
+              <span class="canvas-tag">7. Actividades Clave</span>
+              <span class="canvas-icon">⚙️</span>
+            </div>
+            <div class="canvas-title">Operaciones Críticas</div>
+            <ul class="canvas-items">
+              <li>Desarrollo de software continuo</li>
+              <li>Optimización prompts & tools IA</li>
+              <li>Actualización padrones y SENASA</li>
+            </ul>
+          </div>
+
+          <!-- 3. Recursos Clave -->
+          <div class="glass-card canvas-block b-resources" onclick="deck.showCanvasDetail('Recursos Clave', 'Código fuente propietario en TypeScript, arquitectura contenerizada en Docker (PostgreSQL 16, MinIO, Fastify), bases de datos oficiales sincronizadas, modelos de LLM con Function Calling.')">
+            <div class="canvas-header">
+              <span class="canvas-tag">6. Recursos Clave</span>
+              <span class="canvas-icon">💎</span>
+            </div>
+            <div class="canvas-title">Activos Clave</div>
+            <ul class="canvas-items">
+              <li>Monorrepo TypeScript</li>
+              <li>Infraestructura Docker Compose</li>
+              <li>Padrón oficial Cba y SENASA</li>
+            </ul>
+          </div>
+
+          <!-- 4. Propuesta de Valor -->
+          <div class="glass-card canvas-block b-propositions" onclick="deck.showCanvasDetail('Propuesta de Valor', 'Ficha clínica digital integral, validación oficial de matrícula en tiempo real, vademécum SENASA estandarizado, Copiloto IA con 14 herramientas activas, y carné sanitario digital 24/7 para tutores.')">
+            <div class="canvas-header">
+              <span class="canvas-tag" style="color: #38BDF8;">2. Propuesta de Valor</span>
+              <span class="canvas-icon">🎯</span>
+            </div>
+            <div class="canvas-title" style="color: #38BDF8;">Valor Diferencial</div>
+            <ul class="canvas-items">
+              <li>Ficha clínica integral en la nube</li>
+              <li>Validación matrícula Colegio Cba</li>
+              <li>Copiloto IA con 14 herramientas</li>
+              <li>Carnet sanitario PDF 24/7</li>
+            </ul>
+          </div>
+
+          <!-- 5. Relaciones con Clientes -->
+          <div class="glass-card canvas-block b-relationships" onclick="deck.showCanvasDetail('Relaciones con Clientes', 'Autoservicio ágil para tutores mediante la web app, onboarding asistido para clínicas veterinarias, soporte técnico directo y resguardo estricto de auditoría clínica.')">
+            <div class="canvas-header">
+              <span class="canvas-tag">4. Relaciones</span>
+              <span class="canvas-icon">❤️</span>
+            </div>
+            <div class="canvas-title">Vínculo con Usuarios</div>
+            <ul class="canvas-items">
+              <li>Self-service para tutores</li>
+              <li>Onboarding guiado en clínicas</li>
+              <li>Soporte técnico y auditoría</li>
+            </ul>
+          </div>
+
+          <!-- 6. Canales -->
+          <div class="glass-card canvas-block b-channels" onclick="deck.showCanvasDetail('Canales', 'Aplicación Web SPA Responsive (React 19), App Móvil (React Native en roadmap), convenios directos con colegios veterinarios y marketing digital para clínicas.')">
+            <div class="canvas-header">
+              <span class="canvas-tag">3. Canales</span>
+              <span class="canvas-icon">🚀</span>
+            </div>
+            <div class="canvas-title">Distribución</div>
+            <ul class="canvas-items">
+              <li>Web App SPA (React 19)</li>
+              <li>App Móvil (React Native)</li>
+              <li>Alianzas con Colegios Vet</li>
+            </ul>
+          </div>
+
+          <!-- 7. Segmentos de Clientes -->
+          <div class="glass-card canvas-block b-segments" onclick="deck.showCanvasDetail('Segmentos de Clientes', 'Clínicas veterinarias multisede y con staff médico (B2B), veterinarios independientes o a domicilio (B2B), tutores de perros y gatos que buscan seguimiento sanitario transparente (B2C).')">
+            <div class="canvas-header">
+              <span class="canvas-tag">1. Segmentos</span>
+              <span class="canvas-icon">👥</span>
+            </div>
+            <div class="canvas-title">Público Objetivo</div>
+            <ul class="canvas-items">
+              <li>Clínicas Múltiples (B2B)</li>
+              <li>Veterinarios Autónomos (B2B)</li>
+              <li>Tutores de Mascotas (B2C)</li>
+            </ul>
+          </div>
+
+          <!-- 8. Estructura de Costos -->
+          <div class="glass-card canvas-block b-cost" onclick="deck.showCanvasDetail('Estructura de Costos', 'Servidores cloud para backend y base de datos PostgreSQL, almacenamiento MinIO/S3 para imágenes médicas, consumo de tokens en la API de Gemini 3.1 Flash Lite y comisiones de pasarela de pago.')">
+            <div class="canvas-header">
+              <span class="canvas-tag" style="color: var(--accent-red);">9. Estructura de Costos</span>
+              <span class="canvas-icon">💳</span>
+            </div>
+            <div class="canvas-title">Costos Operativos</div>
+            <ul class="canvas-items">
+              <li>Cómputo en nube (Backend Fastify + PostgreSQL 16)</li>
+              <li>Almacenamiento S3 / MinIO para imágenes médicas</li>
+              <li>Consumo de tokens en API de Google Gemini</li>
+              <li>Comisiones por transacción (Mercado Pago)</li>
+            </ul>
+          </div>
+
+          <!-- 9. Fuentes de Ingresos -->
+          <div class="glass-card canvas-block b-revenue" onclick="deck.showCanvasDetail('Fuentes de Ingresos', 'Suscripciones mensuales y anuales vía Checkout Pro de Mercado Pago. Plan independent para profesionales independientes y Plan clinic_pro para clínicas veterinarias con múltiples veterinarios.')">
+            <div class="canvas-header">
+              <span class="canvas-tag" style="color: var(--accent-tutor-light);">5. Fuentes de Ingresos</span>
+              <span class="canvas-icon">💰</span>
+            </div>
+            <div class="canvas-title">Monetización SaaS</div>
+            <ul class="canvas-items">
+              <li>Plan <code>independent</code>: Para veterinarios autónomos o a domicilio</li>
+              <li>Plan <code>clinic_pro</code>: Para clínicas con múltiples profesionales y turnos</li>
+              <li>Módulos complementarios de analítica avanzada y carnet impreso</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 5: ARQUITECTURA TÉCNICA Y STACK
+           ========================================================== -->
+      <section class="slide" data-title="Arquitectura Técnica" data-category="Stack Tecnológico">
+        <div class="slide-header">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            INGENIERÍA DE SOFTWARE & INFRAESTRUCTURA
+          </div>
+          <h2 class="slide-title">Monorrepitorio y Arquitectura de Alto Rendimiento</h2>
+          <p class="slide-subtitle">
+            Organización modular en TypeScript con separación estricta de responsabilidades, contratos tipados unificados y persistencia auditable.
+          </p>
+        </div>
+
+        <div class="arch-layout">
+          <!-- Left: Architecture Flow -->
+          <div class="glass-card arch-diagram-card">
+            <div class="inst-label" style="color: var(--accent-vet-light); margin-bottom: 12px;">Flujo de Datos y Capas del Sistema</div>
+
+            <div class="arch-layer-box">
+              <div>
+                <div class="arch-layer-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-vet)" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                  Capa Cliente SPA (apps/web-app)
+                </div>
+                <div class="arch-layer-desc">React 19 + Vite 8 + React Router 7 • Tokens CSS • Glassmorphism</div>
+              </div>
+              <span class="badge-good">HttpOnly JWT</span>
+            </div>
+
+            <div class="arch-connector">▼ Solicitudes REST seguras y Chat IA</div>
+
+            <div class="arch-layer-box">
+              <div>
+                <div class="arch-layer-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-tutor)" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+                  API Gateway & Backend (services/api-backend)
+                </div>
+                <div class="arch-layer-desc">Fastify 5 REST API • Rate Limiter en Memoria • Inyección RAG</div>
+              </div>
+              <span class="badge-good">&lt; 100 ms</span>
+            </div>
+
+            <div class="arch-connector">▼ Drizzle ORM / Function Calling / Multipart</div>
+
+            <div class="arch-layer-box">
+              <div>
+                <div class="arch-layer-title">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--accent-purple)" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+                  Persistencia & Servicios Externos
+                </div>
+                <div class="arch-layer-desc">PostgreSQL 16 • MinIO S3 • Google Gemini 3.1 Flash Lite • Mercado Pago</div>
+              </div>
+              <span class="badge-good">Docker 100%</span>
+            </div>
+
+            <div class="perf-kpi-bar">
+              <div class="perf-chip">
+                <span>Latencia CRUD REST</span>
+                <strong>&lt; 100 ms</strong>
+              </div>
+              <div class="perf-chip green">
+                <span>Tool Calling IA</span>
+                <strong>&lt; 1.5 s</strong>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Detailed Tech Stack Breakdown -->
+          <div class="stack-cards-grid">
+            <div class="glass-card stack-item-card">
+              <span class="stack-badge" style="background: rgba(14, 165, 233, 0.15); color: var(--accent-vet-light);">Frontend SPA</span>
+              <div class="stack-tech-name">React 19 + Vite 8</div>
+              <div class="stack-tech-bullets">
+                • React Router 7 para enrutamiento declarativo.<br>
+                • Sistema semántico de tokens CSS Custom Properties.<br>
+                • Soporte completo Modo Claro / Modo Oscuro.<br>
+                • Detección y acentuación dinámica por rol.
+              </div>
+            </div>
+
+            <div class="glass-card stack-item-card">
+              <span class="stack-badge" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light);">Backend API</span>
+              <div class="stack-tech-name">Fastify 5 + Node 22</div>
+              <div class="stack-tech-bullets">
+                • Servidor asíncrono con tipado estricto TS.<br>
+                • Tokens JWT seguros en cookies HttpOnly.<br>
+                • PreHandlers de verificación de roles RBAC.<br>
+                • Documentación interactiva Swagger.
+              </div>
+            </div>
+
+            <div class="glass-card stack-item-card">
+              <span class="stack-badge" style="background: rgba(168, 85, 247, 0.15); color: var(--accent-purple);">Persistencia & ORM</span>
+              <div class="stack-tech-name">PostgreSQL 16 + Drizzle</div>
+              <div class="stack-tech-bullets">
+                • Schemas fuertemente tipados de extremo a extremo.<br>
+                • Migraciones declarativas con Drizzle Kit.<br>
+                • Catálogos oficiales importados (SENASA y Cba).<br>
+                • Auditoría inmutable en tabla <code>audit_log</code>.
+              </div>
+            </div>
+
+            <div class="glass-card stack-item-card">
+              <span class="stack-badge" style="background: rgba(245, 158, 11, 0.15); color: var(--accent-amber);">Reportes & Almacenamiento</span>
+              <div class="stack-tech-name">pdfmake + MinIO S3</div>
+              <div class="stack-tech-bullets">
+                • Renderizado en backend de carnés oficiales en PDF.<br>
+                • Almacenamiento de fotos de mascotas y perfiles.<br>
+                • Docker Compose con redes y volúmenes aislados.<br>
+                • Despliegue reproducible de un solo comando.
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 6: COPILOTO CLÍNICO INTELIGENTE (GEMINI 3.1)
+           ========================================================== -->
+      <section class="slide" data-title="Copiloto Clínico IA" data-category="Inteligencia Artificial" style="justify-content: flex-start;">
+        <div class="slide-header" style="margin-bottom: 8px;">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            AGENTIC WORKFLOWS & FUNCTION CALLING
+          </div>
+          <h2 class="slide-title" style="font-size: 26px;">Copiloto Clínico Inteligente: Google Gemini 3.1 Flash Lite</h2>
+          <p class="slide-subtitle" style="font-size: 13px; margin-top: 2px;">
+            Bucle de razonamiento semántico de circuito cerrado: 14 herramientas estandarizadas, tareas autónomas en segundo plano y roadmap de expansión.
+          </p>
+        </div>
+
+        <!-- Visual Closed-Loop Pipeline Strip -->
+        <div class="ai-pipeline-strip">
+          <div class="pipeline-step">
+            <div class="pipeline-icon" style="color: var(--accent-vet-light); background: rgba(14, 165, 233, 0.12);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="pipeline-text">
+              <span class="pipeline-label">1. Prompt Clínico</span>
+              <strong class="pipeline-val">Lenguaje Natural</strong>
+            </div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+
+          <div class="pipeline-step">
+            <div class="pipeline-icon" style="color: var(--accent-purple); background: rgba(168, 85, 247, 0.12);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            </div>
+            <div class="pipeline-text">
+              <span class="pipeline-label">2. Razonamiento</span>
+              <strong class="pipeline-val">Gemini 3.1 &lt;850ms</strong>
+            </div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+
+          <div class="pipeline-step">
+            <div class="pipeline-icon" style="color: var(--accent-purple); background: rgba(168, 85, 247, 0.12);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="pipeline-text">
+              <span class="pipeline-label">3. Reglas Clínicas</span>
+              <strong class="pipeline-val">Permisos & Contexto</strong>
+            </div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+
+          <div class="pipeline-step">
+            <div class="pipeline-icon" style="color: var(--accent-tutor); background: rgba(34, 197, 94, 0.12);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+            </div>
+            <div class="pipeline-text">
+              <span class="pipeline-label">4. Tool Calling</span>
+              <strong class="pipeline-val">14 Tools Drizzle ORM</strong>
+            </div>
+          </div>
+          <div class="pipeline-arrow">➔</div>
+
+          <div class="pipeline-step">
+            <div class="pipeline-icon" style="color: var(--accent-amber); background: rgba(245, 158, 11, 0.12);">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            </div>
+            <div class="pipeline-text">
+              <span class="pipeline-label">5. Respuesta</span>
+              <strong class="pipeline-val">Zero Alucinación</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Dashboard: Tools Universe + Security & Quotas -->
+        <div class="ai-slide-dashboard">
+          
+          <!-- LEFT PANEL: 14 Tools Explorer & Domain Donut -->
+          <div class="glass-card ai-tools-panel">
+            <div class="panel-section-header">
+              <div class="inst-label" style="color: var(--accent-vet-light); margin-bottom: 0;">
+                Ecosistema de 14 Herramientas Clínicas
+              </div>
+              <span class="badge-good" style="font-size: 9.5px; padding: 2px 7px;">100% Tipadas TypeScript</span>
+            </div>
+
+            <!-- Visual Donut Chart + Legend Row -->
+            <div class="donut-chart-row">
+              <div class="donut-svg-wrap">
+                <svg width="90" height="90" viewBox="0 0 120 120" class="donut-svg">
+                  <!-- Background Track -->
+                  <circle cx="60" cy="60" r="48" fill="none" stroke="rgba(255, 255, 255, 0.06)" stroke-width="12"/>
+                  <!-- Segment 1: Agenda (5 tools / 14 = 35.7%) len=107.7 offset=0 -->
+                  <circle id="donutSegAgenda" cx="60" cy="60" r="48" fill="none" stroke="#0EA5E9" stroke-width="12"
+                    stroke-dasharray="107.7 301.6" stroke-dashoffset="0" stroke-linecap="round"/>
+                  <!-- Segment 2: Pacientes (4 tools / 14 = 28.6%) len=86.2 offset=-107.7 -->
+                  <circle id="donutSegPacientes" cx="60" cy="60" r="48" fill="none" stroke="#22C55E" stroke-width="12"
+                    stroke-dasharray="86.2 301.6" stroke-dashoffset="-107.7" stroke-linecap="round"/>
+                  <!-- Segment 3: Fármacos (3 tools / 14 = 21.4%) len=64.6 offset=-193.9 -->
+                  <circle id="donutSegFarmacos" cx="60" cy="60" r="48" fill="none" stroke="#A855F7" stroke-width="12"
+                    stroke-dasharray="64.6 301.6" stroke-dashoffset="-193.9" stroke-linecap="round"/>
+                  <!-- Segment 4: Vacunas (2 tools / 14 = 14.3%) len=43.1 offset=-258.5 -->
+                  <circle id="donutSegVacunas" cx="60" cy="60" r="48" fill="none" stroke="#F59E0B" stroke-width="12"
+                    stroke-dasharray="43.1 301.6" stroke-dashoffset="-258.5" stroke-linecap="round"/>
+                </svg>
+                <div class="donut-center-info">
+                  <div class="donut-center-num">14</div>
+                  <div class="donut-center-lbl">Tools</div>
+                </div>
+              </div>
+
+              <!-- Domain Legend Badges -->
+              <div class="donut-legend-grid">
+                <div class="donut-legend-item" onclick="deck.filterTools('agenda')">
+                  <span class="legend-dot" style="background: #0EA5E9;"></span>
+                  <span class="legend-name">Agenda & Citas</span>
+                  <strong class="legend-val" style="color: #0EA5E9;">5 tools (36%)</strong>
+                </div>
+                <div class="donut-legend-item" onclick="deck.filterTools('pacientes')">
+                  <span class="legend-dot" style="background: #22C55E;"></span>
+                  <span class="legend-name">Pacientes & Fichas</span>
+                  <strong class="legend-val" style="color: #22C55E;">4 tools (28%)</strong>
+                </div>
+                <div class="donut-legend-item" onclick="deck.filterTools('fármacos')">
+                  <span class="legend-dot" style="background: #A855F7;"></span>
+                  <span class="legend-name">Tratamientos & SENASA</span>
+                  <strong class="legend-val" style="color: #A855F7;">3 tools (21%)</strong>
+                </div>
+                <div class="donut-legend-item" onclick="deck.filterTools('vacunas')">
+                  <span class="legend-dot" style="background: #F59E0B;"></span>
+                  <span class="legend-name">Vacunación & Dosis</span>
+                  <strong class="legend-val" style="color: #F59E0B;">2 tools (15%)</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Filter Tabs -->
+            <div class="tools-filter-bar" id="toolFilterBar">
+              <button class="filter-pill active" onclick="deck.filterTools('all')">Todas (14)</button>
+              <button class="filter-pill" onclick="deck.filterTools('agenda')">Agenda (5)</button>
+              <button class="filter-pill" onclick="deck.filterTools('pacientes')">Pacientes (4)</button>
+              <button class="filter-pill" onclick="deck.filterTools('fármacos')">Fármacos (3)</button>
+              <button class="filter-pill" onclick="deck.filterTools('vacunas')">Vacunas (2)</button>
+            </div>
+
+            <!-- Tools Compact Grid (Dynamic JS) -->
+            <div class="tools-grid-compact" id="toolsGrid">
+              <!-- Dynamically populated via JS as sleek interactive pills -->
+            </div>
+          </div>
+
+          <!-- RIGHT PANEL: Future Implementations, Cron Engine & Roadmap -->
+          <div class="glass-card ai-roadmap-panel">
+            <div class="panel-section-header">
+              <div class="inst-label" style="color: var(--accent-tutor-light); margin-bottom: 0;">
+                Evolución del Agente: Próximas Implementaciones
+              </div>
+              <span class="badge-good" style="font-size: 9.5px; padding: 2px 7px; background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3);">Roadmap 2026-2027</span>
+            </div>
+
+            <!-- Block 1: Cron Engine Background Scheduler -->
+            <div class="cron-engine-box">
+              <div class="cron-engine-header">
+                <div class="cron-title-tag">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  Motor de Cron Jobs Autónomos (24/7)
+                </div>
+                <span class="pulse-badge"><span class="pulse-dot"></span>En Planificación</span>
+              </div>
+
+              <div class="cron-timeline-list">
+                <div class="cron-item">
+                  <div class="cron-time-chip">03:00 AM</div>
+                  <div class="cron-info">
+                    <strong>Barrido Vacunal Autónomo</strong>
+                    <span>Detección de dosis por vencer a 7 y 15 días + alertas preventivas</span>
+                  </div>
+                  <span class="cron-tag-pill cron-blue">Cron Diario</span>
+                </div>
+
+                <div class="cron-item">
+                  <div class="cron-time-chip">07:30 AM</div>
+                  <div class="cron-info">
+                    <strong>Briefing Matutino Veterinario</strong>
+                    <span>Despacho de agenda diaria y pacientes críticos al WhatsApp del vet</span>
+                  </div>
+                  <span class="cron-tag-pill cron-green">Push Digest</span>
+                </div>
+
+                <div class="cron-item">
+                  <div class="cron-time-chip">18:00 PM</div>
+                  <div class="cron-info">
+                    <strong>Control de Adherencia Terapéutica</strong>
+                    <span>Recordatorio de antibióticos a tutores y reasignación de turnos vacíos</span>
+                  </div>
+                  <span class="cron-tag-pill cron-purple">WhatsApp API</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Block 2: Projections Gauges -->
+            <div class="ai-gauges-row">
+              <div class="ai-gauge-card">
+                <div class="gauge-svg-wrap">
+                  <svg width="52" height="52" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255, 255, 255, 0.07)" stroke-width="7"/>
+                    <circle id="gaugeAdherence" cx="40" cy="40" r="32" fill="none" stroke="#22C55E" stroke-width="7"
+                      stroke-dasharray="201.1" stroke-dashoffset="12.1" stroke-linecap="round"
+                      style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.8s ease;"/>
+                  </svg>
+                  <div class="gauge-center-text">
+                    <strong>94%</strong>
+                    <small>estim.</small>
+                  </div>
+                </div>
+                <div class="gauge-desc">
+                  <strong>Adherencia Vacunal</strong>
+                  <span>Alertas WhatsApp proactivas</span>
+                </div>
+              </div>
+
+              <div class="ai-gauge-card">
+                <div class="gauge-svg-wrap">
+                  <svg width="52" height="52" viewBox="0 0 80 80">
+                    <circle cx="40" cy="40" r="32" fill="none" stroke="rgba(255, 255, 255, 0.07)" stroke-width="7"/>
+                    <circle id="gaugeNoShow" cx="40" cy="40" r="32" fill="none" stroke="#0EA5E9" stroke-width="7"
+                      stroke-dasharray="201.1" stroke-dashoffset="30.2" stroke-linecap="round"
+                      style="transform: rotate(-90deg); transform-origin: 50% 50%; transition: stroke-dashoffset 0.8s ease;"/>
+                  </svg>
+                  <div class="gauge-center-text">
+                    <strong>-85%</strong>
+                    <small>ausent.</small>
+                  </div>
+                </div>
+                <div class="gauge-desc">
+                  <strong>Tasa de No-Shows</strong>
+                  <span>Reagendamiento y reasignación</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Block 3: 4 Future Expansion Modules Grid -->
+            <div class="roadmap-grid">
+              <div class="roadmap-item">
+                <div class="roadmap-icon" style="color: var(--accent-tutor);">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                </div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">WhatsApp Cloud API</div>
+                  <div class="roadmap-status">Q4 2026 • Piloto</div>
+                </div>
+              </div>
+
+              <div class="roadmap-item">
+                <div class="roadmap-icon" style="color: var(--accent-purple);">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="3"/><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/></svg>
+                </div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Gemini Vision OCR</div>
+                  <div class="roadmap-status">Q1 2027 • Análisis PDF</div>
+                </div>
+              </div>
+
+              <div class="roadmap-item">
+                <div class="roadmap-icon" style="color: var(--accent-vet-light);">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+                </div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Web Services SENASA</div>
+                  <div class="roadmap-status">Q2 2027 • Sync Oficial</div>
+                </div>
+              </div>
+
+              <div class="roadmap-item">
+                <div class="roadmap-icon" style="color: var(--accent-amber);">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+                </div>
+                <div class="roadmap-content">
+                  <div class="roadmap-title">Voice AI (Triaje Guardia)</div>
+                  <div class="roadmap-status">Q3 2027 • Telefonía 24/7</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 7: FLUJOS CLÍNICOS Y BUCLE OPERATIVO
+           ========================================================== -->
+      <section class="slide" data-title="Flujos Clínicos" data-category="Operación del Sistema">
+        <div class="slide-header">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+            BUCLE DE ATENCIÓN Y MONETIZACIÓN
+          </div>
+          <h2 class="slide-title">Flujo Integral de Consulta y Cobro</h2>
+          <p class="slide-subtitle">
+            Desde la reserva de turno hasta la emisión del certificado oficial en PDF y la liquidación automática mediante suscripción recurrente.
+          </p>
+        </div>
+
+        <!-- 4 Steps Interactive Stepper -->
+        <div class="glass-card flow-stepper-card">
+          <div class="inst-label" style="color: var(--accent-vet-light); margin-bottom: 14px;">Pasos de la Consulta Médica Asistida</div>
+
+          <div class="stepper-steps-row">
+            <div class="step-item active" onclick="deck.showStepDetail(1)">
+              <div class="step-badge">01</div>
+              <div class="step-title">Agenda & Recepción</div>
+              <div class="step-desc">El paciente llega a la clínica con cita confirmada. El sistema carga automáticamente la ficha médica y peso anterior.</div>
+            </div>
+
+            <div class="step-item" onclick="deck.showStepDetail(2)">
+              <div class="step-badge">02</div>
+              <div class="step-title">Vademécum SENASA</div>
+              <div class="step-desc">El veterinario busca medicamentos registrados en el catálogo oficial de SENASA, validando dosis, presentación y vía.</div>
+            </div>
+
+            <div class="step-item" onclick="deck.showStepDetail(3)">
+              <div class="step-badge">03</div>
+              <div class="step-title">Vacunación Inteligente</div>
+              <div class="step-desc">Se aplica la dosis con número de lote. El sistema calcula en <code>vacuna_serie</code> la fecha del próximo refuerzo según el protocolo.</div>
+            </div>
+
+            <div class="step-item" onclick="deck.showStepDetail(4)">
+              <div class="step-badge">04</div>
+              <div class="step-title">Generación PDF & Nube</div>
+              <div class="step-desc">Inserción atómica en base de datos y emisión inmediata del carné sanitario en PDF firmado digitalmente para el tutor.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Monetization & Mercado Pago Integration -->
+        <div class="monetization-row">
+          <div class="glass-card mp-card">
+            <div class="mp-logo">MP</div>
+            <div class="mp-details">
+              <h4>Mercado Pago Checkout Pro</h4>
+              <p>Suscripciones recurrentes automatizadas con preapproval para los planes <code>independent</code> (veterinarios autónomos) y <code>clinic_pro</code> (clínicas completas).</p>
+            </div>
+          </div>
+
+          <div class="glass-card mp-card" style="border-left-color: var(--accent-tutor);">
+            <div class="mp-logo" style="background: rgba(34, 197, 94, 0.15); color: var(--accent-tutor-light);">WH</div>
+            <div class="mp-details">
+              <h4>Webhooks Asíncronos & Dev Bypass</h4>
+              <p>Procesamiento seguro de notificaciones IPN con validación de estados y endpoint de bypass local (<code>/api/suscripciones/dev-bypass</code>) para agilidad en testing.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================================
+           SLIDE 8: MATRIZ DE PRUEBAS Y VALIDACIÓN (CP-01 a CP-10)
+           ========================================================== -->
+      <section class="slide" data-title="Validación del Sistema" data-category="Casos de Prueba (QA)">
+        <div class="slide-header" style="margin-bottom: 14px;">
+          <div class="slide-eyebrow">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            MATRIZ FORMAL DE PRUEBAS (QA)
+          </div>
+          <h2 class="slide-title">Validación Integral del Sistema (100% Aprobado)</h2>
+          <p class="slide-subtitle">
+            10 casos de prueba rigurosos ejecutados sobre los módulos críticos: seguridad de tokens, validación de matrícula, agendamiento, vademécum, copiloto IA y PDF.
+          </p>
+        </div>
+
+        <div class="test-matrix-layout">
+          <div class="matrix-top-bar">
+            <div class="test-score-banner">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+              <span>10 / 10 Casos de Prueba Aprobados (100% OK)</span>
+            </div>
+
+            <div class="test-tabs">
+              <button class="test-tab-btn active" onclick="deck.filterTests('all')">Todos (10)</button>
+              <button class="test-tab-btn" onclick="deck.filterTests('seguridad')">Seguridad & Matrícula</button>
+              <button class="test-tab-btn" onclick="deck.filterTests('clinica')">Clínica & SENASA</button>
+              <button class="test-tab-btn" onclick="deck.filterTests('ia')">IA & Auditoría</button>
+              <button class="test-tab-btn" onclick="deck.filterTests('pagos')">Pagos & PDF</button>
+            </div>
+          </div>
+
+          <div class="test-cards-grid" id="testCardsContainer">
+            <!-- Dynamically populated via JS -->
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar -->
+    <footer class="bottom-bar">
+      <button class="nav-btn" id="prevBtn" onclick="deck.prev()">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Anterior</span>
+        <span class="kbd-tag">←</span>
+      </button>
+
+      <div class="deck-progress-center">
+        <div class="indicators-row" id="indicatorsRow">
+          <!-- 8 indicators generated via JS -->
+        </div>
+        <div class="slide-counter-badge">
+          DIAPOSITIVA <span class="cur" id="currentSlideNum">01</span> / <span id="totalSlidesNum">08</span>
+        </div>
+      </div>
+
+      <button class="nav-btn" id="nextBtn" onclick="deck.next()">
+        <span>Siguiente</span>
+        <span class="kbd-tag">→</span>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </button>
+    </footer>
+  </div>
+
+  <!-- Index Drawer Floating Menu -->
+  <div class="index-drawer" id="indexDrawer">
+    <div class="index-drawer-header">
+      <span>Índice de Diapositivas</span>
+      <span style="font-size: 11px; color: var(--text-dim);">8 Secciones</span>
+    </div>
+    <div id="indexItemsList">
+      <!-- Generated via JS -->
+    </div>
+  </div>
+
+  <!-- General Info & Test Case Details Modal -->
+  <div class="modal-backdrop" id="detailModal" onclick="deck.closeModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Detalle</div>
+        <button class="modal-close-btn" onclick="deck.closeModal()">✕</button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Injected via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Keyboard Help Modal -->
+  <div class="modal-backdrop" id="helpModal" onclick="deck.closeHelpModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">Atajos de Teclado</div>
+        <button class="modal-close-btn" onclick="deck.closeHelpModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="modal-field">
+          <strong>Navegación de Diapositivas</strong>
+          <span style="color: #CBD5E1;">Flecha Derecha (→) o Barra Espaciadora: Siguiente diapositiva</span><br>
+          <span style="color: #CBD5E1;">Flecha Izquierda (←): Diapositiva anterior</span>
+        </div>
+        <div class="modal-field">
+          <strong>Saltos Rápidos</strong>
+          <span style="color: #CBD5E1;">Inicio / Tecla 1: Ir a la primera diapositiva (Portada)</span><br>
+          <span style="color: #CBD5E1;">Fin / Tecla 8: Ir a la última diapositiva (Matriz de Pruebas)</span><br>
+          <span style="color: #CBD5E1;">Teclas 1 a 8: Salto directo al número de diapositiva</span>
+        </div>
+        <div class="modal-field">
+          <strong>Pantalla e Interfaz</strong>
+          <span style="color: #CBD5E1;">Tecla F: Alternar pantalla completa</span><br>
+          <span style="color: #CBD5E1;">Tecla M o I: Abrir/Cerrar menú de índice</span><br>
+          <span style="color: #CBD5E1;">Tecla ESC: Cerrar ventanas modales o índice</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       JAVASCRIPT LOGIC & INTERACTIONS
+       ========================================================== -->
+  <script>
+    // 14 Veterinary Tools Definition
+    const AI_TOOLS = [
+      { name: "schedule_appointment", category: "agenda", desc: "Registra turnos médicos validando mascota, clínica, fecha ISO y motivo.", params: "mascotaId, clinicaId, fechaHora, motivoId" },
+      { name: "get_my_appointments", category: "agenda", desc: "Obtiene citas agendadas filtrando por rol, veterinario o tutor.", params: "fechaInicio, fechaFin, clinicaId" },
+      { name: "reschedule_appointment", category: "agenda", desc: "Modifica horario o clínica de un turno existente con validación de superposición.", params: "citaId, nuevaFechaHora, clinicaId" },
+      { name: "cancel_appointment", category: "agenda", desc: "Cancela una cita médica registrada marcándola con estado correspondiente.", params: "citaId, motivo" },
+      { name: "check_availability", category: "agenda", desc: "Comprueba franjas horarias disponibles del veterinario (por defecto: mañana).", params: "fecha, clinicaId, veterinarioId" },
+      { name: "get_vaccination_status", category: "vacunas", desc: "Verifica el historial vacunal completo y próximos refuerzos de una mascota.", params: "mascotaId" },
+      { name: "find_patients_with_overdue_vaccines", category: "vacunas", desc: "Detecta pacientes con vacunas vencidas o refuerzos pendientes en la clínica.", params: "clinicaId, diasTolerancia" },
+      { name: "search_patient", category: "pacientes", desc: "Búsqueda por nombre o microchip restringida a las mascotas del usuario.", params: "query" },
+      { name: "get_visit_summary", category: "pacientes", desc: "Genera el resumen clínico conciso de la última consulta atendida.", params: "mascotaId" },
+      { name: "get_medical_history", category: "pacientes", desc: "Recupera todas las atenciones, diagnósticos y tratamientos históricos.", params: "mascotaId, limit" },
+      { name: "get_owner_contact", category: "pacientes", desc: "Obtiene los datos de contacto y teléfono del tutor asignado a la mascota.", params: "mascotaId" },
+      { name: "search_vademecum", category: "fármacos", desc: "Búsqueda en catálogo oficial de SENASA por nombre comercial o principio activo.", params: "query" },
+      { name: "get_active_treatments", category: "fármacos", desc: "Lista de medicamentos y prescripciones actualmente vigentes.", params: "mascotaId" },
+      { name: "search_patients_on_medication", category: "fármacos", desc: "Localiza pacientes que están bajo tratamiento con un fármaco específico.", params: "query, clinicaId" }
+    ];
+
+    // 10 Formal Test Cases (CP-01 a CP-10)
+    const TEST_CASES = [
+      {
+        id: "CP-01",
+        category: "seguridad",
+        title: "Autenticación JWT en HttpOnly Cookie",
+        desc: "Inicio de sesión seguro con credenciales válidas y protección XSS.",
+        precondition: "Email y contraseña registrados en base de datos.",
+        action: "Envío de solicitud POST /api/usuarios/login.",
+        result: "Generación de JWT almacenado en Cookie HttpOnly (SameSite=Lax). Redirección al Dashboard según rol.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-02",
+        category: "seguridad",
+        title: "Validación de Matrícula (Padrón Colegio Cba)",
+        desc: "Verificación obligatoria de Categoría A habilitante; bloqueo de Cat B/C.",
+        precondition: "Matrícula ingresada en el registro de un veterinario.",
+        action: "Consulta al padrón oficial de la Provincia de Córdoba.",
+        result: "Habilitación exclusiva a Categoría A. Rechazo descriptivo y bloqueo de prescripción para Cat B o C.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-03",
+        category: "clinica",
+        title: "Agendamiento de Citas & Control de Superposición",
+        desc: "Reserva de turno médico evitando conflictos horarios.",
+        precondition: "Mascota, clínica y veterinario disponibles.",
+        action: "Envío de reserva para franja horaria ocupada vs libre.",
+        result: "Inserción exitosa en estado 'Pendiente' cuando está libre. Bloqueo inmediato ante solapamiento horario.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-04",
+        category: "clinica",
+        title: "Registro Clínico & Prescripción SENASA",
+        desc: "Consulta médica con pesaje del paciente y fármacos oficiales.",
+        precondition: "Atención iniciada desde una cita agendada.",
+        action: "Registro de diagnóstico, notas clínicas y selección de producto SENASA.",
+        result: "Inserción atómica en tablas `atenciones`, `atenciones_diagnosticos` y `tratamientos`.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-05",
+        category: "clinica",
+        title: "Vacunación con Cálculo Matemático de Refuerzos",
+        desc: "Registro de dosis con lote y actualización de próximo refuerzo.",
+        precondition: "Protocolo de vacuna registrado según catálogo SENASA.",
+        action: "Carga de dosis aplicada a una serie vacunal.",
+        result: "Inserción en `vacuna_dosis` y cálculo automático de fecha en `vacuna_serie.proximo_refuerzo` sumando días homologados.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-06",
+        category: "ia",
+        title: "Copiloto IA con Function Calling",
+        desc: "Ejecución de tool `get_my_appointments` respondiendo en lenguaje natural.",
+        precondition: "Veterinario autenticado con turnos para mañana.",
+        action: "Pregunta: '¿Qué turnos tengo agendados para mañana?'",
+        result: "El modelo invoca `get_my_appointments`, resuelve fecha relativa, consulta la BD y responde amigablemente.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-07",
+        category: "ia",
+        title: "Control de Cuotas MAX_FUNCTION_CALLS",
+        desc: "Interrupción preventiva al superar el límite de llamadas permitidas.",
+        precondition: "Usuario en rol Propietario (límite: 4 calls).",
+        action: "Prompt complejo diseñado para forzar más de 4 llamadas recursivas.",
+        result: "El backend detiene la recursión en la llamada 4 y entrega respuesta parcial segura sin crash.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-08",
+        category: "ia",
+        title: "Persistencia de Auditoría `audit_log`",
+        desc: "Registro estricto e inmutable de cada ejecución de tools.",
+        precondition: "Ejecución de `search_vademecum` desde el asistente conversacional.",
+        action: "Búsqueda del término 'Antirrábica' vía IA.",
+        result: "Inserción inmediata en tabla `audit_log` con usuario, rol, nombre de herramienta, argumentos y marca temporal.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-09",
+        category: "pagos",
+        title: "Suscripción SaaS & Webhook Mercado Pago",
+        desc: "Procesamiento de pagos con activación automática del plan Pro.",
+        precondition: "Veterinario suscribe plan `clinic_pro`.",
+        action: "Recepción de notificación webhook con estado `authorized`.",
+        result: "Actualización de registro en tabla `suscripciones` a 'activo' y desbloqueo inmediato de funciones Pro.",
+        status: "Aprobado (OK)"
+      },
+      {
+        id: "CP-10",
+        category: "pagos",
+        title: "Emisión Server-Side de Carnés PDF",
+        desc: "Generación binaria de carné sanitario oficial mediante pdfmake.",
+        precondition: "Mascota con vacunas y tratamientos registrados.",
+        action: "Solicitud GET /api/atenciones/:id/pdf con token JWT válido.",
+        result: "Servidor retorna documento PDF binario oficial de alta resolución con formato institucional y datos completos.",
+        status: "Aprobado (OK)"
+      }
+    ];
+
+    class DeckPresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.currentSlide = 0;
+        this.totalSlides = this.slides.length;
+        this.isAudioEnabled = true;
+
+        this.topProgressBar = document.getElementById('topProgressBar');
+        this.categoryPill = document.getElementById('categoryPill');
+        this.slideTitleHeader = document.getElementById('slideTitleHeader');
+        this.currentSlideNum = document.getElementById('currentSlideNum');
+        this.totalSlidesNum = document.getElementById('totalSlidesNum');
+        this.indicatorsRow = document.getElementById('indicatorsRow');
+        this.prevBtn = document.getElementById('prevBtn');
+        this.nextBtn = document.getElementById('nextBtn');
+        this.indexDrawer = document.getElementById('indexDrawer');
+        this.indexItemsList = document.getElementById('indexItemsList');
+
+        this.init();
+      }
+
+      init() {
+        this.totalSlidesNum.textContent = String(this.totalSlides).padStart(2, '0');
+        this.renderIndicators();
+        this.renderIndexList();
+        this.renderTools('all');
+        this.renderTests('all');
+        this.setupKeyboard();
+        this.setupTouch();
+        this.updateUI();
+      }
+
+      renderIndicators() {
+        this.indicatorsRow.innerHTML = '';
+        this.slides.forEach((slide, idx) => {
+          const dot = document.createElement('div');
+          dot.className = `indicator-dot ${idx === 0 ? 'active' : ''}`;
+          dot.title = `Ir a diapositiva ${idx + 1}: ${slide.dataset.title}`;
+          dot.onclick = () => this.goTo(idx);
+          this.indicatorsRow.appendChild(dot);
+        });
+      }
+
+      renderIndexList() {
+        this.indexItemsList.innerHTML = '';
+        this.slides.forEach((slide, idx) => {
+          const item = document.createElement('div');
+          item.className = `index-item ${idx === 0 ? 'active' : ''}`;
+          item.innerHTML = `
+            <span class="index-num">0${idx + 1}</span>
+            <span>${slide.dataset.title}</span>
+          `;
+          item.onclick = () => {
+            this.goTo(idx);
+            this.closeIndexDrawer();
+          };
+          this.indexItemsList.appendChild(item);
+        });
+      }
+
+      renderTools(filterCategory) {
+        const grid = document.getElementById('toolsGrid');
+        if (!grid) return;
+        grid.innerHTML = '';
+
+        const filtered = filterCategory === 'all' 
+          ? AI_TOOLS 
+          : AI_TOOLS.filter(t => t.category === filterCategory);
+
+        const categoryIcons = {
+          agenda: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#0EA5E9" stroke-width="2.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+          pacientes: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+          fármacos: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 14.14 14.14"/></svg>`,
+          vacunas: `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2.5"><path d="m18 2 4 4"/><path d="m17 7 3-3"/><path d="M19 9 8.7 19.3c-.4.4-1 .4-1.4 0l-2.6-2.6c-.4-.4-.4-1 0-1.4L15 5"/><path d="m9 11 4 4"/><path d="m5 19-3 3"/></svg>`
+        };
+
+        const vetOnlyTools = ['find_patients_with_overdue_vaccines', 'get_owner_contact', 'search_vademecum', 'search_patients_on_medication'];
+
+        filtered.forEach(tool => {
+          const pill = document.createElement('div');
+          pill.className = 'tool-compact-pill';
+          pill.onclick = () => this.showToolDetail(tool);
+          pill.title = `${tool.name}: ${tool.desc} (Click para ver detalles)`;
+
+          const isVetOnly = vetOnlyTools.includes(tool.name);
+          const roleTag = isVetOnly 
+            ? `<span class="tool-pill-role role-vet">Vet</span>`
+            : `<span class="tool-pill-role role-both">Ambos</span>`;
+
+          pill.innerHTML = `
+            <div class="tool-pill-left">
+              ${categoryIcons[tool.category] || ''}
+              <span class="tool-pill-fn">${tool.name}</span>
+            </div>
+            ${roleTag}
+          `;
+          grid.appendChild(pill);
+        });
+      }
+
+      filterTools(cat) {
+        document.querySelectorAll('#toolFilterBar .filter-pill').forEach(btn => {
+          btn.classList.toggle('active', btn.textContent.toLowerCase().includes(cat) || (cat === 'all' && btn.textContent.includes('Todas')));
+        });
+        this.renderTools(cat);
+      }
+
+      renderTests(cat) {
+        const container = document.getElementById('testCardsContainer');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const filtered = cat === 'all' 
+          ? TEST_CASES 
+          : TEST_CASES.filter(t => t.category === cat);
+
+        filtered.forEach(tc => {
+          const card = document.createElement('div');
+          card.className = 'glass-card test-card';
+          card.onclick = () => this.showTestDetail(tc);
+          card.innerHTML = `
+            <div class="test-code-badge">${tc.id}</div>
+            <div class="test-content-area">
+              <div class="test-header-line">
+                <div class="test-title">${tc.title}</div>
+                <div class="test-status-ok">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
+                  ${tc.status}
+                </div>
+              </div>
+              <div class="test-desc">${tc.desc}</div>
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      }
+
+      filterTests(cat) {
+        document.querySelectorAll('.test-tab-btn').forEach(btn => {
+          const match = (cat === 'all' && btn.textContent.includes('Todos')) ||
+                        (cat === 'seguridad' && btn.textContent.includes('Seguridad')) ||
+                        (cat === 'clinica' && btn.textContent.includes('Clínica')) ||
+                        (cat === 'ia' && btn.textContent.includes('IA')) ||
+                        (cat === 'pagos' && btn.textContent.includes('Pagos'));
+          btn.classList.toggle('active', match);
+        });
+        this.renderTests(cat);
+      }
+
+      updateUI() {
+        this.slides.forEach((slide, idx) => {
+          slide.classList.toggle('active', idx === this.currentSlide);
+        });
+
+        const activeSlide = this.slides[this.currentSlide];
+        this.categoryPill.textContent = activeSlide.dataset.category || 'VetVault PIN 2026';
+        this.slideTitleHeader.textContent = activeSlide.dataset.title || '';
+
+        const progressPercent = ((this.currentSlide + 1) / this.totalSlides) * 100;
+        this.topProgressBar.style.width = `${progressPercent}%`;
+
+        this.currentSlideNum.textContent = String(this.currentSlide + 1).padStart(2, '0');
+
+        this.prevBtn.disabled = this.currentSlide === 0;
+        this.nextBtn.innerHTML = this.currentSlide === this.totalSlides - 1
+          ? `<span>Finalizar</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>`
+          : `<span>Siguiente</span><span class="kbd-tag">→</span><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`;
+
+        // Update Dots
+        const dots = this.indicatorsRow.querySelectorAll('.indicator-dot');
+        dots.forEach((dot, idx) => dot.classList.toggle('active', idx === this.currentSlide));
+
+        // Update Index Menu items
+        const indexItems = this.indexItemsList.querySelectorAll('.index-item');
+        indexItems.forEach((it, idx) => it.classList.toggle('active', idx === this.currentSlide));
+
+        // Animate KPIs & charts
+        if (this.currentSlide === 1) {
+          this.animateKpiNumbers();
+          this.animateChartsSlide2();
+        } else if (this.currentSlide === 2) {
+          this.animateChartsSlide3();
+        } else if (this.currentSlide === 5) {
+          this.animateChartsSlide6();
+        }
+
+        // Ambient mesh light tilt
+        const mesh1 = document.getElementById('meshVet');
+        const mesh2 = document.getElementById('meshTutor');
+        if (mesh1 && mesh2) {
+          if (this.currentSlide % 2 === 0) {
+            mesh1.style.transform = 'translate(40px, 30px)';
+            mesh2.style.transform = 'translate(-40px, -30px)';
+          } else {
+            mesh1.style.transform = 'translate(-20px, -40px)';
+            mesh2.style.transform = 'translate(30px, 20px)';
+          }
+        }
+      }
+
+      goTo(index) {
+        if (index < 0 || index >= this.totalSlides) return;
+        this.currentSlide = index;
+        this.updateUI();
+        this.playSubtleClick();
+      }
+
+      next() {
+        if (this.currentSlide < this.totalSlides - 1) {
+          this.goTo(this.currentSlide + 1);
+        } else {
+          // If on last slide, show completion summary
+          this.showPresentationEndModal();
+        }
+      }
+
+      prev() {
+        if (this.currentSlide > 0) {
+          this.goTo(this.currentSlide - 1);
+        }
+      }
+
+      animateKpiNumbers() {
+        const counters = document.querySelectorAll('.kpi-number');
+        counters.forEach(counter => {
+          const target = parseInt(counter.dataset.target, 10);
+          const isNegative = target < 0;
+          const absTarget = Math.abs(target);
+          let current = 0;
+          const step = Math.max(1, Math.ceil(absTarget / 30));
+
+          const update = () => {
+            current += step;
+            if (current >= absTarget) {
+              counter.textContent = isNegative ? `-${absTarget}` : `${absTarget}`;
+            } else {
+              counter.textContent = isNegative ? `-${current}` : `${current}`;
+              requestAnimationFrame(update);
+            }
+          };
+          update();
+        });
+      }
+
+      animateChartsSlide2() {
+        const barSegments = document.querySelectorAll('.slide:nth-child(2) .bar-segment');
+        barSegments.forEach(seg => {
+          const targetWidth = seg.getAttribute('data-w') || seg.style.width;
+          if (!seg.getAttribute('data-w')) seg.setAttribute('data-w', targetWidth);
+          seg.style.width = '0%';
+          setTimeout(() => {
+            seg.style.width = targetWidth;
+          }, 100);
+        });
+      }
+
+      animateChartsSlide3() {
+        const gauges = [
+          { id: 'gaugeBar1', offset: '24.1' },
+          { id: 'gaugeBar2', offset: '22.1' },
+          { id: 'gaugeBar3', offset: '0' }
+        ];
+        gauges.forEach(g => {
+          const el = document.getElementById(g.id);
+          if (el) {
+            el.style.strokeDashoffset = '201.06';
+            setTimeout(() => {
+              el.style.strokeDashoffset = g.offset;
+            }, 120);
+          }
+        });
+      }
+
+      animateChartsSlide6() {
+        // Animate Donut Segments
+        const donutSegs = [
+          { id: 'donutSegAgenda', len: 107.7, total: 301.6 },
+          { id: 'donutSegPacientes', len: 86.2, total: 301.6 },
+          { id: 'donutSegFarmacos', len: 64.6, total: 301.6 },
+          { id: 'donutSegVacunas', len: 43.1, total: 301.6 }
+        ];
+        donutSegs.forEach(seg => {
+          const el = document.getElementById(seg.id);
+          if (el) {
+            el.style.strokeDasharray = `0 ${seg.total}`;
+            el.style.transition = 'stroke-dasharray 0.8s cubic-bezier(0.16, 1, 0.3, 1)';
+            setTimeout(() => {
+              el.style.strokeDasharray = `${seg.len} ${seg.total}`;
+            }, 100);
+          }
+        });
+
+        // Animate Roadmap Projection Gauges
+        const gAdh = document.getElementById('gaugeAdherence');
+        const gNoShow = document.getElementById('gaugeNoShow');
+        if (gAdh) {
+          gAdh.style.strokeDashoffset = '201.1';
+          setTimeout(() => { gAdh.style.strokeDashoffset = '12.1'; }, 150);
+        }
+        if (gNoShow) {
+          gNoShow.style.strokeDashoffset = '201.1';
+          setTimeout(() => { gNoShow.style.strokeDashoffset = '30.2'; }, 200);
+        }
+      }
+
+      setupKeyboard() {
+        window.addEventListener('keydown', (e) => {
+          // If modal is open, ESC closes it
+          if (e.key === 'Escape') {
+            this.closeModal();
+            this.closeHelpModal();
+            this.closeIndexDrawer();
+            return;
+          }
+
+          if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'PageDown') {
+            e.preventDefault();
+            this.next();
+          } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
+            e.preventDefault();
+            this.prev();
+          } else if (e.key === 'Home') {
+            e.preventDefault();
+            this.goTo(0);
+          } else if (e.key === 'End') {
+            e.preventDefault();
+            this.goTo(this.totalSlides - 1);
+          } else if (e.key === 'f' || e.key === 'F') {
+            e.preventDefault();
+            this.toggleFullscreen();
+          } else if (e.key === '?' || e.key === 'h' || e.key === 'H') {
+            e.preventDefault();
+            this.openHelpModal();
+          } else if (e.key === 'm' || e.key === 'M' || e.key === 'i' || e.key === 'I') {
+            e.preventDefault();
+            this.toggleIndexDrawer();
+          } else if (e.key >= '1' && e.key <= '8') {
+            const slideIdx = parseInt(e.key, 10) - 1;
+            if (slideIdx < this.totalSlides) {
+              this.goTo(slideIdx);
+            }
+          }
+        });
+      }
+
+      setupTouch() {
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        window.addEventListener('touchstart', (e) => {
+          touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+
+        window.addEventListener('touchend', (e) => {
+          touchEndX = e.changedTouches[0].screenX;
+          const diff = touchEndX - touchStartX;
+          if (Math.abs(diff) > 60) {
+            if (diff < 0) this.next();
+            else this.prev();
+          }
+        }, { passive: true });
+      }
+
+      toggleFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(() => {});
+        } else {
+          document.exitFullscreen().catch(() => {});
+        }
+      }
+
+      toggleIndexDrawer() {
+        this.indexDrawer.classList.toggle('open');
+      }
+
+      closeIndexDrawer() {
+        this.indexDrawer.classList.remove('open');
+      }
+
+      openHelpModal() {
+        document.getElementById('helpModal').classList.add('open');
+      }
+
+      closeHelpModal() {
+        document.getElementById('helpModal').classList.remove('open');
+      }
+
+      closeModal(e) {
+        if (e && e.target !== e.currentTarget) return;
+        document.getElementById('detailModal').classList.remove('open');
+      }
+
+      showToolDetail(tool) {
+        document.getElementById('modalTitle').textContent = `Herramienta: ${tool.name}`;
+        document.getElementById('modalBody').innerHTML = `
+          <div class="modal-field">
+            <strong>Descripción Clínica</strong>
+            <p>${tool.desc}</p>
+          </div>
+          <div class="modal-field">
+            <strong>Parámetros Requeridos</strong>
+            <code style="color: var(--accent-vet-light); font-size: 12px;">${tool.params}</code>
+          </div>
+          <div class="modal-field">
+            <strong>Garantía de Seguridad</strong>
+            <p>Validación obligatoria de rol mediante <code>Validation.hasAccessMascota</code> y persistencia atómica en <code>audit_log</code>.</p>
+          </div>
+        `;
+        document.getElementById('detailModal').classList.add('open');
+      }
+
+      showTestDetail(tc) {
+        document.getElementById('modalTitle').textContent = `${tc.id}: ${tc.title}`;
+        document.getElementById('modalBody').innerHTML = `
+          <div class="modal-field">
+            <strong>Objetivo del Caso de Prueba</strong>
+            <p>${tc.desc}</p>
+          </div>
+          <div class="modal-field">
+            <strong>Precondición / Entrada</strong>
+            <p>${tc.precondition}</p>
+            <code style="color: var(--text-muted); font-size: 11px;">${tc.action}</code>
+          </div>
+          <div class="modal-field">
+            <strong>Resultado Obtenido</strong>
+            <p style="color: #4ADE80;">${tc.result}</p>
+          </div>
+          <div class="modal-field" style="display: flex; justify-content: space-between; align-items: center;">
+            <strong>Dictamen de Validación</strong>
+            <span class="badge-good">${tc.status}</span>
+          </div>
+        `;
+        document.getElementById('detailModal').classList.add('open');
+      }
+
+      showCanvasDetail(title, text) {
+        document.getElementById('modalTitle').textContent = `Lienzo Canvas: ${title}`;
+        document.getElementById('modalBody').innerHTML = `
+          <div class="modal-field">
+            <strong>Estrategia y Fundamento</strong>
+            <p style="font-size: 14px; line-height: 1.6; color: #E2E8F0;">${text}</p>
+          </div>
+        `;
+        document.getElementById('detailModal').classList.add('open');
+      }
+
+      showStepDetail(stepNum) {
+        const steps = document.querySelectorAll('.step-item');
+        steps.forEach((s, idx) => s.classList.toggle('active', idx === stepNum - 1));
+      }
+
+      setSimRole(role) {
+        const btnVet = document.getElementById('btnRoleVet');
+        const btnOwner = document.getElementById('btnRoleOwner');
+        const rowVet = document.getElementById('simRowVet');
+        const rowOwner = document.getElementById('simRowOwner');
+
+        if (role === 'Vet') {
+          if (btnVet) btnVet.classList.add('active');
+          if (btnOwner) btnOwner.classList.remove('active');
+          if (rowVet) rowVet.style.opacity = '1';
+          if (rowOwner) rowOwner.style.opacity = '0.45';
+        } else {
+          if (btnVet) btnVet.classList.remove('active');
+          if (btnOwner) btnOwner.classList.add('active');
+          if (rowVet) rowVet.style.opacity = '0.45';
+          if (rowOwner) rowOwner.style.opacity = '1';
+        }
+      }
+
+      showPresentationEndModal() {
+        document.getElementById('modalTitle').textContent = "¡Presentación Finalizada!";
+        document.getElementById('modalBody').innerHTML = `
+          <div class="modal-field" style="text-align: center; padding: 20px;">
+            <div style="font-size: 40px; margin-bottom: 10px;">🎓🐾</div>
+            <h3 style="color: #FFFFFF; font-size: 18px; margin-bottom: 8px;">VetVault — PIN 2026</h3>
+            <p style="color: var(--text-muted); font-size: 13px; line-height: 1.5;">
+              Agradecemos al docente <strong>Mgter. Lic. Enzo Varela</strong> y al <strong>Instituto Superior Villa del Rosario</strong> por el acompañamiento técnico y académico.
+            </p>
+            <div style="margin-top: 16px; display: flex; gap: 10px; justify-content: center;">
+              <button class="action-btn" onclick="deck.goTo(0); deck.closeModal();">
+                Volver a la Portada
+              </button>
+            </div>
+          </div>
+        `;
+        document.getElementById('detailModal').classList.add('open');
+      }
+
+      playSubtleClick() {
+        try {
+          if (!this.isAudioEnabled) return;
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          if (!AudioContext) return;
+          if (!this.audioCtx) this.audioCtx = new AudioContext();
+          if (this.audioCtx.state === 'suspended') this.audioCtx.resume();
+
+          const osc = this.audioCtx.createOscillator();
+          const gain = this.audioCtx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(600, this.audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(300, this.audioCtx.currentTime + 0.04);
+          gain.gain.setValueAtTime(0.04, this.audioCtx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.001, this.audioCtx.currentTime + 0.04);
+          osc.connect(gain);
+          gain.connect(this.audioCtx.destination);
+          osc.start();
+          osc.stop(this.audioCtx.currentTime + 0.04);
+        } catch(e) {}
+      }
+    }
+
+    // Initialize deck on DOM load
+    let deck;
+    document.addEventListener('DOMContentLoaded', () => {
+      deck = new DeckPresentation();
+    });
+  </script>
+</body>
+</html>

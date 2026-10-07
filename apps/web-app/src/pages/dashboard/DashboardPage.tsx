@@ -1,7 +1,6 @@
 import { useAuth } from '../../hooks/useAuth';
 import { VetDashboard } from './VetDashboard';
 import { OwnerDashboard } from './OwnerDashboard';
-import './DashboardPage.css';
 
 export function DashboardPage() {
   const { user } = useAuth();

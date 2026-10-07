@@ -1,237 +1,210 @@
-import { useState } from 'react';
+import {
+  ResponsiveContainer,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+} from 'recharts';
+import { Scale, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 
-interface WeightPoint {
-  date: Date;
-  dateStr: string;
-  weight: number;
-  x: number;
-  y: number;
+interface WeightChartProps {
+  atenciones: any[];
 }
 
-export function WeightChart({ atenciones }: { atenciones: any[] }) {
+export function WeightChart({ atenciones }: WeightChartProps) {
   // Extract and sort weight records
-  const points = atenciones
+  const points = (atenciones || [])
     .filter((a) => a.peso_actual && !isNaN(Number(a.peso_actual)))
-    .map((a) => ({
-      date: new Date(a.fecha_atencion),
-      dateStr: new Date(a.fecha_atencion).toLocaleDateString('es-AR', {
-        day: '2-digit',
-        month: 'short',
-      }),
-      weight: Number(a.peso_actual),
-    }))
+    .map((a) => {
+      const date = new Date(a.fecha_atencion);
+      return {
+        date,
+        rawDate: a.fecha_atencion,
+        dateStr: date.toLocaleDateString('es-AR', {
+          day: '2-digit',
+          month: 'short',
+        }),
+        fullDate: date.toLocaleDateString('es-AR', {
+          day: '2-digit',
+          month: 'long',
+          year: 'numeric',
+        }),
+        weight: Number(Number(a.peso_actual).toFixed(2)),
+        diagnostico: a.diagnostico || 'Control de peso',
+      };
+    })
     .sort((a, b) => a.date.getTime() - b.date.getTime());
-
-  const [hoveredPoint, setHoveredPoint] = useState<WeightPoint | null>(null);
-  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   if (points.length === 0) {
     return (
-      <div className="weight-graph-empty">
-        <p>No hay registros de peso para esta mascota.</p>
+      <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+        <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800/60 flex items-center justify-center text-slate-400 mb-3">
+          <Scale size={24} />
+        </div>
+        <p className="text-sm font-medium text-slate-600 dark:text-slate-400">
+          No hay registros de peso para esta mascota.
+        </p>
+        <p className="text-xs text-slate-400 dark:text-slate-500 mt-1">
+          Los pesos registrados en cada consulta clínica aparecerán aquí de forma evolutiva.
+        </p>
       </div>
     );
   }
 
-  // Dimensions
-  const width = 500;
-  const height = 200;
-  const paddingLeft = 45;
-  const paddingRight = 20;
-  const paddingTop = 20;
-  const paddingBottom = 30;
-
-  const chartWidth = width - paddingLeft - paddingRight;
-  const chartHeight = height - paddingTop - paddingBottom;
-
-  // Find min/max
+  // Calculate statistics
   const weights = points.map((p) => p.weight);
-  const maxWeight = Math.max(...weights);
+  const currentWeight = weights[weights.length - 1];
+  const initialWeight = weights[0];
   const minWeight = Math.min(...weights);
-  const weightRange = maxWeight - minWeight;
+  const maxWeight = Math.max(...weights);
+  const diff = Number((currentWeight - initialWeight).toFixed(2));
 
-  // Add 10% padding to Y axis
-  const yMax = maxWeight + (weightRange === 0 ? 2 : weightRange * 0.1);
-  const yMin = Math.max(0, minWeight - (weightRange === 0 ? 2 : weightRange * 0.1));
-  const yRange = yMax - yMin === 0 ? 1 : yMax - yMin;
-
-  // Map points to SVG coordinates
-  const svgPoints: WeightPoint[] = points.map((p, idx) => {
-    const x =
-      paddingLeft +
-      (points.length === 1
-        ? chartWidth / 2
-        : (idx / (points.length - 1)) * chartWidth);
-    const y =
-      paddingTop +
-      chartHeight -
-      ((p.weight - yMin) / yRange) * chartHeight;
-    return { x, y, ...p };
-  });
-
-  // Construct SVG Path
-  let linePath = '';
-  let areaPath = '';
-
-  if (svgPoints.length > 0) {
-    linePath =
-      `M ${svgPoints[0].x} ${svgPoints[0].y} ` +
-      svgPoints.slice(1).map((p) => `L ${p.x} ${p.y}`).join(' ');
-    areaPath =
-      linePath +
-      ` L ${svgPoints[svgPoints.length - 1].x} ${paddingTop + chartHeight} L ${svgPoints[0].x} ${paddingTop + chartHeight} Z`;
-  }
-
-  // Y-axis ticks
-  const yTicks = 4;
-  const yTickValues = Array.from(
-    { length: yTicks },
-    (_, i) => yMin + (yRange / (yTicks - 1)) * i
-  );
+  // Determine Y Domain with breathing room
+  const yDomainMin = Math.max(0, Math.floor(minWeight - (maxWeight === minWeight ? 1 : (maxWeight - minWeight) * 0.15)));
+  const yDomainMax = Math.ceil(maxWeight + (maxWeight === minWeight ? 1 : (maxWeight - minWeight) * 0.15));
 
   return (
-    <div className="weight-graph-container" style={{ position: 'relative' }}>
-      <svg viewBox={`0 0 ${width} ${height}`} width="100%" height="100%">
-        <defs>
-          <linearGradient id="weightAreaGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="var(--accent)" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="var(--accent)" stopOpacity="0.0" />
-          </linearGradient>
-        </defs>
-
-        {/* Grid lines */}
-        {yTickValues.map((val, idx) => {
-          const y =
-            paddingTop +
-            chartHeight -
-            ((val - yMin) / yRange) * chartHeight;
-          return (
-            <g key={idx}>
-              <line
-                x1={paddingLeft}
-                y1={y}
-                x2={width - paddingRight}
-                y2={y}
-                stroke="var(--border)"
-                strokeDasharray="4 4"
-                strokeWidth="1"
-              />
-              <text
-                x={paddingLeft - 8}
-                y={y + 3}
-                textAnchor="end"
-                fontSize="10"
-                fill="var(--text-muted)"
-              >
-                {val.toFixed(1)} kg
-              </text>
-            </g>
-          );
-        })}
-
-        {/* Area under the line */}
-        {svgPoints.length > 1 && <path d={areaPath} fill="url(#weightAreaGrad)" />}
-
-        {/* The line */}
-        {svgPoints.length > 1 && (
-          <path
-            d={linePath}
-            fill="none"
-            stroke="var(--accent)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        )}
-
-        {/* X-axis labels */}
-        {svgPoints.map((p, idx) => {
-          const shouldRenderLabel =
-            points.length <= 6 ||
-            idx === 0 ||
-            idx === points.length - 1 ||
-            idx === Math.floor(points.length / 2);
-          if (!shouldRenderLabel) return null;
-          return (
-            <text
-              key={idx}
-              x={p.x}
-              y={height - 8}
-              textAnchor="middle"
-              fontSize="9"
-              fill="var(--text-muted)"
-            >
-              {p.dateStr}
-            </text>
-          );
-        })}
-
-        {/* Interactivity guide line */}
-        {hoveredPoint && (
-          <line
-            x1={hoveredPoint.x}
-            y1={paddingTop}
-            x2={hoveredPoint.x}
-            y2={paddingTop + chartHeight}
-            stroke="var(--accent)"
-            strokeOpacity="0.3"
-            strokeWidth="1.5"
-            strokeDasharray="2 2"
-          />
-        )}
-
-        {/* Dots */}
-        {svgPoints.map((p, idx) => (
-          <circle
-            key={idx}
-            cx={p.x}
-            cy={p.y}
-            r={hoveredIndex === idx ? 6 : 4}
-            fill="var(--surface-solid)"
-            stroke="var(--accent)"
-            strokeWidth={hoveredIndex === idx ? 3 : 2}
-            style={{ cursor: 'pointer', transition: 'all 0.15s ease' }}
-            onMouseEnter={() => {
-              setHoveredPoint(p);
-              setHoveredIndex(idx);
-            }}
-            onMouseLeave={() => {
-              setHoveredPoint(null);
-              setHoveredIndex(null);
-            }}
-          />
-        ))}
-      </svg>
-
-      {/* Tooltip Overlay */}
-      {hoveredPoint && (
-        <div
-          style={{
-            position: 'absolute',
-            left: `${(hoveredPoint.x / width) * 100}%`,
-            top: `${(hoveredPoint.y / height) * 100 - 45}%`,
-            transform: 'translateX(-50%)',
-            background: 'var(--surface-solid)',
-            border: '1px solid var(--border)',
-            borderRadius: '6px',
-            padding: '4px 8px',
-            boxShadow: 'var(--shadow)',
-            pointerEvents: 'none',
-            zIndex: 10,
-            fontSize: '0.75rem',
-            whiteSpace: 'nowrap',
-            color: 'var(--text-h)',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }}
-        >
-          <strong>{hoveredPoint.weight} kg</strong>
-          <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-            {hoveredPoint.dateStr}
+    <div className="w-full space-y-4">
+      {/* Stat indicators */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+            Actual
+          </span>
+          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {currentWeight} <span className="text-xs font-normal text-slate-500">kg</span>
           </span>
         </div>
-      )}
+
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+            Mínimo
+          </span>
+          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {minWeight} <span className="text-xs font-normal text-slate-500">kg</span>
+          </span>
+        </div>
+
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+            Máximo
+          </span>
+          <span className="text-lg font-bold text-slate-800 dark:text-slate-100">
+            {maxWeight} <span className="text-xs font-normal text-slate-500">kg</span>
+          </span>
+        </div>
+
+        <div className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/40 border border-slate-200/60 dark:border-slate-800">
+          <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400 uppercase tracking-wider block">
+            Variación
+          </span>
+          <div className="flex items-center gap-1.5">
+            {diff > 0 ? (
+              <>
+                <TrendingUp size={16} className="text-emerald-500" />
+                <span className="text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  +{diff} <span className="text-xs font-normal">kg</span>
+                </span>
+              </>
+            ) : diff < 0 ? (
+              <>
+                <TrendingDown size={16} className="text-amber-500" />
+                <span className="text-lg font-bold text-amber-600 dark:text-amber-400">
+                  {diff} <span className="text-xs font-normal">kg</span>
+                </span>
+              </>
+            ) : (
+              <>
+                <Minus size={16} className="text-slate-400" />
+                <span className="text-lg font-bold text-slate-600 dark:text-slate-300">
+                  0 <span className="text-xs font-normal">kg</span>
+                </span>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Chart container */}
+      <div className="w-full h-64 pt-2">
+        <ResponsiveContainer width="100%" height="100%">
+          <AreaChart
+            data={points}
+            margin={{ top: 10, right: 10, left: -15, bottom: 0 }}
+          >
+            <defs>
+              <linearGradient id="weightAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--accent, #0ea5e9)" stopOpacity={0.35} />
+                <stop offset="95%" stopColor="var(--accent, #0ea5e9)" stopOpacity={0.0} />
+              </linearGradient>
+            </defs>
+            <CartesianGrid
+              strokeDasharray="3 3"
+              vertical={false}
+              stroke="currentColor"
+              className="text-slate-200 dark:text-slate-800"
+            />
+            <XAxis
+              dataKey="dateStr"
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: 'currentColor' }}
+              className="text-slate-500 dark:text-slate-400"
+            />
+            <YAxis
+              domain={[yDomainMin, yDomainMax]}
+              tickLine={false}
+              axisLine={false}
+              tick={{ fontSize: 12, fill: 'currentColor' }}
+              className="text-slate-500 dark:text-slate-400"
+              unit=" kg"
+            />
+            <Tooltip
+              content={({ active, payload }: any) => {
+                if (!active || !payload || !payload.length) return null;
+                const data = payload[0].payload;
+                return (
+                  <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-3 shadow-xl text-xs space-y-1 z-50">
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 flex items-center justify-between gap-4">
+                      <span>{data.fullDate}</span>
+                      <span className="text-sm font-bold text-sky-600 dark:text-sky-400">
+                        {data.weight} kg
+                      </span>
+                    </div>
+                    {data.diagnostico && (
+                      <p className="text-slate-500 dark:text-slate-400 truncate max-w-[200px]">
+                        {data.diagnostico}
+                      </p>
+                    )}
+                  </div>
+                );
+              }}
+            />
+            <Area
+              type="monotone"
+              dataKey="weight"
+              stroke="var(--accent, #0ea5e9)"
+              strokeWidth={2.5}
+              fillOpacity={1}
+              fill="url(#weightAreaGrad)"
+              activeDot={{
+                r: 6,
+                fill: 'var(--accent, #0ea5e9)',
+                stroke: '#ffffff',
+                strokeWidth: 2,
+              }}
+              dot={{
+                r: 4,
+                fill: 'var(--accent, #0ea5e9)',
+                stroke: '#ffffff',
+                strokeWidth: 1.5,
+              }}
+            />
+          </AreaChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 }

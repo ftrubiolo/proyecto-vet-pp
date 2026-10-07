@@ -82,6 +82,7 @@ Implementar Fase 1 (Agenda + Vacunación) y Fase 2 (Pacientes + Tratamientos) de
 - **AtencionService**: Nuevo método `getUltimasByMascotaId(mascotaId, limit)`.
 - **TratamientoService**: Nuevo método `getActivosByMascotaId(mascotaId)` y `searchPacientesByProducto(query, clinicaIds)`.
 - **tools.ts**: Handler `search_patients_on_medication` refactorizado para usar `TratamientoService.searchPacientesByProducto`. Limpiados imports no usados (`atenciones`, `gt`, `isNull`).
+- **Migración a OpenRouter (GLM 5.3 Flash)**: Copilot desacoplado de `@google/generative-ai` y migrado a OpenRouter con `z-ai/glm-5.3-flash`. `session.ts` implementa chat completions multi-turn con function calling nativo en formato OpenAI; `tools.ts` exporta `getOpenAITools()` y `SchemaType` tipado internamente; `.env` configurado con `OPENROUTER_API_KEY` y `OPENROUTER_MODEL`.
 
 ### In Progress
 - (none)

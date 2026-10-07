@@ -4,7 +4,6 @@ import { api } from '../../api/client';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { Input, Select } from '../ui/Input';
-import './CreateCitaModal.css';
 
 export interface CreateCitaModalProps {
   onClose: () => void;
@@ -21,7 +20,7 @@ export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
 
   // Fetch dropdown lists
   const { data: mascotas } = useFetch<any[]>('/mascotas');
-  
+
   // Only fetch clinics where the selected pet is a patient (Activo)
   const { data: clinicas } = useFetch<any[]>(
     mascotaId ? `/clinicas/mascota/${mascotaId}` : null
@@ -74,28 +73,44 @@ export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
       title="Agendar Nueva Cita"
       footer={
         <>
-          <Button variant="secondary" onClick={onClose}>Cancelar</Button>
-          <Button type="submit" form="create-cita-form">Agendar</Button>
+          <Button variant="secondary" onClick={onClose}>
+            Cancelar
+          </Button>
+          <Button type="submit" form="create-cita-form">
+            Agendar
+          </Button>
         </>
       }
     >
-      <form id="create-cita-form" className="create-cita-form" onSubmit={handleSubmit}>
+      <form
+        id="create-cita-form"
+        className="space-y-4 py-1"
+        onSubmit={handleSubmit}
+      >
         <Select
           label="Mascota"
           options={[
             { value: '', label: 'Seleccionar mascota...' },
-            ...mascotaList.map((m: any) => ({ value: m.id, label: m.nombre }))
+            ...mascotaList.map((m: any) => ({ value: m.id, label: m.nombre })),
           ]}
           value={mascotaId}
           onChange={(e) => handleMascotaChange(e.target.value)}
           required
         />
-        
+
         <Select
           label="Clínica"
           options={[
-            { value: '', label: mascotaId ? 'Seleccionar clínica...' : 'Seleccione una mascota primero...' },
-            ...clinicaList.map((c: any) => ({ value: c.id, label: c.nombre_comercial }))
+            {
+              value: '',
+              label: mascotaId
+                ? 'Seleccionar clínica...'
+                : 'Seleccione una mascota primero...',
+            },
+            ...clinicaList.map((c: any) => ({
+              value: c.id,
+              label: c.nombre_comercial,
+            })),
           ]}
           value={clinicaId}
           onChange={(e) => handleClinicaChange(e.target.value)}
@@ -106,8 +121,16 @@ export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
         <Select
           label="Veterinario"
           options={[
-            { value: '', label: clinicaId ? 'Cualquiera / Sin asignar' : 'Seleccione una clínica primero...' },
-            ...vetList.map((v: any) => ({ value: v.id, label: `${v.nombre} ${v.apellido}` }))
+            {
+              value: '',
+              label: clinicaId
+                ? 'Cualquiera / Sin asignar'
+                : 'Seleccione una clínica primero...',
+            },
+            ...vetList.map((v: any) => ({
+              value: v.id,
+              label: `${v.nombre} ${v.apellido}`,
+            })),
           ]}
           value={veterinarioId}
           onChange={(e) => setVeterinarioId(e.target.value)}
@@ -127,7 +150,7 @@ export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
           required
         />
 
-        <div className="form-row">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
             label="Fecha"
             type="date"

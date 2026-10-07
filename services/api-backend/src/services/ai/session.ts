@@ -1,8 +1,7 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { TokenPayload } from "@vetvault/shared";
-import { getToolDeclarations, findTool } from "./tools";
+import { getOpenAITools, findTool } from "./tools";
 import { AuditService } from "../audit.service";
-import type { ChatMessage } from "./types";
+import type { ChatMessage, OpenAIMessage } from "./types";
 
 const MAX_FUNCTION_CALLS: Record<string, number> = {
     Veterinario: 8,
@@ -10,56 +9,112 @@ const MAX_FUNCTION_CALLS: Record<string, number> = {
     Admin: 8,
 };
 
+const OPENROUTER_ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+
+async function postChatCompletion(apiKey: string, payload: unknown): Promise<any> {
+    const response = await fetch(OPENROUTER_ENDPOINT, {
+        method: "POST",
+        headers: {
+            "Authorization": `Bearer ${apiKey}`,
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://vetvault.app",
+            "X-Title": "VetVault Copilot",
+        },
+        body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Error del proveedor de IA (${response.status}): ${errorText}`);
+    }
+
+    return response.json();
+}
+
 export async function runChatSession(
-    genAI: GoogleGenerativeAI,
+    apiKey: string,
     modelName: string,
     systemInstruction: string,
     message: string,
     history: ChatMessage[],
     user: TokenPayload
 ): Promise<string> {
-    const model = genAI.getGenerativeModel({
-        model: modelName,
-        systemInstruction,
-        tools: [{ functionDeclarations: getToolDeclarations() }]
-    });
+    const messages: OpenAIMessage[] = [
+        { role: "system", content: systemInstruction },
+        ...history.map(msg => ({
+            role: (msg.sender === "user" ? "user" : "assistant") as "user" | "assistant",
+            content: msg.text,
+        })),
+        { role: "user", content: message },
+    ];
 
-    const chatSession = model.startChat({
-        history: history.map(msg => ({
-            role: msg.sender === "user" ? "user" : "model",
-            parts: [{ text: msg.text }]
-        }))
-    });
-
-    let result = await chatSession.sendMessage(message);
+    const openAITools = getOpenAITools();
     let limit = MAX_FUNCTION_CALLS[user.rol] ?? 5;
-    let calls = result.response.functionCalls();
 
-    while (calls && calls.length > 0 && limit > 0) {
-        limit--;
-        const call = calls[0];
-        const tool = findTool(call.name);
+    while (limit > 0) {
+        const data = await postChatCompletion(apiKey, {
+            model: modelName,
+            messages,
+            tools: openAITools,
+        });
 
-        let functionResult: object;
-        if (!tool) {
-            functionResult = { error: "Función no reconocida o no implementada." };
-        } else {
-            AuditService.log(user.id, user.rol, call.name, call.args as Record<string, unknown>);
-            try {
-                functionResult = await tool.handler(call.args as Record<string, unknown>, user);
-            } catch (err) {
-                functionResult = { error: err instanceof Error ? err.message : "Error inesperado ejecutando la función." };
-            }
+        const choice = data.choices?.[0];
+        if (!choice || !choice.message) {
+            throw new Error("Respuesta inválida recibida del proveedor de IA.");
         }
 
-        result = await chatSession.sendMessage([{
-            functionResponse: {
-                name: call.name,
-                response: functionResult
+        const assistantMsg = choice.message;
+        const toolCalls = assistantMsg.tool_calls;
+
+        if (!toolCalls || toolCalls.length === 0) {
+            return assistantMsg.content || "";
+        }
+
+        messages.push({
+            role: "assistant",
+            content: assistantMsg.content ?? null,
+            tool_calls: toolCalls,
+        });
+
+        limit--;
+
+        for (const call of toolCalls) {
+            const toolName = call.function.name;
+            let args: Record<string, unknown> = {};
+            try {
+                args = JSON.parse(call.function.arguments || "{}");
+            } catch {
+                args = {};
             }
-        }]);
-        calls = result.response.functionCalls();
+
+            const tool = findTool(toolName);
+            let functionResult: object;
+            if (!tool) {
+                functionResult = { error: "Función no reconocida o no implementada." };
+            } else {
+                AuditService.log(user.id, user.rol, toolName, args);
+                try {
+                    functionResult = await tool.handler(args, user);
+                } catch (err) {
+                    functionResult = {
+                        error: err instanceof Error ? err.message : "Error inesperado ejecutando la función."
+                    };
+                }
+            }
+
+            messages.push({
+                role: "tool",
+                tool_call_id: call.id,
+                name: toolName,
+                content: JSON.stringify(functionResult),
+            });
+        }
     }
 
-    return result.response.text();
+    const finalData = await postChatCompletion(apiKey, {
+        model: modelName,
+        messages,
+    });
+
+    return finalData.choices?.[0]?.message?.content || "";
 }

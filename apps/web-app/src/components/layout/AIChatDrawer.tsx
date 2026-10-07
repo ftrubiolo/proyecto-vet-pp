@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
 import { api } from '../../api/client';
 import { downloadPdf } from '../../utils/download';
-import './AIChatDrawer.css';
+import { cn } from '../../utils/cn';
 
 interface Message {
   id: string;

@@ -1,55 +1,70 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
+@import "tailwindcss";
 
-/* ─── Global Resets ─── */
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-heading: 'Manrope', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+  --color-primary: #0ea5e9;
+  --color-primary-hover: #0284c7;
+  --color-secondary: #22c55e;
+  --color-secondary-hover: #16a34a;
+
+  --color-accent-blue: #0ea5e9;
+  --color-accent-green: #22c55e;
+
+  --radius-outer: 24px;
+  --radius-inner: 12px;
+  --radius-pill: 9999px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+}
+
+/* ─── Global Resets & Root Variables ─── */
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
-/* ─── Design Tokens (Light Theme) ─── */
 :root {
   /* Fonts */
   --sans: 'Inter', system-ui, -apple-system, sans-serif;
   --heading: 'Manrope', system-ui, -apple-system, sans-serif;
 
   /* Typography Defaults */
-  font: 16px/145% var(--sans);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.45;
   letter-spacing: 0.18px;
 
-  /* Surfaces & Backgrounds */
+  /* Light Theme Surfaces & Backgrounds */
   --bg: #f8f9fa;
-  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(241, 245, 249, 0.3) 100%), var(--surface-solid);
-  --surface-solid: #FFFFFF;
+  --surface-solid: #ffffff;
+  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(241, 245, 249, 0.45) 100%), var(--surface-solid);
   --surface-2: linear-gradient(135deg, rgba(255, 255, 255, 0.7) 0%, rgba(241, 245, 249, 0.3) 100%);
 
-  /* Borders */
+  /* Borders & Text */
   --border: #e5e4e7;
-
-  /* Text */
   --text: #334155;
   --text-h: #0f172a;
   --text-muted: #94a3b8;
 
   /* Accents */
-  --accent-blue: #0EA5E9;
-  --accent-green: #22C55E;
+  --accent-blue: #0ea5e9;
+  --accent-green: #22c55e;
   --accent-gradient: linear-gradient(135deg, var(--accent-blue) 0%, var(--accent-green) 100%);
+  --accent: var(--accent-blue);
+  --accent-rgb: 14, 165, 233;
+  --accent-hover: #0284c7;
+  --accent-light: rgba(14, 165, 233, 0.1);
+  --accent-gradient-role: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
 
   /* Shadows */
-  --shadow: rgba(0, 0, 0, 0.1) 0px 10px 15px -3px, rgba(0, 0, 0, 0.05) 0px 4px 6px -2px;
+  --shadow: rgba(0, 0, 0, 0.08) 0px 10px 15px -3px, rgba(0, 0, 0, 0.04) 0px 4px 6px -2px;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
   --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
-
-  /* Radii */
-  --radius-outer: 24px;
-  --radius-inner: 12px;
-  --radius-pill: 20px;
-  --radius-md: 12px;
-  --radius-sm: 8px;
-  --radius-xs: 4px;
 
   /* Spacing */
   --space-xxs: 4px;
@@ -60,6 +75,14 @@
   --space-xl: 32px;
   --space-2xl: 48px;
 
+  /* Radii */
+  --radius-outer: 24px;
+  --radius-inner: 12px;
+  --radius-pill: 9999px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 4px;
+
   /* Layout */
   --sidebar-width: 260px;
   --header-height: 68px;
@@ -68,11 +91,11 @@
   --transition: 0.2s ease;
   --transition-slow: 0.3s ease;
 
-  /* State */
-  --success: #22C55E;
+  /* Feedback Colors */
+  --success: #22c55e;
   --warning: #f59e0b;
   --danger: #ef4444;
-  --info: #0EA5E9;
+  --info: #0ea5e9;
 
   color-scheme: light dark;
   color: var(--text);
@@ -86,8 +109,8 @@
 /* ─── Dark Theme ─── */
 [data-theme="dark"] {
   --bg: #0f1119;
-  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(8, 0, 255, 0.02) 100%), var(--surface-solid);
   --surface-solid: #12151d;
+  --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(8, 0, 255, 0.02) 100%), var(--surface-solid);
   --surface-2: linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.02) 100%);
   --border: #2e303a;
   --text: #9ca3af;
@@ -96,6 +119,23 @@
   --shadow: rgba(0, 0, 0, 0.4) 0px 10px 15px -3px, rgba(0, 0, 0, 0.25) 0px 4px 6px -2px;
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.12);
   --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+/* ─── Role Accent Contexts ─── */
+.role-vet {
+  --accent: var(--accent-blue);
+  --accent-rgb: 14, 165, 233;
+  --accent-hover: #0284c7;
+  --accent-light: rgba(14, 165, 233, 0.12);
+  --accent-gradient-role: linear-gradient(135deg, #0ea5e9 0%, #3b82f6 100%);
+}
+
+.role-owner {
+  --accent: var(--accent-green);
+  --accent-rgb: 34, 197, 94;
+  --accent-hover: #16a34a;
+  --accent-light: rgba(34, 197, 94, 0.12);
+  --accent-gradient-role: linear-gradient(135deg, #22c55e 0%, #10b981 100%);
 }
 
 /* ─── Compact Mode ─── */
@@ -113,80 +153,20 @@
   --header-height: 52px;
 }
 
-[data-compact="true"] .btn {
-  padding: 6px 14px;
-  font-size: 0.8125rem;
-}
-
-[data-compact="true"] .card {
-  padding: var(--space-md);
-}
-
-/* ─── Role Accent Contexts ─── */
-.role-vet {
-  --accent: var(--accent-blue);
-  --accent-rgb: 14, 165, 233;
-  --accent-hover: #0284c7;
-  --accent-light: rgba(14, 165, 233, 0.1);
-  --accent-gradient-role: linear-gradient(135deg, #0EA5E9 0%, #3b82f6 100%);
-}
-
-.role-owner {
-  --accent: var(--accent-green);
-  --accent-rgb: 34, 197, 94;
-  --accent-hover: #16a34a;
-  --accent-light: rgba(34, 197, 94, 0.1);
-  --accent-gradient-role: linear-gradient(135deg, #22C55E 0%, #10b981 100%);
-}
-
-/* ─── Typography ─── */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+/* ─── Typography Elements ─── */
+h1, h2, h3, h4, h5, h6 {
   font-family: var(--heading);
   font-weight: 600;
   color: var(--text-h);
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
-h1 {
-  font-size: 2rem;
-  letter-spacing: -0.5px;
-}
-
-h2 {
-  font-size: 1.5rem;
-  letter-spacing: -0.24px;
-}
-
-h3 {
-  font-size: 1.125rem;
-}
-
-p {
-  font-family: var(--sans);
-  color: var(--text);
-  line-height: 1.6;
-}
-
-a {
-  color: var(--accent, var(--accent-blue));
-  text-decoration: none;
-  transition: color var(--transition);
-}
-
-a:hover {
-  color: var(--accent-hover, #0284c7);
-}
-
-/* ─── Global Styles ─── */
 body {
   margin: 0;
   min-height: 100vh;
   background: var(--bg);
+  color: var(--text);
+  font-family: var(--sans);
 }
 
 #root {
@@ -194,25 +174,10 @@ body {
   min-height: 100vh;
 }
 
-img {
-  max-width: 100%;
-  display: block;
-}
-
-button {
-  cursor: pointer;
-  font-family: var(--sans);
-}
-
-input,
-select,
-textarea {
-  font-family: var(--sans);
-}
-
-/* ─── Scrollbar Styling ─── */
+/* ─── Scrollbars ─── */
 ::-webkit-scrollbar {
   width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
@@ -221,7 +186,7 @@ textarea {
 
 ::-webkit-scrollbar-thumb {
   background: var(--border);
-  border-radius: 3px;
+  border-radius: 9999px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -230,13 +195,8 @@ textarea {
 
 /* ─── Animations ─── */
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 @keyframes fadeInUp {
@@ -244,44 +204,31 @@ textarea {
     opacity: 0;
     transform: translateY(12px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
 
-@keyframes slideInLeft {
+@keyframes slideDown {
   from {
     opacity: 0;
-    transform: translateX(-16px);
+    transform: translateY(-8px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
+@keyframes slideRightIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
   to {
     opacity: 1;
     transform: translateX(0);
-  }
-}
-
-@keyframes pulse {
-
-  0%,
-  100% {
-    opacity: 1;
-  }
-
-  50% {
-    opacity: 0.5;
-  }
-}
-
-@keyframes spin {
-  from {
-    transform: rotate(0deg);
-  }
-
-  to {
-    transform: rotate(360deg);
   }
 }
 
@@ -293,6 +240,6 @@ textarea {
   animation: fadeInUp 0.4s ease forwards;
 }
 
-.animate-slide-in-left {
-  animation: slideInLeft 0.3s ease forwards;
+.animate-slide-down {
+  animation: slideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }

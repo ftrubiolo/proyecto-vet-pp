@@ -13,8 +13,7 @@ import { Badge } from '../../components/ui/Badge';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
-import './DashboardPage.css';
-
+import { AppointmentsActivityChart } from './components/AppointmentsActivityChart';
 import { type Mascota, type MascotasResponse, monthNames, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared';
 
 export function VetDashboard() {
@@ -45,7 +44,7 @@ export function VetDashboard() {
       estado: getUIEstado(c),
     }))
     .filter((c: any) => c.estado === 'Pendiente' || c.estado === 'Confirmada')
-    .slice(0, 3);
+    .slice(0, 4);
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -57,75 +56,102 @@ export function VetDashboard() {
   const displayName = user?.nombre || user?.email?.split('@')[0] || 'Veterinario';
 
   return (
-    <div className="page">
-      <div className="dashboard-welcome">
-        <h2>
+    <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
+      {/* Welcome header */}
+      <div className="space-y-1">
+        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
           {greeting()}, {displayName} 👋
         </h2>
-        <p>Aquí tenés un resumen de tu actividad clínica.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">
+          Aquí tenés un resumen de tu actividad clínica y pacientes.
+        </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid-stats">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <Card>
-          <div className="stat-card">
-            <div className="stat-card-icon">
+          <div className="flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
               <PawPrint size={20} />
             </div>
-            <div className="stat-card-value">{isLoading ? '–' : mascotas.length}</div>
-            <div className="stat-card-label">Pacientes registrados</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              {isLoading ? '–' : mascotas.length}
+            </div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Pacientes registrados
+            </div>
           </div>
         </Card>
 
         <Card>
-          <div className="stat-card">
-            <div className="stat-card-icon">
+          <div className="flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center">
               <CalendarDays size={20} />
             </div>
-            <div className="stat-card-value">{isCitasLoading ? '–' : upcomingCitas.length}</div>
-            <div className="stat-card-label">Próximas citas</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              {isCitasLoading ? '–' : upcomingCitas.length}
+            </div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Próximas citas
+            </div>
           </div>
         </Card>
 
         <Card>
-          <div className="stat-card">
-            <div className="stat-card-icon">
+          <div className="flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
               <Syringe size={20} />
             </div>
-            <div className="stat-card-value">0</div>
-            <div className="stat-card-label">Vacunas pendientes</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              0
+            </div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Vacunas pendientes
+            </div>
           </div>
         </Card>
 
         <Card>
-          <div className="stat-card">
-            <div className="stat-card-icon">
+          <div className="flex flex-col gap-2">
+            <div className="w-10 h-10 rounded-xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center">
               <Users size={20} />
             </div>
-            <div className="stat-card-value">–</div>
-            <div className="stat-card-label">Propietarios</div>
+            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
+              –
+            </div>
+            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
+              Propietarios
+            </div>
           </div>
         </Card>
       </div>
 
-      <div className="dashboard-grid-2">
+      {/* Activity Chart Section (External library: Recharts) */}
+      <Card>
+        <AppointmentsActivityChart citas={rawCitasList} />
+      </Card>
+
+      {/* Main 2-column Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Quick Pets */}
-        <div className="dashboard-section">
-          <div className="dashboard-section-header">
-            <h3 className="dashboard-section-title">Pacientes recientes</h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              Pacientes recientes
+            </h3>
             <Button variant="ghost" size="sm" onClick={() => navigate('/mascotas')}>
               Ver todas
             </Button>
           </div>
 
           {isLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
+            <div className="flex justify-center p-8">
               <Spinner />
             </div>
           ) : mascotas.length === 0 ? (
             <Card>
               <EmptyState
-                icon={<PawPrint size={48} />}
+                icon={<PawPrint size={40} />}
                 title="Sin mascotas"
                 message="No hay pacientes registrados aún."
                 action={
@@ -136,7 +162,7 @@ export function VetDashboard() {
               />
             </Card>
           ) : (
-            <div className="dashboard-quick-pets">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {mascotas.slice(0, 4).map((m) => (
                 <Card
                   key={m.id}
@@ -144,13 +170,15 @@ export function VetDashboard() {
                   clickable
                   onClick={() => navigate(`/mascotas/${m.id}`)}
                 >
-                  <div className="dashboard-pet-card">
-                    <div className="dashboard-pet-avatar">
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex items-center justify-center flex-shrink-0">
                       <PawPrint size={20} />
                     </div>
-                    <div className="dashboard-pet-info">
-                      <div className="dashboard-pet-name">{m.nombre}</div>
-                      <div className="dashboard-pet-breed">
+                    <div className="min-w-0 flex-1">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
+                        {m.nombre}
+                      </div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                         {m.raza || 'Sin raza'}
                       </div>
                     </div>
@@ -162,49 +190,60 @@ export function VetDashboard() {
         </div>
 
         {/* Upcoming Appointments */}
-        <div className="dashboard-section">
-          <div className="dashboard-section-header">
-            <h3 className="dashboard-section-title">Próximas citas</h3>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
+              Próximas citas
+            </h3>
             <Button variant="ghost" size="sm" onClick={() => navigate('/citas')}>
               Ver todas
             </Button>
           </div>
 
           {isCitasLoading ? (
-            <div style={{ display: 'flex', justifyContent: 'center', padding: '32px' }}>
+            <div className="flex justify-center p-8">
               <Spinner />
             </div>
           ) : upcomingCitas.length === 0 ? (
             <Card>
               <EmptyState
-                icon={<CalendarDays size={48} />}
+                icon={<CalendarDays size={40} />}
                 title="Sin citas pendientes"
                 message="No tenés citas programadas."
               />
             </Card>
           ) : (
-            <div className="dashboard-appointment-list">
+            <div className="space-y-3">
               {upcomingCitas.map((cita) => (
                 <Card key={cita.id} variant="inner">
-                  <div className="dashboard-appointment-item">
-                    <div className="dashboard-appointment-date">
-                      <span className="dashboard-appointment-day">
+                  <div className="flex items-center gap-3.5">
+                    <div className="w-12 h-12 rounded-xl bg-sky-50 dark:bg-sky-950/50 text-sky-600 dark:text-sky-400 flex flex-col items-center justify-center flex-shrink-0">
+                      <span className="text-base font-bold leading-none">
                         {cita.fecha.getDate()}
                       </span>
-                      <span className="dashboard-appointment-month">
+                      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">
                         {monthNames[cita.fecha.getMonth()]}
                       </span>
                     </div>
-                    <div className="dashboard-appointment-details">
-                      <div className="dashboard-appointment-title">
+
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
                         {cita.motivo}
                       </div>
-                      <div className="dashboard-appointment-sub">
-                        <Clock size={12} style={{ display: 'inline', verticalAlign: '-2px', marginRight: 4 }} />
-                        {cita.mascota} · {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 truncate">
+                        <Clock size={12} className="flex-shrink-0" />
+                        <span>{cita.mascota}</span>
+                        <span>·</span>
+                        <span>
+                          {cita.fecha.toLocaleTimeString('es-AR', {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
                       </div>
                     </div>
-                    <div className="dashboard-appointment-actions" style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+
+                    <div className="flex items-center gap-2 flex-shrink-0">
                       <Badge variant={getEstadoBadgeVariant(cita.estado)}>
                         {cita.estado}
                       </Badge>
@@ -212,8 +251,12 @@ export function VetDashboard() {
                         <Button
                           size="sm"
                           variant="ghost"
-                          onClick={() => navigate(`/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`)}
-                          style={{ padding: '4px 8px' }}
+                          onClick={() =>
+                            navigate(
+                              `/mascotas/${cita.mascotaId}?atenderCitaId=${cita.id}&clinicaId=${cita.clinicaId}`
+                            )
+                          }
+                          className="px-2 py-1 text-xs"
                         >
                           Atender
                         </Button>

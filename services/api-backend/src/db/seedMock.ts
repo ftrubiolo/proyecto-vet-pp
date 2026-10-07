@@ -218,10 +218,11 @@ async function main() {
       infeccionUrinaria = refreshedDiag.find(d => d.diagnostico === 'Infección Urinaria');
     }
 
-    const dbProductos = await db.select().from(catalogo_productos).limit(50);
+    const dbProductos = await db.select().from(catalogo_productos).limit(100);
     let vaccineProduct = dbProductos.find(p => p.nombre_comercial.toLowerCase().includes('vacuna') || p.nombre_comercial.toLowerCase().includes('antirrábica'));
-    let otherProduct1 = dbProductos.find(p => !p.nombre_comercial.toLowerCase().includes('vacuna') && p.id !== vaccineProduct?.id);
-    let otherProduct2 = dbProductos.find(p => p.id !== vaccineProduct?.id && p.id !== otherProduct1?.id);
+    let cefalexinaProduct = dbProductos.find(p => p.nombre_comercial.toLowerCase().includes('cefalexina'));
+    let otherProduct1 = dbProductos.find(p => !p.nombre_comercial.toLowerCase().includes('vacuna') && p.id !== vaccineProduct?.id && p.id !== cefalexinaProduct?.id);
+    let otherProduct2 = cefalexinaProduct || dbProductos.find(p => p.id !== vaccineProduct?.id && p.id !== otherProduct1?.id);
 
     if (!vaccineProduct || !otherProduct1 || !otherProduct2) {
       console.log('⚠️ Productos de catálogo incompletos. Insertando productos de prueba...');
@@ -233,8 +234,8 @@ async function main() {
 
       const refreshedProds = await db.select().from(catalogo_productos);
       vaccineProduct = refreshedProds.find(p => p.numero_senasa === 'MOCK-V-001');
-      otherProduct1 = refreshedProds.find(p => p.numero_senasa === 'MOCK-M-002');
-      otherProduct2 = refreshedProds.find(p => p.numero_senasa === 'MOCK-P-003');
+      otherProduct1 = refreshedProds.find(p => p.numero_senasa === 'MOCK-P-003') || refreshedProds.find(p => p.numero_senasa === 'MOCK-M-002');
+      otherProduct2 = refreshedProds.find(p => p.numero_senasa === 'MOCK-M-002');
     }
 
     // --- 4. Asegurar Veterinarios en el Padrón ---
@@ -380,6 +381,9 @@ async function main() {
         sexo: 'M',
         es_castrado: true,
         numero_microchip: '981020000123456',
+        alergias: 'Alergia a picaduras de pulgas (DAPP)',
+        condiciones_cronicas: 'Ninguna',
+        contraindicaciones: 'Evitar corticoides sin evaluación previa',
         propietario_id: propietariosList[0].id // Juan Perez
       },
       {
@@ -389,6 +393,9 @@ async function main() {
         sexo: 'H',
         es_castrado: false,
         numero_microchip: null,
+        alergias: 'Ninguna conocida',
+        condiciones_cronicas: 'Sensibilidad digestiva leve',
+        contraindicaciones: 'Ninguna',
         propietario_id: propietariosList[1].id // Maria Gomez
       },
       {
@@ -398,6 +405,9 @@ async function main() {
         sexo: 'M',
         es_castrado: true,
         numero_microchip: '981020000789012',
+        alergias: 'Ninguna conocida',
+        condiciones_cronicas: 'Predisposición a otitis recidivante',
+        contraindicaciones: 'Ninguna',
         propietario_id: propietariosList[2].id // Carlos Rodriguez
       },
       {
@@ -407,6 +417,9 @@ async function main() {
         sexo: 'H',
         es_castrado: true,
         numero_microchip: null,
+        alergias: 'Ninguna',
+        condiciones_cronicas: 'Ninguna',
+        contraindicaciones: 'Ninguna',
         propietario_id: propietariosList[3].id // Ana Martinez
       },
       {
@@ -416,6 +429,9 @@ async function main() {
         sexo: 'M',
         es_castrado: true,
         numero_microchip: null,
+        alergias: 'Ninguna conocida',
+        condiciones_cronicas: 'Artrosis leve en miembros posteriores',
+        contraindicaciones: 'Monitorear función renal en tratamientos con AINEs',
         propietario_id: propietariosList[4].id // Laura Fernandez
       },
       {
@@ -425,6 +441,9 @@ async function main() {
         sexo: 'H',
         es_castrado: false,
         numero_microchip: null,
+        alergias: 'Ninguna',
+        condiciones_cronicas: 'Ninguna',
+        contraindicaciones: 'Ninguna',
         propietario_id: propietariosList[0].id // Juan Perez (2do)
       },
       {
@@ -434,6 +453,9 @@ async function main() {
         sexo: 'M',
         es_castrado: true,
         numero_microchip: '981020000456789',
+        alergias: 'Dermatitis atópica estacional',
+        condiciones_cronicas: 'Displasia de cadera leve bilateral',
+        contraindicaciones: 'Sensible a ciertos antibióticos inyectables',
         propietario_id: propietariosList[1].id // Maria Gomez (2do)
       },
       {
@@ -443,6 +465,9 @@ async function main() {
         sexo: 'M',
         es_castrado: true,
         numero_microchip: null,
+        alergias: 'Intolerancia a alimentos grasos',
+        condiciones_cronicas: 'Gastritis recurrente',
+        contraindicaciones: 'Ninguna',
         propietario_id: propietariosList[2].id // Carlos Rodriguez (2do)
       }
     ];
@@ -456,7 +481,10 @@ async function main() {
         raza_id: pet.raza_id,
         sexo: pet.sexo,
         es_castrado: pet.es_castrado,
-        numero_microchip: pet.numero_microchip
+        numero_microchip: pet.numero_microchip,
+        alergias: pet.alergias,
+        condiciones_cronicas: pet.condiciones_cronicas,
+        contraindicaciones: pet.contraindicaciones
       }).returning();
 
       // Vincular al propietario como principal
@@ -525,7 +553,7 @@ async function main() {
         mascota_id: mascotasList[2].id, // Felix
         veterinario_id: vDante[0].id,
         clinica_id: cHuellas[0].id,
-        fecha_hora: new Date(now.getTime() - 8 * 24 * 60 * 60 * 1000), // 8 días atrás
+        fecha_hora: new Date(now.getTime() - 3 * 24 * 60 * 60 * 1000), // 3 días atrás
         motivo_id: consultaGeneral!.id,
         estado_cita_id: citaConfirmada!.id
       },
@@ -551,9 +579,17 @@ async function main() {
         mascota_id: mascotasList[0].id, // Toby
         veterinario_id: vDante[0].id,
         clinica_id: cCentro[0].id,
-        fecha_hora: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000), // En 3 días
-        motivo_id: vacunacion!.id,
+        fecha_hora: new Date(now.getTime() + 2 * 24 * 60 * 60 * 1000), // En 2 días
+        motivo_id: consultaGeneral!.id,
         estado_cita_id: citaConfirmada!.id
+      },
+      {
+        mascota_id: mascotasList[2].id, // Felix
+        veterinario_id: vDante[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000), // En 4 días
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaAgendada!.id
       },
       {
         mascota_id: mascotasList[4].id, // Rocky
@@ -584,21 +620,59 @@ async function main() {
     tomorrow.setDate(tomorrow.getDate() + 1);
 
     const todayCitasData = [
+      // 1. Toby - Dr. Dante en Centro (09:00, Confirmada, Atención completada hoy)
       {
-        mascota_id: mascotasList[5].id, // Mia
-        veterinario_id: vVeronica[0].id,
+        mascota_id: mascotasList[0].id, // Toby
+        veterinario_id: vDante[0].id,
         clinica_id: cCentro[0].id,
         fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 0),
-        motivo_id: vacunacion!.id,
+        motivo_id: consultaGeneral!.id,
         estado_cita_id: citaConfirmada!.id
       },
+      // 2. Simba - Dr. Dante en Huellas (11:30, Confirmada, Atención completada hoy)
       {
         mascota_id: mascotasList[7].id, // Simba
         veterinario_id: vDante[0].id,
         clinica_id: cHuellas[0].id,
-        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 30),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      // 3. Beto - Dr. Dante en Centro (15:30, Confirmada, Cita de esta tarde)
+      {
+        mascota_id: mascotasList[6].id, // Beto
+        veterinario_id: vDante[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 15, 30),
+        motivo_id: consultaGeneral!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      // 4. Felix - Dr. Dante en Huellas (17:00, Agendada, Cita de esta tarde)
+      {
+        mascota_id: mascotasList[2].id, // Felix
+        veterinario_id: vDante[0].id,
+        clinica_id: cHuellas[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 17, 0),
         motivo_id: consultaGeneral!.id,
         estado_cita_id: citaAgendada!.id
+      },
+      // 5. Luna - Dr. Dante en Centro (18:30, Confirmada, Vacunación atrasada)
+      {
+        mascota_id: mascotasList[3].id, // Luna
+        veterinario_id: vDante[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 18, 30),
+        motivo_id: vacunacion!.id,
+        estado_cita_id: citaConfirmada!.id
+      },
+      // Citas de otros colegas hoy
+      {
+        mascota_id: mascotasList[5].id, // Mia
+        veterinario_id: vVeronica[0].id,
+        clinica_id: cCentro[0].id,
+        fecha_hora: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 10, 0),
+        motivo_id: vacunacion!.id,
+        estado_cita_id: citaConfirmada!.id
       },
       {
         mascota_id: mascotasList[1].id, // Lola
@@ -618,8 +692,10 @@ async function main() {
       }
     ];
 
+    const todayCitasList = [];
     for (const appt of todayCitasData) {
-      await db.insert(citas).values(appt);
+      const c = await db.insert(citas).values(appt).returning();
+      todayCitasList.push(c[0]);
     }
 
     // Citas para Mañana
@@ -654,26 +730,10 @@ async function main() {
       await db.insert(citas).values(appt);
     }
 
-    // --- 12. Crear Atenciones Clínicas ---
+    // --- 12. Crear Atenciones Clínicas, Vacunas y Tratamientos ---
     console.log('🩺 Registrando consultas clínicas, vacunas y tratamientos...');
 
-    // Atencion 1: Toby
-    const aToby = await db.insert(atenciones).values({
-      cita_id: pastCitasList[0].id,
-      mascota_id: mascotasList[0].id,
-      veterinario_id: vDante[0].id,
-      clinica_id: cCentro[0].id,
-      notas_clinicas: 'Control de rutina por pérdida de apetito temporal. El paciente se presenta activo, alerta y responsivo. Mucosas de coloración rosada normal, tiempo de llenado capilar menor a 2 segundos. Al examen físico no se detectan anomalías cardiorrespiratorias ni abdominales. Se sugiere monitorear el consumo de alimento en los próximos días y evitar darle sobras.',
-      peso_actual: '32.50',
-      fecha_atencion: pastCitasList[0].fecha_hora
-    }).returning();
-
-    await db.insert(atenciones_diagnosticos).values({
-      atencion_id: aToby[0].id,
-      diagnostico_id: sano!.id
-    });
-
-    // Vacuna de refuerzo para Toby (nuevo sistema: protocolo → serie → dosis)
+    // Protocolo de vacunación (compartido)
     await db.insert(vacuna_protocolo).values({
       senasa_id: vaccineProduct!.id,
       numero_inscripcion: vaccineProduct!.numero_senasa,
@@ -682,42 +742,97 @@ async function main() {
       tiene_refuerzo: true,
       refuerzo_cada_dias: 365,
       fecha_validez: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
-      especies_target: ['Canino'],
+      especies_target: ['Canino', 'Felino'],
       vias_administracion: ['Subcutánea'],
     }).onConflictDoNothing();
 
+    // 1. Atencion Toby HOY (cita de las 09:00 con Dr. Dante en Centro)
+    const aTobyToday = await db.insert(atenciones).values({
+      cita_id: todayCitasList[0].id,
+      mascota_id: mascotasList[0].id,
+      veterinario_id: vDante[0].id,
+      clinica_id: cCentro[0].id,
+      notas_clinicas: 'Control semestral y chequeo preventivo general. Paciente normotérmico (38.4 °C), hidratado y activo. Examen cardiopulmonar normal. Se administra dosis de refuerzo anual de inmunización y se renueva prescripción antiparasitaria.',
+      peso_actual: '33.20',
+      fecha_atencion: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 9, 30)
+    }).returning();
+
+    await db.insert(atenciones_diagnosticos).values({
+      atencion_id: aTobyToday[0].id,
+      diagnostico_id: sano!.id
+    });
+
+    // Serie de vacunas de Toby (Dosis 1 hace 365 días, Dosis 2 hoy)
     const serieToby = await db.insert(vacuna_serie).values({
       protocolo_id: vaccineProduct!.id,
       mascota_id: mascotasList[0].id,
       veterinario_id: vDante[0].id,
-      fecha_inicio: pastCitasList[0].fecha_hora,
+      fecha_inicio: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000),
       estado_serie: 'completa',
-      dosis_aplicadas: 1,
-      proximo_refuerzo: new Date(pastCitasList[0].fecha_hora.getTime() + 365 * 24 * 60 * 60 * 1000),
+      dosis_aplicadas: 2,
+      proximo_refuerzo: new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000),
     }).returning();
 
     await db.insert(vacuna_dosis).values({
       serie_id: serieToby[0].id,
-      atencion_id: aToby[0].id,
       numero_dosis: 1,
-      fecha_aplicacion: pastCitasList[0].fecha_hora,
+      fecha_aplicacion: new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000),
       lote: 'L-AB456',
       via_administracion: 'Subcutánea',
+      observaciones: 'Dosis anual anterior'
     });
 
-    // Desparasitación preventiva para Toby
+    await db.insert(vacuna_dosis).values({
+      serie_id: serieToby[0].id,
+      atencion_id: aTobyToday[0].id,
+      numero_dosis: 2,
+      fecha_aplicacion: aTobyToday[0].fecha_atencion,
+      lote: 'L-AB990',
+      via_administracion: 'Subcutánea',
+      observaciones: 'Refuerzo anual administrado en consulta de hoy'
+    });
+
+    // Tratamiento antiparasitario activo para Toby iniciado hoy
     await db.insert(tratamientos).values({
-      atencion_id: aToby[0].id,
+      atencion_id: aTobyToday[0].id,
       tipo_id: tratamientoAntiparasitario!.id,
-      producto_id: otherProduct2!.id,
-      dosis: '1 comprimido',
-      frecuencia: 'Dosis única, repetir a los 15 días',
-      fecha_inicio: pastCitasList[0].fecha_hora,
-      fecha_fin: new Date(pastCitasList[0].fecha_hora.getTime() + 15 * 24 * 60 * 60 * 1000),
-      indicaciones_adicionales: 'Administrar con el estómago lleno para evitar náuseas. Repetir dosis en 15 días para completar el ciclo.'
+      producto_id: otherProduct1!.id,
+      dosis: '1 comprimido masticable',
+      frecuencia: 'Mensual',
+      fecha_inicio: aTobyToday[0].fecha_atencion,
+      fecha_fin: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
+      indicaciones_adicionales: 'Administrar junto con alimento. Repetir dosis cada 30 días.'
     });
 
-    // Atencion 2: Lola
+    // 2. Atencion Simba HOY (cita de las 11:30 con Dr. Dante en Huellas)
+    const aSimbaToday = await db.insert(atenciones).values({
+      cita_id: todayCitasList[1].id,
+      mascota_id: mascotasList[7].id,
+      veterinario_id: vDante[0].id,
+      clinica_id: cHuellas[0].id,
+      notas_clinicas: 'Control de evolución clínica por gastroenteritis aguda. Tutor informa remisión completa de episodios eméticos y reanudación normal del apetito. Abdomen blando y no reactivo a la palpación. Se mantiene protector gástrico oral por 3 días más para completar el esquema.',
+      peso_actual: '4.95',
+      fecha_atencion: new Date(today.getFullYear(), today.getMonth(), today.getDate(), 11, 45)
+    }).returning();
+
+    await db.insert(atenciones_diagnosticos).values({
+      atencion_id: aSimbaToday[0].id,
+      diagnostico_id: gastroenteritis!.id
+    });
+
+    // Tratamiento protector gástrico activo para Simba iniciado hoy
+    await db.insert(tratamientos).values({
+      atencion_id: aSimbaToday[0].id,
+      tipo_id: tratamientoMedicamento!.id,
+      producto_id: otherProduct2!.id,
+      dosis: '0.5 ml vía oral',
+      frecuencia: 'Cada 24 horas',
+      fecha_inicio: aSimbaToday[0].fecha_atencion,
+      fecha_fin: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
+      indicaciones_adicionales: 'Completar los 3 días de protector gástrico. Mantener agua fresca disponible.'
+    });
+
+    // 3. Atencion Lola (pasada con Dra. Veronica en Centro)
     const aLola = await db.insert(atenciones).values({
       cita_id: pastCitasList[1].id,
       mascota_id: mascotasList[1].id,
@@ -733,7 +848,6 @@ async function main() {
       diagnostico_id: sano!.id
     });
 
-    // Vacuna para Lola (mismo protocolo, nueva serie)
     const serieLola = await db.insert(vacuna_serie).values({
       protocolo_id: vaccineProduct!.id,
       mascota_id: mascotasList[1].id,
@@ -753,13 +867,13 @@ async function main() {
       via_administracion: 'Subcutánea',
     });
 
-    // Atencion 3: Felix
+    // 4. Atencion Felix (hace 3 días con Dr. Dante en Huellas por Otitis)
     const aFelix = await db.insert(atenciones).values({
       cita_id: pastCitasList[2].id,
       mascota_id: mascotasList[2].id,
       veterinario_id: vDante[0].id,
       clinica_id: cHuellas[0].id,
-      notas_clinicas: 'Presenta otitis eritematosa bilateral, con mayor compromiso en el conducto auditivo derecho. El paciente manifiesta molestia y sacude la cabeza frecuentemente. Se observa abundante secreción cerosa oscura. Limpieza exhaustiva en el consultorio y prescripción de gotas óticas antiparasitarias/antibióticas.',
+      notas_clinicas: 'Presenta otitis eritematosa bilateral, con mayor compromiso en el conducto auditivo derecho. El paciente manifiesta molestia y sacude la cabeza frecuentemente. Se observa secreción cerosa. Limpieza exhaustiva en consultorio y prescripción de tratamiento oral con antibiótico.',
       peso_actual: '5.10',
       fecha_atencion: pastCitasList[2].fecha_hora
     }).returning();
@@ -769,42 +883,64 @@ async function main() {
       diagnostico_id: otitisExterna!.id
     });
 
+    // Tratamiento antibiótico activo para Felix (Cefalexina)
     await db.insert(tratamientos).values({
       atencion_id: aFelix[0].id,
       tipo_id: tratamientoMedicamento!.id,
-      producto_id: otherProduct1!.id,
-      dosis: '4 gotas en cada oído',
-      frecuencia: 'Cada 12 horas',
+      producto_id: otherProduct2!.id, // Cefalexina
+      dosis: '1/2 comprimido cada 12 horas',
+      frecuencia: 'Cada 12 horas por 7 días',
       fecha_inicio: pastCitasList[2].fecha_hora,
-      fecha_fin: new Date(pastCitasList[2].fecha_hora.getTime() + 7 * 24 * 60 * 60 * 1000),
-      indicaciones_adicionales: 'Limpiar suavemente la entrada del conducto auditivo con gasa seca antes de aplicar las gotas. Control clínico en 7 días para evaluar evolución.'
+      fecha_fin: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000),
+      indicaciones_adicionales: 'Limpiar suavemente la entrada del conducto auditivo con gasa antes de la toma. Control clínico agendado para hoy.'
     });
 
-    // Atencion 4: Walk-in Simba (Sin cita previa)
-    const aSimba = await db.insert(atenciones).values({
+    // 5. Atencion Beto (hace 4 días con Dr. Dante en Centro por Dermatitis)
+    const aBeto = await db.insert(atenciones).values({
       cita_id: null,
-      mascota_id: mascotasList[7].id,
+      mascota_id: mascotasList[6].id, // Beto
       veterinario_id: vDante[0].id,
-      clinica_id: cHuellas[0].id,
-      notas_clinicas: 'Traído por guardia debido a vómitos recurrentes (4 episodios) y decaimiento marcado desde hace 24 horas. Mucosas levemente secas, abdomen tenso y doloroso a la palpación media en zona epigástrica. Se administra antiemético inyectable por vía SC en consultorio y se prescribe tratamiento protector de la mucosa gástrica oral.',
-      peso_actual: '4.85',
-      fecha_atencion: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000)
+      clinica_id: cCentro[0].id,
+      notas_clinicas: 'Consulta por prurito moderado y eritema en región axilar y flancos. Cuadro compatible con dermatitis atópica estacional. Se prescribe tratamiento y se programa cita de seguimiento para hoy.',
+      peso_actual: '28.40',
+      fecha_atencion: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000)
     }).returning();
 
     await db.insert(atenciones_diagnosticos).values({
-      atencion_id: aSimba[0].id,
-      diagnostico_id: gastroenteritis!.id
+      atencion_id: aBeto[0].id,
+      diagnostico_id: dermatitisAtopica!.id
     });
 
+    // Tratamiento antialérgico activo para Beto
     await db.insert(tratamientos).values({
-      atencion_id: aSimba[0].id,
+      atencion_id: aBeto[0].id,
       tipo_id: tratamientoMedicamento!.id,
-      producto_id: otherProduct2!.id,
-      dosis: '0.5 ml por vía oral',
-      frecuencia: 'Cada 24 horas',
-      fecha_inicio: new Date(now.getTime() - 2 * 24 * 60 * 60 * 1000),
-      fecha_fin: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
-      indicaciones_adicionales: 'Dieta blanda líquida (pollo hervido y arroz sin condimentos) en porciones muy pequeñas durante las próximas 48 horas. Controlar consumo de agua para evitar deshidratación. Si los vómitos persisten, regresar inmediatamente.'
+      producto_id: otherProduct1!.id,
+      dosis: '1 comprimido cada 24 horas',
+      frecuencia: 'Diario por 14 días',
+      fecha_inicio: new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000),
+      fecha_fin: new Date(now.getTime() + 10 * 24 * 60 * 60 * 1000),
+      indicaciones_adicionales: 'Administrar con el alimento para mejorar absorción. Control agendado para hoy.'
+    });
+
+    // 6. Vacuna Vencida para Luna (para alertas de vacunación atrasada con Dr. Dante)
+    const serieLuna = await db.insert(vacuna_serie).values({
+      protocolo_id: vaccineProduct!.id,
+      mascota_id: mascotasList[3].id, // Luna
+      veterinario_id: vDante[0].id,
+      fecha_inicio: new Date(now.getTime() - 380 * 24 * 60 * 60 * 1000),
+      estado_serie: 'completa',
+      dosis_aplicadas: 1,
+      proximo_refuerzo: new Date(now.getTime() - 15 * 24 * 60 * 60 * 1000), // Vencida hace 15 días
+    }).returning();
+
+    await db.insert(vacuna_dosis).values({
+      serie_id: serieLuna[0].id,
+      numero_dosis: 1,
+      fecha_aplicacion: new Date(now.getTime() - 380 * 24 * 60 * 60 * 1000),
+      lote: 'L-LU789',
+      via_administracion: 'Subcutánea',
+      observaciones: 'Vacunación inicial. Refuerzo requerido vencido.'
     });
 
     console.log('🎉 ¡Carga de datos de prueba completada con éxito!');

@@ -1,5 +1,5 @@
 import type { TokenPayload } from "@vetvault/shared";
-import { SchemaType, type FunctionDeclaration } from "@google/generative-ai";
+import type { OpenAITool } from "./types";
 import { and, eq, inArray, lt, or } from "drizzle-orm";
 import { db } from "../../db";
 import { catalogo_productos, vacuna_serie } from "../../db/schema";
@@ -13,8 +13,34 @@ import { MascotaService } from "../mascota.service";
 import { PropietarioService } from "../propietario.service";
 import { TratamientoService } from "../tratamiento.service";
 
+export const SchemaType = {
+    STRING: "string",
+    NUMBER: "number",
+    INTEGER: "integer",
+    BOOLEAN: "boolean",
+    ARRAY: "array",
+    OBJECT: "object",
+} as const;
+
+export interface ToolParameterProperty {
+    type: string;
+    description?: string;
+    enum?: string[];
+    items?: unknown;
+}
+
+export interface ToolDeclaration {
+    name: string;
+    description: string;
+    parameters?: {
+        type: string;
+        properties: Record<string, ToolParameterProperty>;
+        required?: string[];
+    };
+}
+
 export interface Tool {
-    declaration: FunctionDeclaration;
+    declaration: ToolDeclaration;
     handler: (args: Record<string, unknown>, user: TokenPayload) => Promise<object>;
 }
 
@@ -635,8 +661,22 @@ export const tools: Tool[] = [
     }
 ];
 
-export function getToolDeclarations(): FunctionDeclaration[] {
+export function getToolDeclarations(): ToolDeclaration[] {
     return tools.map(t => t.declaration);
+}
+
+export function getOpenAITools(): OpenAITool[] {
+    return tools.map(t => ({
+        type: "function",
+        function: {
+            name: t.declaration.name,
+            description: t.declaration.description,
+            parameters: (t.declaration.parameters as any) ?? {
+                type: "object",
+                properties: {}
+            }
+        }
+    }));
 }
 
 export function findTool(name: string): Tool | undefined {
