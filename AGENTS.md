@@ -106,3 +106,21 @@ Por consistencia con la constraint "todo query a BD debe ir en servicios", todav
 - `services/api-backend/src/services/ai/prompts.ts`: System prompts con herramientas detalladas e inferencia de fechas.
 - `services/api-backend/src/services/tratamiento.service.ts`: Nuevo método `searchPacientesByProducto`.
 - `apps/web-app/src/components/layout/AIChatDrawer.tsx`: vetSuggestions con pool de 10, muestra 3 aleatorias.
+
+## Session — Oct 7, 2026
+
+### Goal
+Reemplazar todos los archivos CSS tradicionales en `apps/web-app` por Tailwind CSS v4 y tokens de diseño centralizados en `src/index.css`, implementar librerías externas (Recharts) para gráficos, corregir el sistema de temas (Claro / Oscuro / Sistema / Compacto) y commitear a GitHub.
+
+### Done
+- **Tailwind CSS v4 & Recharts**: Instalados `tailwindcss@4`, `@tailwindcss/vite`, `clsx`, `tailwind-merge` y `recharts`.
+- **Eliminación de CSS legados**: Eliminados 16 archivos `.css` (`App.css`, `ui.css`, `AppLayout.css`, `Header.css`, `Sidebar.css`, `AIChatDrawer.css`, `CreateCitaModal.css`, `DashboardPage.css`, `CitasPage.css`, `MascotasPage.css`, `MascotaDetailPage.css`, `ConsultationForm.css`, `PerfilPage.css`, `LoginPage.css`, `RegisterPage.css`, `ErrorPage.css`).
+- **Gráficos con Recharts**:
+  - `WeightChart.tsx`: Reconstruido con `AreaChart`, `ResponsiveContainer`, gradientes, tooltips dinámicos y 4 tarjetas de estadísticas (`Actual`, `Mínimo`, `Máximo`, `Variación`).
+  - `AppointmentsActivityChart.tsx`: Implementado gráfico de barras semanales para `VetDashboard.tsx`.
+- **Theme Engine & Fix de Temas**:
+  - `src/index.css`: Definido `@custom-variant dark (&:where(.dark, .dark *, [data-theme="dark"], [data-theme="dark"] *));` y tokens semánticos completos en `:root` y `[data-theme="dark"], .dark`.
+  - Mapeadas variables semánticas a `@theme` (`--color-canvas`, `--color-surface-card`, `--color-surface-solid`, etc.).
+  - Migrados todos los componentes (`Card`, `AppLayout`, `Sidebar`, `Header`, `Input`, `Tabs`, `Badge`, `Modal`, `Button`, `EmptyState`, `AIChatDrawer`, `LoginPage`, `RegisterPage`, `RegisterSuccessPage`, `ErrorPage`, `PerfilPage`) a variables semánticas (`bg-[var(--surface)]`, `border-[var(--border)]`, `text-[var(--text)]`, `text-[var(--text-h)]`, etc.) en lugar de clases hardcodeadas de slate que chocaban con el cambio de tema.
+  - Sincronización completa de `data-theme` y clase `.dark` en `ThemeContext.tsx`.
+- **Verificación y Deploy**: `npm run build` ejecutado y validado en `packages/shared` y `apps/web-app` con 0 errores. Cambios commiteados y pusheados a `origin main`.
