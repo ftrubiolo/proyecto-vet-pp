@@ -36,6 +36,7 @@ import {
   getEstadoBadgeVariant,
   getUIEstado,
 } from '@vetvault/shared';
+import { formatTime } from '../../utils/formatters';
 
 export function VetDashboard() {
   const { user } = useAuth();
@@ -93,20 +94,34 @@ export function VetDashboard() {
     }));
   }, [rawCitasList]);
 
-  // Today's schedule & triage
-  const now = new Date();
+  // Today's schedule & triage: undones first (Pendiente/Confirmada), then dones (Completada/Cancelada)
   const citasHoy = useMemo(() => {
+    const today = new Date();
+    const isDone = (estado: string) =>
+      estado === 'Completada' || estado === 'Cancelada';
+
     return mappedCitas
       .filter((c) => {
         const d = c.fecha;
         return (
-          d.getFullYear() === now.getFullYear() &&
-          d.getMonth() === now.getMonth() &&
-          d.getDate() === now.getDate()
+          d.getFullYear() === today.getFullYear() &&
+          d.getMonth() === today.getMonth() &&
+          d.getDate() === today.getDate()
         );
       })
-      .sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
-  }, [mappedCitas, now]);
+      .sort((a, b) => {
+        const aDone = isDone(a.estado);
+        const bDone = isDone(b.estado);
+
+        // Undones first, dones second
+        if (aDone !== bDone) {
+          return aDone ? 1 : -1;
+        }
+
+        // Chronological order within each group
+        return a.fecha.getTime() - b.fecha.getTime();
+      });
+  }, [mappedCitas]);
 
   const todayPending = useMemo(() => {
     return citasHoy.filter(
@@ -357,13 +372,10 @@ export function VetDashboard() {
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     {/* Time pill */}
-                    <div className="w-14 h-12 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col items-center justify-center flex-shrink-0">
+                    <div className="w-16 h-12 rounded-xl bg-[var(--surface-solid)] border border-[var(--border)] flex flex-col items-center justify-center flex-shrink-0 shadow-2xs">
                       <Clock size={12} className="text-[var(--accent)] mb-0.5" />
-                      <span className="text-xs font-bold text-[var(--text-h)]">
-                        {cita.fecha.toLocaleTimeString('es-AR', {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                      <span className="text-xs font-bold text-[var(--text-h)] tabular-nums whitespace-nowrap">
+                        {formatTime(cita.fecha)}
                       </span>
                     </div>
 

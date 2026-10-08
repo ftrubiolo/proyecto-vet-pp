@@ -194,22 +194,22 @@ export function UpcomingAppointmentBanner({
         </div>
 
         {/* Right Side: Quick Action Triggers */}
-        <div className="flex flex-wrap sm:flex-nowrap lg:flex-col items-stretch sm:items-center lg:items-end gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-[var(--border)] flex-shrink-0">
+        <div className="flex flex-col sm:flex-row lg:flex-col items-stretch sm:items-center lg:items-end gap-2.5 pt-3 lg:pt-0 border-t lg:border-t-0 border-[var(--border)] flex-shrink-0">
           <Button
             variant="secondary"
             size="sm"
             onClick={() => onReschedule(upcomingCita)}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5"
+            className="w-full sm:w-36 h-8 flex items-center justify-center gap-1.5 whitespace-nowrap"
           >
             <CalendarClock size={15} />
             <span>Reprogramar</span>
           </Button>
 
           <Button
-            variant="ghost"
+            variant="danger"
             size="sm"
             onClick={() => onCancel(upcomingCita.id)}
-            className="flex-1 sm:flex-initial flex items-center justify-center gap-1.5 text-[var(--danger)] hover:bg-[var(--danger)]/10"
+            className="w-full sm:w-36 h-8 flex items-center justify-center gap-1.5 whitespace-nowrap shadow-xs"
           >
             <XCircle size={15} />
             <span>Cancelar</span>
@@ -219,7 +219,7 @@ export function UpcomingAppointmentBanner({
             variant="primary"
             size="sm"
             onClick={onBookAppointment}
-            className="w-full sm:w-auto flex items-center justify-center gap-1.5 shadow-xs"
+            className="w-full sm:w-36 h-8 flex items-center justify-center gap-1.5 whitespace-nowrap shadow-xs"
           >
             <Plus size={15} />
             <span>Sacar Turno</span>

@@ -18,6 +18,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
 
 import { monthNames, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared';
+import { formatTime } from '../../../utils/formatters';
 
 export function OwnerCitasView() {
   const navigate = useNavigate();
@@ -425,7 +426,7 @@ export function OwnerCitasView() {
                       <strong className="text-sm font-bold text-[var(--text-h)] block truncate">{cita.mascota}</strong>
                       <span className="text-xs text-[var(--text-muted)] block truncate">{cita.motivo}</span>
                       <span className="text-[11px] text-[var(--text-muted)] block truncate">
-                        {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs · con {cita.veterinario}
+                        {formatTime(cita.fecha)} hs · con {cita.veterinario}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 flex-shrink-0">

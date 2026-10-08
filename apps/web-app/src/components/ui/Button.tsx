@@ -14,7 +14,7 @@ const variantStyles: Record<string, string> = {
   secondary:
     'bg-[var(--surface-solid)] text-[var(--text-h)] border border-[var(--border)] hover:bg-[var(--surface-2)] shadow-sm',
   danger:
-    'bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500/20',
+    'text-white bg-red-600 hover:bg-red-700 shadow-sm hover:-translate-y-0.5 active:translate-y-0',
   ghost:
     'bg-transparent text-[var(--text)] hover:bg-[var(--accent-light)] hover:text-[var(--accent)]',
 };

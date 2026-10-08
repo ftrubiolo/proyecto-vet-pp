@@ -21,6 +21,7 @@ import { Badge } from '../../../components/ui/Badge';
 import { CreateCitaModal } from '../../../components/appointments/CreateCitaModal';
 
 import { type CitaMapped, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared';
+import { formatTime } from '../../../utils/formatters';
 
 type EstadoCita = 'Todas' | 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancelada';
 
@@ -359,7 +360,7 @@ export function VetCitasView() {
                         <div className="flex items-center gap-1 text-sm font-bold text-[var(--text-h)]">
                           <Clock size={14} />
                           <span>
-                            {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })} hs
+                            {formatTime(cita.fecha)} hs
                           </span>
                         </div>
                         <span className="text-xs text-[var(--text-muted)]">
@@ -438,7 +439,7 @@ export function VetCitasView() {
                             className="p-1.5 rounded-lg bg-[var(--surface-2)] border border-[var(--border)] text-[11px] flex items-center gap-1.5 cursor-pointer hover:border-[var(--accent)] transition"
                             onClick={() => navigate(`/mascotas/${cita.mascotaId}`)}
                           >
-                            <strong className="text-[var(--text-h)]">{cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</strong>
+                            <strong className="text-[var(--text-h)]">{formatTime(cita.fecha)}</strong>
                             <span className="flex-1 truncate">{cita.mascota} ({cita.motivo})</span>
                             <Badge variant={getEstadoBadgeVariant(cita.estado)}>{cita.estado}</Badge>
                             {(cita.estado === 'Confirmada' || cita.estado === 'Pendiente') && (
@@ -519,7 +520,7 @@ export function VetCitasView() {
                       >
                         <div className="flex items-center gap-2 overflow-hidden text-ellipsis whitespace-nowrap">
                           <span className="font-bold">
-                            {cita.fecha.toLocaleTimeString('es-AR', { hour: 'numeric', minute: '2-digit' })}
+                            {formatTime(cita.fecha)}
                           </span>
                           <span
                             className="font-bold underline cursor-pointer hover:opacity-80"
@@ -586,7 +587,7 @@ export function VetCitasView() {
                 <div className="space-y-1">
                   <h4 className="font-bold text-base text-[var(--text-h)]">{activeCita.mascota}</h4>
                   <p className="text-xs text-[var(--text-muted)]">Motivo: {activeCita.motivo}</p>
-                  <p className="text-xs text-[var(--text-muted)]">Hora: {activeCita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}</p>
+                  <p className="text-xs text-[var(--text-muted)]">Hora: {formatTime(activeCita.fecha)} hs</p>
                   <p className="text-xs text-[var(--text-muted)]">Médico: {activeCita.veterinario}</p>
                 </div>
                 <div className="w-full mt-2">
@@ -626,7 +627,7 @@ export function VetCitasView() {
                 {upcomingCitas.slice(0, 5).map(cita => (
                   <div key={cita.id} className="flex items-center justify-between p-2.5 rounded-xl bg-[var(--surface-2)] border border-[var(--border)] text-xs">
                     <div className="font-bold text-[var(--text-h)] min-w-[55px]">
-                      {cita.fecha.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })}
+                      {formatTime(cita.fecha)}
                     </div>
                     <div className="flex-1 min-w-0 px-2">
                       <strong className="text-[var(--text-h)] block truncate">{cita.mascota}</strong>
