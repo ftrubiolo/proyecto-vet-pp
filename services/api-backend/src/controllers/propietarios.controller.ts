@@ -3,16 +3,16 @@ import { PropietarioService } from '../services/propietario.service';
 import { Validation } from '../utils/validation';
 import { UpdatePropietario } from '../types/db.types';
 import { MascotaService } from '../services/mascota.service';
+import { handleControllerError } from '../utils/error-handler';
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
         const props = await PropietarioService.getAll();
         return reply.code(200).send(props);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener los propietarios');
     }
-}
+};
 
 export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id } = request.params as { id: string };
@@ -25,10 +25,9 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
         if (!prop) return reply.code(404).send({ message: 'Propietario no encontrado' });
         return reply.code(200).send(prop);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener el propietario');
     }
-}
+};
 
 export const getAllMascotas = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user || !request.user.proId) {
@@ -39,10 +38,9 @@ export const getAllMascotas = async (request: FastifyRequest, reply: FastifyRepl
         const mascotas = await MascotaService.getAllMascotasByPropietarioId(request.user.proId);
         return reply.code(200).send(mascotas);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener las mascotas del propietario');
     }
-}
+};
 
 export const update = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id } = request.params as { id: string };
@@ -59,10 +57,9 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
             prop
         });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al actualizar el propietario');
     }
-}
+};
 
 export const buscar = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { q } = request.query as { q?: string };
@@ -74,7 +71,6 @@ export const buscar = async (request: FastifyRequest, reply: FastifyReply): Prom
         const results = await PropietarioService.search(q);
         return reply.code(200).send(results);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al buscar propietarios');
     }
-}
+};

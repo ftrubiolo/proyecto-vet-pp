@@ -168,3 +168,28 @@ Implementar un sistema de notificaciones Toast liviano, accesible y reactivo (ce
 - **Verificación**:
   - `grep -rn "alert(" apps/web-app/src` verificado en 0 ocurrencias.
   - `npm run build` en `@vetvault/shared` y `apps/web-app` completado con 0 errores.
+
+### Goal (Part 4) — API Standard Error Handling & Leak Prevention
+Centralizar la captura y sanitización de errores en el backend (`services/api-backend`) para evitar que errores de base de datos / Drizzle ORM filtren estructuras de consultas SQL (`Failed query: insert into ...`) o parámetros confidenciales a los clientes, entregando en su lugar respuestas estructuradas con códigos HTTP estándares y mensajes claros en español.
+
+### Done (Part 4)
+- **Centralized Error Handler (`src/utils/error-handler.ts`)**:
+  - Creada clase `AppError` para errores operacionales y de dominio con código de estado HTTP explícito.
+  - Creada función `sanitizeApiError(error, fallbackMessage)`:
+    - Mapeo de códigos de error de PostgreSQL (`23505` para duplicados -> 409 Conflict, `23503` para claves foráneas inexistentes -> 400 Bad Request, `23502` para campos obligatorios faltantes -> 400 Bad Request, `22001` para longitudes excedidas -> 400 Bad Request, `22P02` y `22007` para formatos/fechas inválidas -> 400 Bad Request, errores de conexión -> 503 Service Unavailable).
+    - Detección y filtrado automático de filtraciones de consultas Drizzle/SQL (`Failed query:`, `insert into`, `select`, etc.), reemplazándolas por mensajes seguros de servidor (500) sin exponer tablas ni parámetros.
+    - Soporte para validaciones de Fastify y errores de negocio seguros.
+  - Creada función `handleControllerError(error, reply, fallbackMessage)`: registra en consola del servidor el stack trace y detalle técnico completo para diagnóstico (`[API Error {code}]: ...`), y envía al cliente la respuesta sanitizada `{ message }` con su código HTTP correspondiente.
+- **Fastify Global Handlers (`src/server.ts`)**:
+  - Registrado `app.setErrorHandler` global para atrapar cualquier excepción imprevista o en middlewares/plugins.
+  - Registrado `app.setNotFoundHandler` devolviendo 404 estandarizado.
+- **Refactorización de Controladores**:
+  - Migrados los bloques catch de los 15 controladores del backend (`mascotas`, `auth`, `atenciones`, `citas`, `clinicas`, `catalogo`, `horarios`, `propietarios`, `suscripciones`, `tratamientos`, `upload`, `usuarios`, `vacunas`, `veterinarios`, `ai`) a `handleControllerError`.
+  - Eliminados todos los `reply.code(500).send({ message: error.message })` y `detalle: error.message` que exponían SQL crudo.
+- **Sanitización de Datos de Entrada**:
+  - Normalización defensiva de `sexo` en `MascotaService.create` y `MascotaService.update` para truncar/mapear valores como `'Macho'` / `'Hembra'` a `'M'` / `'H'`, protegiendo la columna `char(1)` en Postgres.
+- **Verificación**:
+  - TypeScript compilado en `services/api-backend` (`npx tsc --noEmit`) con 0 errores.
+  - Pruebas unitarias en runner de scratch confirmaron sanitización correcta en casos de unique constraint, foreign key, string length, query leak y connection error.
+  - Builds de `@vetvault/shared` y `apps/web-app` superados con 0 errores.
+

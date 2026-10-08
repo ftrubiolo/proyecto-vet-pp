@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { CitaService } from "../services/cita.service";
 import { Validation } from "../utils/validation";
 import type { NewCita, UpdateCita } from "../types/db.types";
+import { handleControllerError } from "../utils/error-handler";
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) return reply.code(401).send({ message: 'No autorizado' });
@@ -30,8 +31,7 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
         }
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener la lista de citas');
     }
 };
 
@@ -50,8 +50,7 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 
         return reply.code(200).send(cita);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener la cita');
     }
 };
 
@@ -69,8 +68,7 @@ export const create = async (request: FastifyRequest, reply: FastifyReply): Prom
         const newCita = await CitaService.create(data);
         return reply.code(201).send({ message: 'Cita agendada exitosamente', result: newCita });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar la cita');
     }
 };
 
@@ -91,7 +89,6 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
         const result = await CitaService.update(id, data);
         return reply.code(200).send({ message: 'Cita actualizada exitosamente', result });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al actualizar la cita');
     }
 };

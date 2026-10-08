@@ -1,5 +1,6 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { UploadService } from '../services/upload.service';
+import { handleControllerError } from '../utils/error-handler';
 
 interface UploadParams {
   folder?: string;
@@ -32,7 +33,6 @@ export const uploadFile = async (request: FastifyRequest, reply: FastifyReply): 
 
     return reply.code(200).send(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error al subir archivo';
-    return reply.code(400).send({ message });
+    return handleControllerError(error, reply, 'Error al subir el archivo');
   }
 };

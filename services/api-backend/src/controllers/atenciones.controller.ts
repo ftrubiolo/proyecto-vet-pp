@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { AtencionService, AtencionInput } from "../services/atencion.service";
 import { Validation } from "../utils/validation";
 import { PdfService } from "../services/pdf.service";
+import { handleControllerError } from "../utils/error-handler";
 
 export const getByMascota = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { mascotaId } = request.params as { mascotaId: string };
@@ -16,8 +17,7 @@ export const getByMascota = async (request: FastifyRequest, reply: FastifyReply)
         const result = await AtencionService.getByMascotaId(mascotaId);
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener el historial de consultas');
     }
 };
 
@@ -42,8 +42,7 @@ export const create = async (request: FastifyRequest, reply: FastifyReply): Prom
         const result = await AtencionService.create(data);
         return reply.code(201).send({ message: 'Consulta registrada exitosamente', result });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar la consulta');
     }
 };
 
@@ -68,8 +67,7 @@ export const downloadPdf = async (request: FastifyRequest, reply: FastifyReply):
         reply.header('Content-Disposition', `attachment; filename="consulta-${atencion.mascota?.nombre || 'mascota'}-${id.substring(0, 8)}.pdf"`);
         return reply.code(200).send(buffer);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error al generar el PDF';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al generar el PDF de la consulta');
     }
 };
 

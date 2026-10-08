@@ -5,14 +5,14 @@ import { and, eq } from 'drizzle-orm';
 import { clinicas, clinicas_mascotas, mascotas } from '../db/schema';
 import { VetService } from '../services/veterinario.service';
 import { Validation } from '../utils/validation';
+import { handleControllerError } from '../utils/error-handler';
 
 export async function getAll(request: FastifyRequest, reply: FastifyReply) {
     try {
         const clinicas = await ClinicaService.getAll();
         return reply.code(200).send(clinicas);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener las clínicas');
     }
 }
 
@@ -23,8 +23,7 @@ export async function getOne(request: FastifyRequest, reply: FastifyReply) {
         if (!clinica) return reply.code(404).send({ message: 'Clínica no encontrada' });
         return reply.code(200).send(clinica);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener la clínica');
     }
 }
 
@@ -34,8 +33,7 @@ export async function create(request: FastifyRequest, reply: FastifyReply) {
         const clinica = await ClinicaService.create(data);
         return reply.code(201).send(clinica);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar la clínica');
     }
 }
 
@@ -64,8 +62,7 @@ export async function update(request: FastifyRequest, reply: FastifyReply) {
             clinica: updated
         });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al actualizar la clínica');
     }
 }
 
@@ -133,8 +130,7 @@ export async function admision(request: FastifyRequest, reply: FastifyReply) {
             message: `Mascota '${petExists.nombre}' admitida exitosamente como paciente`
         });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al admitir al paciente en la clínica');
     }
 }
 
@@ -165,7 +161,6 @@ export const getByMascota = async (request: FastifyRequest, reply: FastifyReply)
             );
         return reply.code(200).send(results);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener las clínicas de la mascota');
     }
 };

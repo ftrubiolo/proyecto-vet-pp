@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 import { Validation } from '../utils/validation';
 import { UpdateVeterinario } from '../types/db.types';
 import { ClinicaService } from '../services/clinica.service';
+import { handleControllerError } from '../utils/error-handler';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -12,10 +13,9 @@ export const getAll = async (request: FastifyRequest, reply: FastifyReply): Prom
     const veters = await VetService.getAll();
     return reply.code(200).send(veters);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al obtener los veterinarios');
   }
-}
+};
 
 export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
   const { id } = request.params as { id: string };
@@ -29,8 +29,7 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 
     return reply.code(200).send(vet);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al obtener el perfil de veterinario');
   }
 };
 
@@ -75,8 +74,7 @@ export const generarInvitacion = async (request: FastifyRequest, reply: FastifyR
       nombreClinica: clinic.nombre_comercial,
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al generar la invitación');
   }
 };
 
@@ -95,10 +93,9 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
       vet
     });
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al actualizar el perfil de veterinario');
   }
-}
+};
 
 export const getByClinica = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
   const { clinicaId } = request.params as { clinicaId: string };
@@ -108,7 +105,6 @@ export const getByClinica = async (request: FastifyRequest, reply: FastifyReply)
     const results = await VetService.getByClinicaId(clinicaId);
     return reply.code(200).send(results);
   } catch (error) {
-    const message = error instanceof Error ? error.message : 'Error desconocido';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al obtener los veterinarios de la clínica');
   }
 };

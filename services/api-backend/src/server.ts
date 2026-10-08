@@ -6,6 +6,7 @@ import fastifySwagger from '@fastify/swagger';
 import fastifySwaggerUi from '@fastify/swagger-ui';
 import multipart from '@fastify/multipart';
 import apiRoutes from './routes';
+import { handleControllerError } from './utils/error-handler';
 
 const app = fastify({ logger: true });
 
@@ -51,6 +52,15 @@ const start = async () => {
 
     app.get("/api/health", async (request, reply) => {
       return { message: 'Backend API esta funcionando.' };
+    });
+
+    // Centralized global error handler
+    app.setErrorHandler((error, request, reply) => {
+      return handleControllerError(error, reply);
+    });
+
+    app.setNotFoundHandler((request, reply) => {
+      return reply.code(404).send({ message: 'Ruta no encontrada' });
     });
 
     const PORT = parseInt(process.env.PORT || '8000', 10);

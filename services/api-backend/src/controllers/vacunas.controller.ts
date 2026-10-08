@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { VacunaService } from "../services/vacuna.service";
 import { Validation } from "../utils/validation";
+import { handleControllerError } from "../utils/error-handler";
 
 export const getByMascota = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { mascotaId } = request.params as { mascotaId: string };
@@ -15,8 +16,7 @@ export const getByMascota = async (request: FastifyRequest, reply: FastifyReply)
         const result = await VacunaService.getByMascotaId(mascotaId);
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener las vacunas de la mascota');
     }
 };
 
@@ -28,8 +28,7 @@ export const getProtocoloByProductoId = async (request: FastifyRequest, reply: F
         const result = await VacunaService.getProtocoloByProductoId(Number(productoId));
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener el protocolo de vacunación');
     }
 };
 
@@ -46,7 +45,6 @@ export const createProtocolo = async (request: FastifyRequest, reply: FastifyRep
         const result = await VacunaService.createProtocolo(body);
         return reply.code(201).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar el protocolo de vacunación');
     }
 };

@@ -203,6 +203,11 @@ export class MascotaService {
         const dateObject = new Date(data.fecha_nacimiento);
         data.fecha_nacimiento = dateObject;
 
+        if (data.sexo) {
+            const s = String(data.sexo).trim().toUpperCase();
+            data.sexo = s.startsWith('H') ? 'H' : 'M';
+        }
+
         const [newMascota] = await client
             .insert(mascotas)
             .values(data)
@@ -222,6 +227,11 @@ export class MascotaService {
 
         if (data.fecha_nacimiento) {
             data.fecha_nacimiento = new Date(data.fecha_nacimiento);
+        }
+
+        if (data.sexo) {
+            const s = String(data.sexo).trim().toUpperCase();
+            data.sexo = s.startsWith('H') ? 'H' : 'M';
         }
 
         const [updated] = await client

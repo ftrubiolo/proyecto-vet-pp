@@ -7,16 +7,16 @@ import { PropietarioService } from '../services/propietario.service';
 import { db } from '../db';
 import { eq } from 'drizzle-orm';
 import { suscripciones } from '../db/schema';
+import { handleControllerError } from '../utils/error-handler';
 
 export const getAll = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     try {
         const users = await UserService.getAll();
-
         return reply.code(200).send(users);
     } catch (error) {
-        reply.code(500).send({ message: 'Error al obtener los usuarios' });
+        return handleControllerError(error, reply, 'Error al obtener los usuarios');
     }
-}
+};
 
 export const getOne = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id: userId } = request.params as { id: string };
@@ -27,9 +27,9 @@ export const getOne = async (request: FastifyRequest, reply: FastifyReply): Prom
 
         return reply.code(200).send(user);
     } catch (error) {
-        reply.code(500).send({ message: 'Error al obtener el usuario' });
+        return handleControllerError(error, reply, 'Error al obtener el usuario');
     }
-}
+};
 
 export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     if (!request.user) return reply.code(401).send({ error: 'No se proporcionó un token.' });
@@ -94,9 +94,9 @@ export const getMe = async (request: FastifyRequest, reply: FastifyReply): Promi
                 }
             });
     } catch (error) {
-        reply.code(500).send({ message: 'Error al obtener el usuario' });
+        return handleControllerError(error, reply, 'Error al obtener los datos del usuario');
     }
-}
+};
 
 export const update = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id } = request.params as { id: string };
@@ -115,9 +115,6 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
 
         return reply.code(200).send(updatedUser);
     } catch (error) {
-        reply.code(500).send({ message: 'Error al actualizar el usuario' });
+        return handleControllerError(error, reply, 'Error al actualizar el usuario');
     }
-}
-
-export const remove = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
-}
+};

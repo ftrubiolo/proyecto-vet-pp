@@ -4,6 +4,7 @@ import { checkRateLimit } from "../utils/rate-limiter";
 import { PdfService } from "../services/pdf.service";
 import { AiChatService } from "../services/ai/chat.service";
 import type { ChatRequest } from "../services/ai/types";
+import { handleControllerError } from "../utils/error-handler";
 
 const MAX_HISTORY_LENGTH = 30;
 const MAX_MESSAGE_LENGTH = 2000;
@@ -15,7 +16,7 @@ export const chat = async (request: FastifyRequest, reply: FastifyReply): Promis
     }
 
     // Rate limiting por usuario
-    const { allowed, remaining, resetInMs } = checkRateLimit(`ai:${user.id}`);
+    const { allowed, resetInMs } = checkRateLimit(`ai:${user.id}`);
     if (!allowed) {
         return reply.code(429).header("Retry-After", String(Math.ceil(resetInMs / 1000))).send({
             message: "Demasiadas solicitudes. Intentá de nuevo en unos segundos.",
@@ -48,8 +49,7 @@ export const chat = async (request: FastifyRequest, reply: FastifyReply): Promis
         const response = await AiChatService.processMessage(user, message, safeHistory, context);
         return reply.code(200).send({ response });
     } catch (error) {
-        const message = error instanceof Error ? error.message : "Error de comunicación con el agente de IA";
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error de comunicación con el asistente de IA');
     }
 };
 
@@ -67,8 +67,6 @@ export const downloadChatPdf = async (request: FastifyRequest, reply: FastifyRep
         reply.header('Content-Disposition', `attachment; filename="consulta-ia-${Date.now()}.pdf"`);
         return reply.code(200).send(buffer);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error al generar el PDF';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al generar el PDF del chat');
     }
 };
-

@@ -3,6 +3,7 @@ import { db } from '../db';
 import { eq } from 'drizzle-orm';
 import { suscripciones } from '../db/schema';
 import { MercadoPagoConfig, PreApproval } from 'mercadopago';
+import { handleControllerError } from '../utils/error-handler';
 
 // Initialize Mercado Pago client
 const client = new MercadoPagoConfig({
@@ -68,9 +69,7 @@ export const createCheckoutSession = async (request: FastifyRequest, reply: Fast
 
     return reply.code(200).send({ initPoint });
   } catch (error) {
-    console.error('Error creating MP preapproval:', error);
-    const message = error instanceof Error ? error.message : 'Error al inicializar el pago con Mercado Pago';
-    return reply.code(500).send({ message });
+    return handleControllerError(error, reply, 'Error al inicializar el pago con Mercado Pago');
   }
 };
 
@@ -163,7 +162,6 @@ export const getMySubscription = async (request: FastifyRequest, reply: FastifyR
 
     return reply.code(200).send({ subscription: sub[0] });
   } catch (error) {
-    console.error('Error fetching subscription:', error);
-    return reply.code(500).send({ message: 'Error al obtener los detalles de la suscripción' });
+    return handleControllerError(error, reply, 'Error al obtener los detalles de la suscripción');
   }
 };

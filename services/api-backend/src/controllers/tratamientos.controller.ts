@@ -3,6 +3,7 @@ import { TratamientoService } from "../services/tratamiento.service";
 import { Validation } from "../utils/validation";
 import { PdfService } from "../services/pdf.service";
 import type { UpdateTratamiento } from "../types/db.types";
+import { handleControllerError } from "../utils/error-handler";
 
 export const getByMascota = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { mascotaId } = request.params as { mascotaId: string };
@@ -17,8 +18,7 @@ export const getByMascota = async (request: FastifyRequest, reply: FastifyReply)
         const result = await TratamientoService.getByMascotaId(mascotaId);
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener los tratamientos de la mascota');
     }
 };
 
@@ -38,8 +38,7 @@ export const update = async (request: FastifyRequest, reply: FastifyReply): Prom
 
         return reply.code(200).send({ message: 'Tratamiento actualizado exitosamente', result });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al actualizar el tratamiento');
     }
 };
 
@@ -64,8 +63,6 @@ export const downloadPdf = async (request: FastifyRequest, reply: FastifyReply):
         reply.header('Content-Disposition', `attachment; filename="tratamiento-${tratamiento.atencion?.mascota?.nombre || 'mascota'}-${id.substring(0, 8)}.pdf"`);
         return reply.code(200).send(buffer);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error al generar el PDF';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al generar el PDF del tratamiento');
     }
 };
-

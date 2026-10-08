@@ -2,6 +2,7 @@ import { FastifyRequest, FastifyReply } from "fastify";
 import { HorarioService } from "../services/horario.service";
 import { Validation } from "../utils/validation";
 import type { NewHorarioLaboral } from "../types/db.types";
+import { handleControllerError } from "../utils/error-handler";
 
 export const getHorarios = async (request: FastifyRequest, reply: FastifyReply): Promise<void> => {
     const { id } = request.params as { id: string };
@@ -15,8 +16,7 @@ export const getHorarios = async (request: FastifyRequest, reply: FastifyReply):
         const result = await HorarioService.getByVeterinarioId(id);
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al obtener los horarios laborales');
     }
 };
 
@@ -37,8 +37,7 @@ export const updateHorarios = async (request: FastifyRequest, reply: FastifyRepl
         const result = await HorarioService.updateClinicaHorarios(id, clinicaId, body.horarios);
         return reply.code(200).send({ message: "Horarios actualizados exitosamente", result });
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al actualizar los horarios laborales');
     }
 };
 
@@ -53,7 +52,6 @@ export const getDisponibilidad = async (request: FastifyRequest, reply: FastifyR
         const result = await HorarioService.calcularDisponibilidad(clinicaId, veterinarioId, fecha);
         return reply.code(200).send(result);
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        return reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al calcular la disponibilidad');
     }
 };

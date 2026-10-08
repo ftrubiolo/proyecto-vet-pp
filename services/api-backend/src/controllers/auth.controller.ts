@@ -12,6 +12,7 @@ import { ClinicaService } from '../services/clinica.service';
 import { PropietarioService } from '../services/propietario.service';
 import type { RegistroPropietarioInput, RegistroVeterinarioInput, RegistroVeterinarioUnirseInput, TokenPayload } from '@vetvault/shared';
 import { NewClinica, NewPropietario, NewUsuario, NewVeterinario } from '../types/db.types';
+import { handleControllerError } from '../utils/error-handler';
 
 const JWT_SECRET = process.env.JWT_SECRET as string;
 
@@ -65,8 +66,7 @@ export const registrarVeterinario = async (request: FastifyRequest, reply: Fasti
         });
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar el veterinario');
     }
 };
 
@@ -172,8 +172,7 @@ export const registrarPropietario = async (request: FastifyRequest, reply: Fasti
         });
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al registrar el propietario');
     }
 };
 
@@ -248,8 +247,7 @@ export const registrarVeterinarioUnirse = async (request: FastifyRequest, reply:
         });
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al unirse a la clínica');
     }
 };
 
@@ -359,8 +357,7 @@ export const login = async (request: FastifyRequest, reply: FastifyReply): Promi
             });
 
     } catch (error) {
-        const message = error instanceof Error ? error.message : 'Error desconocido';
-        reply.code(500).send({ message });
+        return handleControllerError(error, reply, 'Error al iniciar sesión');
     }
 };
 
