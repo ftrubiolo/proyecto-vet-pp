@@ -10,6 +10,7 @@ import {
   Cell,
 } from 'recharts';
 import { CalendarDays } from 'lucide-react';
+import { getUIEstado } from '@vetvault/shared';
 
 interface CitaRecord {
   fecha_hora: string;
@@ -42,7 +43,7 @@ export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityCh
       const dayKey = `${d.getDate()}/${d.getMonth() + 1}`;
       if (countsByDay[dayKey] !== undefined) {
         countsByDay[dayKey].total += 1;
-        const estado = c.estado_cita?.estado || c.estado;
+        const estado = getUIEstado(c);
         if (estado === 'Completada') {
           countsByDay[dayKey].completadas += 1;
         }
@@ -115,7 +116,7 @@ export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityCh
                     <p className="text-[var(--accent)]">
                       Total citas: <strong>{data.total}</strong>
                     </p>
-                    <p className="text-emerald-500">
+                    <p className="text-[var(--success)]">
                       Completadas: <strong>{data.completadas}</strong>
                     </p>
                   </div>
@@ -130,7 +131,7 @@ export function AppointmentsActivityChart({ citas = [] }: AppointmentsActivityCh
               {chartData.map((entry, index) => (
                 <Cell
                   key={`cell-${index}`}
-                  fill={entry.total > 0 ? 'var(--accent, #0ea5e9)' : 'rgba(148, 163, 184, 0.3)'}
+                  fill={entry.total > 0 ? 'var(--accent, #0ea5e9)' : 'var(--border)'}
                 />
               ))}
             </Bar>

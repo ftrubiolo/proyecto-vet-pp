@@ -1,46 +1,163 @@
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   PawPrint,
   CalendarDays,
   Syringe,
-  Clock,
+  CheckCircle2,
+  Plus,
 } from 'lucide-react';
+import type { Mascota, MascotasResponse } from '@vetvault/shared';
+import { getUIEstado } from '@vetvault/shared';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/useToast';
+import { api } from '../../api/client';
 import { Card } from '../../components/ui/Card';
-import { Badge } from '../../components/ui/Badge';
+import { StatCard } from '../../components/ui/StatCard';
 import { Button } from '../../components/ui/Button';
 import { Spinner } from '../../components/ui/Spinner';
 import { EmptyState } from '../../components/ui/EmptyState';
-import { type Mascota, type MascotasResponse, monthNames, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared';
+import { CreateCitaModal } from '../../components/appointments/CreateCitaModal';
+import {
+  PetHealthPassportCard,
+  computePetVaccineStatus,
+} from './components/PetHealthPassportCard';
+import { UpcomingAppointmentBanner } from './components/UpcomingAppointmentBanner';
+import { ClinicReferenceBanner } from './components/ClinicReferenceBanner';
+import { RescheduleCitaModal } from './components/RescheduleCitaModal';
 
 export function OwnerDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
+
+  const [showCreateCitaModal, setShowCreateCitaModal] = useState(false);
+  const [reschedulingCita, setReschedulingCita] = useState<any | null>(null);
 
   // Fetch mascotas
-  const { data: mascotasData, isLoading } = useFetch<MascotasResponse | Mascota[]>('/mascotas');
+  const {
+    data: mascotasData,
+    isLoading: isMascotasLoading,
+  } = useFetch<MascotasResponse | Mascota[]>('/mascotas');
 
   // Fetch appointments
-  const { data: rawCitas, isLoading: isCitasLoading } = useFetch<any[]>('/citas');
+  const {
+    data: rawCitas,
+    isLoading: isCitasLoading,
+    refetch: refetchCitas,
+  } = useFetch<any[]>('/citas');
 
-  // Normalize to array
-  const mascotas: Mascota[] = Array.isArray(mascotasData)
-    ? mascotasData
-    : (mascotasData as MascotasResponse)?.mascotas || [];
+  // Fetch clinics as reference
+  const { data: clinicasData } = useFetch<any[]>('/clinicas');
 
-  const rawCitasList = Array.isArray(rawCitas) ? rawCitas : [];
+  // Normalize mascotas list
+  const mascotas: Mascota[] = useMemo(() => {
+    if (Array.isArray(mascotasData)) return mascotasData;
+    return (mascotasData as MascotasResponse)?.mascotas || [];
+  }, [mascotasData]);
 
-  const upcomingCitas = rawCitasList
-    .map((c: any) => ({
-      id: c.id,
-      mascota: c.mascota?.nombre || 'Desconocida',
-      motivo: c.motivo_cita?.motivo || 'Consulta',
-      fecha: new Date(c.fecha_hora),
-      estado: getUIEstado(c),
-    }))
-    .filter((c: any) => c.estado === 'Pendiente' || c.estado === 'Confirmada')
-    .slice(0, 3);
+  const rawCitasList: any[] = useMemo(() => {
+    return Array.isArray(rawCitas) ? rawCitas : [];
+  }, [rawCitas]);
+
+  // Fetch vaccine series per pet
+  const [vacunasByMascota, setVacunasByMascota] = useState<Record<string, any[]>>({});
+  const [isVacunasLoading, setIsVacunasLoading] = useState(false);
+
+  useEffect(() => {
+    if (mascotas.length === 0) {
+      setVacunasByMascota({});
+      setIsVacunasLoading(false);
+      return;
+    }
+
+    let isMounted = true;
+    setIsVacunasLoading(true);
+
+    Promise.all(
+      mascotas.map((m) =>
+        api
+          .get<any[]>(`/vacunas/mascota/${m.id}`)
+          .then((data) => ({ id: m.id, data: Array.isArray(data) ? data : [] }))
+          .catch(() => ({ id: m.id, data: [] }))
+      )
+    )
+      .then((results) => {
+        if (!isMounted) return;
+        const map: Record<string, any[]> = {};
+        results.forEach((r) => {
+          map[r.id] = r.data;
+        });
+        setVacunasByMascota(map);
+        setIsVacunasLoading(false);
+      })
+      .catch(() => {
+        if (isMounted) setIsVacunasLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
+  }, [mascotas]);
+
+  // Compute upcoming appointments
+  const upcomingCitas = useMemo(() => {
+    const now = new Date();
+    return rawCitasList
+      .filter((c: any) => {
+        const appointmentDate = new Date(c.fecha_hora);
+        const estado = getUIEstado(c);
+        return (
+          appointmentDate >= now &&
+          (estado === 'Pendiente' || estado === 'Confirmada')
+        );
+      })
+      .sort((a: any, b: any) => {
+        return (
+          new Date(a.fecha_hora).getTime() - new Date(b.fecha_hora).getTime()
+        );
+      });
+  }, [rawCitasList]);
+
+  // Next immediate appointment
+  const nextUpcomingCita = upcomingCitas.length > 0 ? upcomingCitas[0] : null;
+
+  // Completed visits count
+  const completedVisitsCount = useMemo(() => {
+    return rawCitasList.filter((c: any) => getUIEstado(c) === 'Completada').length;
+  }, [rawCitasList]);
+
+  // Pending/upcoming vaccines sum across all pets
+  const totalPendingVaccinesCount = useMemo(() => {
+    let count = 0;
+    Object.values(vacunasByMascota).forEach((seriesList) => {
+      const info = computePetVaccineStatus(seriesList);
+      count += info.vencidas + info.proximas;
+    });
+    return count;
+  }, [vacunasByMascota]);
+
+  // Determine primary clinic reference
+  const primaryClinic = useMemo(() => {
+    if (nextUpcomingCita?.clinica) return nextUpcomingCita.clinica;
+    const anyCitaWithClinic = rawCitasList.find((c: any) => c.clinica)?.clinica;
+    if (anyCitaWithClinic) return anyCitaWithClinic;
+    if (Array.isArray(clinicasData) && clinicasData.length > 0) return clinicasData[0];
+    return null;
+  }, [nextUpcomingCita, rawCitasList, clinicasData]);
+
+  // Cancel appointment handler
+  const handleCancelAppointment = async (citaId: string) => {
+    if (!window.confirm('¿Seguro que querés cancelar este turno?')) return;
+    try {
+      await api.patch(`/citas/${citaId}`, { estado_cita_id: 3 });
+      toast.success('Turno cancelado exitosamente');
+      refetchCitas();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : 'Error al cancelar la cita');
+    }
+  };
 
   const greeting = () => {
     const hour = new Date().getHours();
@@ -53,184 +170,181 @@ export function OwnerDashboard() {
 
   return (
     <div className="max-w-7xl mx-auto space-y-6 animate-fade-in">
-      {/* Welcome header */}
-      <div className="space-y-1">
-        <h2 className="text-2xl font-bold text-slate-900 dark:text-slate-100">
-          {greeting()}, {displayName} 👋
-        </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">
-          Aquí podés ver el estado de tus mascotas y próximas citas.
-        </p>
+      {/* Header section with greeting & primary CTA */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="space-y-1">
+          <h2 className="text-2xl sm:text-3xl font-extrabold text-[var(--text-h)] tracking-tight">
+            {greeting()}, {displayName} 👋
+          </h2>
+          <p className="text-sm text-[var(--text-muted)]">
+            Aquí podés ver el estado de tus mascotas, su pasaporte de salud y próximas citas.
+          </p>
+        </div>
+
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => setShowCreateCitaModal(true)}
+          className="self-start sm:self-auto flex items-center gap-2 shadow-sm"
+        >
+          <Plus size={16} />
+          <span>Sacar Turno</span>
+        </Button>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <Card>
-          <div className="flex flex-col gap-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <PawPrint size={20} />
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-              {isLoading ? '–' : mascotas.length}
-            </div>
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Mis mascotas
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex flex-col gap-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <CalendarDays size={20} />
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-              {isCitasLoading ? '–' : upcomingCitas.length}
-            </div>
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Próximas citas
-            </div>
-          </div>
-        </Card>
-
-        <Card>
-          <div className="flex flex-col gap-2">
-            <div className="w-10 h-10 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
-              <Syringe size={20} />
-            </div>
-            <div className="text-2xl font-extrabold text-slate-900 dark:text-slate-100 tracking-tight">
-              0
-            </div>
-            <div className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Vacunas pendientes
-            </div>
-          </div>
-        </Card>
+      {/* Dynamic Clinical Metrics (Zero Static Placeholders) */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard
+          icon={<PawPrint size={20} />}
+          value={mascotas.length}
+          label="Mis mascotas"
+          loading={isMascotasLoading}
+        />
+        <StatCard
+          icon={<CalendarDays size={20} />}
+          value={upcomingCitas.length}
+          label="Próximos turnos"
+          loading={isCitasLoading}
+        />
+        <StatCard
+          icon={<Syringe size={20} />}
+          value={totalPendingVaccinesCount}
+          label="Vacunas por atender"
+          loading={isMascotasLoading || isVacunasLoading}
+        />
+        <StatCard
+          icon={<CheckCircle2 size={20} />}
+          value={completedVisitsCount}
+          label="Consultas realizadas"
+          loading={isCitasLoading}
+        />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Quick Pets */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-              Mis mascotas
+      {/* Upcoming Care & Appointment Hero Banner */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h3 className="text-base font-bold text-[var(--text-h)] flex items-center gap-2">
+            <CalendarDays size={18} className="text-[var(--accent)]" />
+            <span>Próxima Cita & Atención</span>
+          </h3>
+          {upcomingCitas.length > 0 && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/citas')}
+              className="text-xs"
+            >
+              Ver todas ({upcomingCitas.length})
+            </Button>
+          )}
+        </div>
+
+        <UpcomingAppointmentBanner
+          upcomingCita={nextUpcomingCita}
+          isLoading={isCitasLoading}
+          onReschedule={(cita) => setReschedulingCita(cita)}
+          onCancel={handleCancelAppointment}
+          onBookAppointment={() => setShowCreateCitaModal(true)}
+        />
+      </div>
+
+      {/* Pet Health Passport Cards Section */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-base font-bold text-[var(--text-h)] flex items-center gap-2">
+              <PawPrint size={18} className="text-[var(--accent)]" />
+              <span>Pasaporte de Salud de Mascotas</span>
             </h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/mascotas')}>
+            <p className="text-xs text-[var(--text-muted)] mt-0.5">
+              Ficha médica digital, estado preventivo y accesos directos
+            </p>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate('/mascotas')}
+              className="text-xs"
+            >
               Ver todas
             </Button>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => navigate('/mascotas')}
+              className="text-xs hidden sm:flex items-center gap-1.5"
+            >
+              <Plus size={14} />
+              <span>Registrar Mascota</span>
+            </Button>
           </div>
+        </div>
 
-          {isLoading ? (
-            <div className="flex justify-center p-8">
-              <Spinner />
-            </div>
-          ) : mascotas.length === 0 ? (
-            <Card>
-              <EmptyState
-                icon={<PawPrint size={40} />}
-                title="Sin mascotas"
-                message="Todavía no registraste ninguna mascota."
-                action={
-                  <Button size="sm" onClick={() => navigate('/mascotas')}>
-                    Agregar mascota
-                  </Button>
-                }
-              />
-            </Card>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              {mascotas.slice(0, 4).map((m) => (
-                <Card
-                  key={m.id}
-                  variant="inner"
-                  clickable
-                  onClick={() => navigate(`/mascotas/${m.id}`)}
+        {isMascotasLoading ? (
+          <Card className="p-8 flex justify-center items-center min-h-[160px]">
+            <Spinner />
+          </Card>
+        ) : mascotas.length === 0 ? (
+          <Card className="p-6">
+            <EmptyState
+              icon={<PawPrint size={40} className="text-[var(--accent)]" />}
+              title="Sin mascotas registradas"
+              message="Todavía no diste de alta ninguna mascota. Registrá a tus compañeros para gestionar sus turnos, vacunas e historial clínico."
+              action={
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => navigate('/mascotas')}
+                  className="flex items-center gap-1.5 mt-1"
                 >
-                  <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
-                      <PawPrint size={20} />
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-                        {m.nombre}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
-                        {m.raza || 'Sin raza'}
-                      </div>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Upcoming Appointments */}
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">
-              Próximas citas
-            </h3>
-            <Button variant="ghost" size="sm" onClick={() => navigate('/citas')}>
-              Ver todas
-            </Button>
-          </div>
-
-          {isCitasLoading ? (
-            <div className="flex justify-center p-8">
-              <Spinner />
-            </div>
-          ) : upcomingCitas.length === 0 ? (
-            <Card>
-              <EmptyState
-                icon={<CalendarDays size={40} />}
-                title="Sin citas pendientes"
-                message="No tenés citas programadas."
+                  <Plus size={15} />
+                  <span>Registrar Mascota</span>
+                </Button>
+              }
+            />
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4.5">
+            {mascotas.map((m) => (
+              <PetHealthPassportCard
+                key={m.id}
+                mascota={m}
+                series={vacunasByMascota[m.id]}
+                isVaccinesLoading={isVacunasLoading}
               />
-            </Card>
-          ) : (
-            <div className="space-y-3">
-              {upcomingCitas.map((cita) => (
-                <Card key={cita.id} variant="inner">
-                  <div className="flex items-center gap-3.5">
-                    <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex flex-col items-center justify-center flex-shrink-0">
-                      <span className="text-base font-bold leading-none">
-                        {cita.fecha.getDate()}
-                      </span>
-                      <span className="text-[10px] font-semibold uppercase tracking-wider text-slate-400 mt-0.5">
-                        {monthNames[cita.fecha.getMonth()]}
-                      </span>
-                    </div>
-
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-                        {cita.motivo}
-                      </div>
-                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mt-0.5 truncate">
-                        <Clock size={12} className="flex-shrink-0" />
-                        <span>{cita.mascota}</span>
-                        <span>·</span>
-                        <span>
-                          {cita.fecha.toLocaleTimeString('es-AR', {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </span>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 flex-shrink-0">
-                      <Badge variant={getEstadoBadgeVariant(cita.estado)}>
-                        {cita.estado}
-                      </Badge>
-                    </div>
-                  </div>
-                </Card>
-              ))}
-            </div>
-          )}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
+
+      {/* Primary Clinic & Emergency Reference Banner */}
+      <div className="space-y-3 pt-2">
+        <ClinicReferenceBanner clinic={primaryClinic} />
+      </div>
+
+      {/* Appointment Creation Modal */}
+      {showCreateCitaModal && (
+        <CreateCitaModal
+          onClose={() => setShowCreateCitaModal(false)}
+          onCreate={() => {
+            setShowCreateCitaModal(false);
+            refetchCitas();
+          }}
+        />
+      )}
+
+      {/* Appointment Reschedule Modal */}
+      <RescheduleCitaModal
+        isOpen={Boolean(reschedulingCita)}
+        onClose={() => setReschedulingCita(null)}
+        onSuccess={() => {
+          setReschedulingCita(null);
+          refetchCitas();
+        }}
+        cita={reschedulingCita}
+      />
     </div>
   );
 }

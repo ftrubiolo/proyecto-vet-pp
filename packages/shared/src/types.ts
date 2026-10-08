@@ -8,6 +8,7 @@ export interface Mascota {
   raza: string;
   especie: string;
   edad?: number;
+  foto_url?: string | null;
 }
 
 export interface MascotasResponse {
@@ -237,7 +238,12 @@ export interface UserData {
   nombre?: string;
   apellido?: string;
   foto_url?: string;
-  clinicas?: { id: string; nombre_comercial: string }[];
+  clinicas?: {
+    id: string;
+    nombre_comercial: string;
+    direccion?: string;
+    telefono?: string;
+  }[];
   subscriptionStatus?: 'activo' | 'inactivo' | 'impago' | 'cancelado';
   subscriptionExpiresAt?: string;
 }

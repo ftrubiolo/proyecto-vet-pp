@@ -31,7 +31,7 @@ export function MascotaDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState('datos');
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') || 'datos');
   const [showEditModal, setShowEditModal] = useState(false);
   const [isManualConsultation, setIsManualConsultation] = useState(false);
   const { user } = useAuth();
@@ -39,7 +39,16 @@ export function MascotaDetailPage() {
   const isOwner = user?.rol === 'Propietario';
 
   const atenderCitaId = searchParams.get('atenderCitaId');
-  const clinicaId = searchParams.get('clinicaId');
+  const clinicaId = searchParams.get('clinicaId') || user?.clinicas?.[0]?.id || null;
+  const isWalkIn = searchParams.get('iniciarConsulta') === 'true' || searchParams.get('walkin') === 'true';
+
+  // Sync active tab with searchParams if tab query param changes
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    if (tabParam && ['datos', 'historial', 'vacunas', 'tratamientos'].includes(tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, [searchParams]);
 
   // Sync viewed pet with the AI Chat context
   useEffect(() => {
@@ -304,7 +313,7 @@ export function MascotaDetailPage() {
     );
   };
 
-  const hasActiveConsultation = ((atenderCitaId && clinicaId) || isManualConsultation) && !isOwner;
+  const hasActiveConsultation = ((atenderCitaId && clinicaId) || isManualConsultation || isWalkIn) && !isOwner;
 
   return (
     <div className="max-w-7xl mx-auto flex flex-col gap-6 animate-fade-in">
