@@ -3,6 +3,7 @@ import { Upload, X } from 'lucide-react';
 import { useFetch } from '../../../hooks/useFetch';
 import { api, apiUpload } from '../../../api/client';
 import { useAuth } from '../../../hooks/useAuth';
+import { useToast } from '../../../hooks/useToast';
 import { Modal } from '../../../components/ui/Modal';
 import { Button } from '../../../components/ui/Button';
 import { Input, Select } from '../../../components/ui/Input';
@@ -16,6 +17,7 @@ interface EditMascotaModalProps {
 }
 
 export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaModalProps) {
+  const { toast } = useToast();
   const { user } = useAuth();
   const isOwner = user?.rol === 'Propietario';
 
@@ -33,7 +35,6 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
   const [razaId, setRazaId] = useState('');
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: especies, isLoading: isCatalogLoading } = useFetch<Especie[]>('/catalogo/especies');
@@ -59,7 +60,8 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
       const result = await apiUpload('/upload', file, 'mascotas');
       setFotoUrl(result.url);
     } catch (err: any) {
-      setError(err.message || 'Error al subir la imagen');
+      const msg = err.message || 'Error al subir la imagen';
+      toast.error(msg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -69,11 +71,10 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!resolvedRazaId) {
-      setError('Por favor seleccione una raza.');
+      toast.warning('Por favor seleccione una raza.');
       return;
     }
     setSaving(true);
-    setError('');
 
     try {
       const payload: any = {
@@ -93,9 +94,11 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
       }
 
       await api.patch(`/mascotas/${mascota.id}`, payload);
+      toast.success('Mascota actualizada correctamente');
       onUpdated();
     } catch (err: any) {
-      setError(err.message || 'Error al actualizar mascota');
+      const msg = err.message || 'Error al actualizar mascota';
+      toast.error(msg);
       setSaving(false);
     }
   };
@@ -239,10 +242,6 @@ export function EditMascotaModal({ mascota, onClose, onUpdated }: EditMascotaMod
               />
             </div>
           </>
-        )}
-
-        {error && (
-          <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
         )}
       </form>
     </Modal>

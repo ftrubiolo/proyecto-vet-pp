@@ -2,14 +2,15 @@ import { useState } from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { Spinner } from './ui/Spinner';
+import { useToast } from '../hooks/useToast';
 import { api } from '../api/client';
 import { ShieldAlert, LogOut, CreditCard } from 'lucide-react';
 
 export function AuthGuard() {
+  const { toast } = useToast();
   const { isAuthenticated, isLoading, user, logout } = useAuth();
   const [selectedPlan, setSelectedPlan] = useState<'independent' | 'clinic_pro'>('clinic_pro');
   const [checkoutStatus, setCheckoutStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
 
   if (isLoading) {
     return (
@@ -39,7 +40,6 @@ export function AuthGuard() {
     if (isUnsubscribed) {
       const handleCheckout = async () => {
         setCheckoutStatus('loading');
-        setErrorMsg('');
         try {
           const res = await api.post<{ initPoint: string }>('/suscripciones/checkout', {
             plan: selectedPlan,
@@ -51,7 +51,8 @@ export function AuthGuard() {
           }
         } catch (err: any) {
           setCheckoutStatus('error');
-          setErrorMsg(err.message || 'Error al conectar con Mercado Pago. Reintente por favor.');
+          const msg = err.message || 'Error al conectar con Mercado Pago. Reintente por favor.';
+          toast.error(msg);
         }
       };
 
@@ -156,20 +157,6 @@ export function AuthGuard() {
               </div>
             </div>
 
-            {errorMsg && (
-              <div style={{
-                background: 'rgba(239, 68, 68, 0.05)',
-                border: '1px solid rgba(239, 68, 68, 0.2)',
-                color: 'var(--danger)',
-                padding: 'var(--space-sm)',
-                borderRadius: 'var(--radius-sm)',
-                fontSize: '0.8125rem',
-                marginBottom: 'var(--space-md)',
-              }}>
-                {errorMsg}
-              </div>
-            )}
-
             {/* Actions */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-sm)' }}>
               <button
@@ -201,7 +188,7 @@ export function AuthGuard() {
                     await api.post('/suscripciones/dev-bypass');
                     window.location.reload();
                   } catch (err) {
-                    alert('Error al simular pago habilitado.');
+                    toast.error('Error al simular pago habilitado.');
                   }
                 }}
                 style={{

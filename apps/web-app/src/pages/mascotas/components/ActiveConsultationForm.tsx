@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 import { Button } from '../../../components/ui/Button';
 import { Input, Select } from '../../../components/ui/Input';
@@ -18,6 +19,7 @@ interface ActiveConsultationFormProps {
 }
 
 export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, onSuccess }: ActiveConsultationFormProps) {
+  const { toast } = useToast();
   const [selectedClinicaId, setSelectedClinicaId] = useState(clinicaId || '');
   const [pesoActual, setPesoActual] = useState('');
   const [notasClinicas, setNotasClinicas] = useState('');
@@ -84,7 +86,7 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
 
   const handleAddTreatment = () => {
     if (!tTipoId || !tProducto || !tDosis || !tFrecuencia) {
-      alert('Por favor complete todos los datos requeridos del tratamiento.');
+      toast.warning('Por favor complete todos los datos requeridos del tratamiento.');
       return;
     }
     const selectedTipo = (tiposTratamiento || []).find((tt: any) => String(tt.id) === tTipoId);
@@ -258,15 +260,15 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
 
   const handleAddVacuna = () => {
     if (!vProducto) {
-      alert('Por favor seleccione una vacuna.');
+      toast.warning('Por favor seleccione una vacuna.');
       return;
     }
     if (!vLote || !vLote.trim()) {
-      alert('El número de lote es obligatorio.');
+      toast.warning('El número de lote es obligatorio.');
       return;
     }
     if (!vViaAdministracion || !vViaAdministracion.trim()) {
-      alert('La vía de administración es obligatoria.');
+      toast.warning('La vía de administración es obligatoria.');
       return;
     }
 
@@ -296,11 +298,11 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
 
   const handleFinalize = async () => {
     if (!selectedClinicaId) {
-      alert('Por favor seleccione la clínica de atención.');
+      toast.warning('Por favor seleccione la clínica de atención.');
       return;
     }
     if (!notasClinicas.trim()) {
-      alert('Por favor ingrese las notas clínicas de la consulta.');
+      toast.warning('Por favor ingrese las notas clínicas de la consulta.');
       return;
     }
 
@@ -310,12 +312,12 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
       const finalVacunas = [...vacunasApplied];
       if (vProducto) {
         if (!vLote || !vLote.trim()) {
-          alert('El número de lote es obligatorio.');
+          toast.warning('El número de lote es obligatorio.');
           setIsSaving(false);
           return;
         }
         if (!vViaAdministracion || !vViaAdministracion.trim()) {
-          alert('La vía de administración es obligatoria.');
+          toast.warning('La vía de administración es obligatoria.');
           setIsSaving(false);
           return;
         }
@@ -372,10 +374,10 @@ export function ActiveConsultationForm({ citaId, clinicaId, mascotaId, onClose, 
         })),
       });
 
-      alert('Consulta finalizada y registrada con éxito.');
+      toast.success('Consulta finalizada y registrada con éxito.');
       onSuccess();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al guardar la consulta');
+      toast.error(err instanceof Error ? err.message : 'Error al guardar la consulta');
     } finally {
       setIsSaving(false);
     }

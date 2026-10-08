@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import { ShieldAlert, BookOpen } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { Modal } from '../../../components/ui/Modal';
 import { Input } from '../../../components/ui/Input';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 
 interface ProtocolCurationModalProps {
@@ -15,18 +16,18 @@ interface ProtocolCurationModalProps {
 }
 
 export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSave }: ProtocolCurationModalProps) {
+  const { toast } = useToast();
   const [nombreComercial, setNombreComercial] = useState(protocoloTemplate.nombre_comercial || '');
   const [totalDosis, setTotalDosis] = useState<number>(1);
   const [intervaloDiasStr, setIntervaloDiasStr] = useState<string>('');
   const [tieneRefuerzo, setTieneRefuerzo] = useState<boolean>(false);
   const [refuerzoCadaDias, setRefuerzoCadaDias] = useState<number>(365);
   const [isSaving, setIsSaving] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nombreComercial.trim()) {
-      setErrorMsg('Por favor ingrese el nombre comercial del producto.');
+      toast.warning('Por favor ingrese el nombre comercial del producto.');
       return;
     }
 
@@ -37,19 +38,18 @@ export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSa
       const expectedIntervalsCount = totalDosis - 1;
       
       if (parts.length !== expectedIntervalsCount) {
-        setErrorMsg(`Para ${totalDosis} dosis, debe especificar exactamente ${expectedIntervalsCount} intervalo(s) de días (ej. separados por comas).`);
+        toast.warning(`Para ${totalDosis} dosis, debe especificar exactamente ${expectedIntervalsCount} intervalo(s) de días (ej. separados por comas).`);
         return;
       }
 
       intervalo_dias = parts.map(p => parseInt(p, 10));
       if (intervalo_dias.some(isNaN) || intervalo_dias.some(i => i <= 0)) {
-        setErrorMsg('Los intervalos deben ser números enteros mayores a 0.');
+        toast.warning('Los intervalos deben ser números enteros mayores a 0.');
         return;
       }
     }
 
     setIsSaving(true);
-    setErrorMsg('');
 
     try {
       const payload = {
@@ -70,10 +70,11 @@ export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSa
       };
 
       const result = await api.post<any>('/vacunas/protocolo', payload);
-      alert('Protocolo de vacuna guardado y verificado con éxito.');
+      toast.success('Protocolo de vacuna guardado y verificado con éxito.');
       onSave(result);
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Error al guardar el protocolo.');
+      const errText = err instanceof Error ? err.message : 'Error al guardar el protocolo.';
+      toast.error(errText);
     } finally {
       setIsSaving(false);
     }
@@ -106,12 +107,6 @@ export function ProtocolCurationModal({ isOpen, protocoloTemplate, onClose, onSa
       }
     >
       <form onSubmit={handleSave} className="flex flex-col gap-4 overflow-y-auto max-h-[70vh] p-4">
-        {errorMsg && (
-          <div className="flex items-center gap-2 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl text-rose-600 dark:text-rose-400 text-xs font-semibold mb-4">
-            <ShieldAlert size={16} />
-            <span>{errorMsg}</span>
-          </div>
-        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-md)', marginBottom: 'var(--space-md)' }}>
           <div style={{ padding: 12, backgroundColor: 'var(--surface-2)', borderRadius: 8, fontSize: '0.8rem', border: '1px solid var(--border-color)' }}>

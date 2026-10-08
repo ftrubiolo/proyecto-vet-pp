@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PawPrint, Search, Plus, Calendar, Tag } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/useToast';
 import { api } from '../../api/client';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -144,6 +145,7 @@ interface CreatePacienteModalProps {
 }
 
 function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
+  const { toast } = useToast();
   const { user } = useAuth();
   const [mode, setMode] = useState<'create' | 'admit'>('create');
 
@@ -176,8 +178,6 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const [searching, setSearching] = useState(false);
   const [foundPet, setFoundPet] = useState<{ id: string; nombre: string; especie: string; raza: string; propietario: string; sexo: string } | null>(null);
   const [admitting, setAdmitting] = useState(false);
-
-  const [error, setError] = useState('');
 
   // Fetch especies (with razas)
   const { data: especies } = useFetch<Especie[]>('/catalogo/especies');
@@ -219,7 +219,6 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setError('');
 
     const propietarioData: any = {
       tipo_relacion_id: Number(tipoRelacionId),
@@ -227,7 +226,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
 
     if (isNewOwnerMode) {
       if (!ownerEmail || !ownerNombre || !ownerApellido || !ownerTelefono) {
-        setError('Por favor complete todos los datos del nuevo tutor');
+        toast.warning('Por favor complete todos los datos del nuevo tutor');
         setSaving(false);
         return;
       }
@@ -237,7 +236,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
       propietarioData.telefono = ownerTelefono;
     } else {
       if (!propietarioId) {
-        setError('Por favor seleccione un tutor existente o cree uno nuevo');
+        toast.warning('Por favor seleccione un tutor existente o cree uno nuevo');
         setSaving(false);
         return;
       }
@@ -255,9 +254,11 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
         },
         propietario: propietarioData,
       });
+      toast.success('Paciente registrado exitosamente');
       onCreated();
     } catch (err: any) {
-      setError(err.message || 'Error al crear mascota');
+      const msg = err.message || 'Error al crear mascota';
+      toast.error(msg);
       setSaving(false);
     }
   };
@@ -265,13 +266,13 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
   const handleSearchPet = async () => {
     if (!admissionCode) return;
     setSearching(true);
-    setError('');
     setFoundPet(null);
     try {
       const pet = await api.get<any>(`/mascotas/buscar-existente/${admissionCode.trim()}`);
       setFoundPet(pet);
     } catch (err: any) {
-      setError(err.message || 'Mascota no encontrada o código inválido');
+      const msg = err.message || 'Mascota no encontrada o código inválido';
+      toast.error(msg);
     } finally {
       setSearching(false);
     }
@@ -281,18 +282,20 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
     if (!foundPet) return;
     const clinicaId = user?.clinicas?.[0]?.id;
     if (!clinicaId) {
-      setError('No tienes una clínica asociada para admitir pacientes.');
+      const msg = 'No tienes una clínica asociada para admitir pacientes.';
+      toast.error(msg);
       return;
     }
     setAdmitting(true);
-    setError('');
     try {
       await api.post(`/clinicas/${clinicaId}/admision`, {
         mascotaId: foundPet.id
       });
+      toast.success('Paciente admitido a la clínica exitosamente');
       onCreated();
     } catch (err: any) {
-      setError(err.message || 'Error al admitir paciente');
+      const msg = err.message || 'Error al admitir paciente';
+      toast.error(msg);
     } finally {
       setAdmitting(false);
     }
@@ -326,7 +329,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
         <Button
           type="button"
           variant={mode === 'create' ? 'primary' : 'secondary'}
-          onClick={() => { setMode('create'); setError(''); }}
+          onClick={() => setMode('create')}
           style={{ flex: 1 }}
         >
           Nuevo Paciente
@@ -334,7 +337,7 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
         <Button
           type="button"
           variant={mode === 'admit' ? 'primary' : 'secondary'}
-          onClick={() => { setMode('admit'); setError(''); }}
+          onClick={() => setMode('admit')}
           style={{ flex: 1 }}
         >
           Paciente Existente
@@ -402,7 +405,6 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                   setIsNewOwnerMode(!isNewOwnerMode);
                   setSelectedOwner(null);
                   setPropietarioId('');
-                  setError('');
                 }}
               >
                 {isNewOwnerMode ? 'Buscar tutor existente' : 'Crear tutor temporal'}
@@ -510,10 +512,6 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
             onChange={(e) => setTipoRelacionId(e.target.value)}
             required
           />
-
-          {error && (
-            <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
-          )}
         </form>
       ) : (
         <div className="flex flex-col gap-4">
@@ -556,10 +554,6 @@ function CreatePacienteModal({ onClose, onCreated }: CreatePacienteModalProps) {
                 </div>
               </div>
             </div>
-          )}
-
-          {error && (
-            <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
           )}
         </div>
       )}

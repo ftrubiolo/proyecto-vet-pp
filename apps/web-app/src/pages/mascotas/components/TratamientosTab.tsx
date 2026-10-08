@@ -6,6 +6,7 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { formatDate } from '@vetvault/shared';
 import { Button } from '../../../components/ui/Button';
+import { useToast } from '../../../hooks/useToast';
 import { downloadPdf } from '../../../utils/download';
 
 interface TratamientosTabProps {
@@ -15,6 +16,7 @@ interface TratamientosTabProps {
 }
 
 export function TratamientosTab({ tratamientos, isLoading, mascotaNombre }: TratamientosTabProps) {
+  const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   const handleDownloadPdf = async (id: string) => {
@@ -24,7 +26,7 @@ export function TratamientosTab({ tratamientos, isLoading, mascotaNombre }: Trat
       await downloadPdf(`/tratamientos/${id}/pdf`, `tratamiento-${name}-${id.substring(0, 8)}.pdf`);
     } catch (error) {
       console.error(error);
-      alert('No se pudo descargar el PDF del tratamiento.');
+      toast.error('No se pudo descargar el PDF del tratamiento.');
     } finally {
       setIsDownloading(null);
     }

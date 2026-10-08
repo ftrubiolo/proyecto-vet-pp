@@ -10,6 +10,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
@@ -20,6 +21,7 @@ import { monthNames, getEstadoBadgeVariant, getUIEstado } from '@vetvault/shared
 
 export function OwnerCitasView() {
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   // Booking Wizard States
   const [step, setStep] = useState(1);
@@ -121,15 +123,16 @@ export function OwnerCitasView() {
     if (!confirm('¿Seguro que querés cancelar este turno?')) return;
     try {
       await api.patch(`/citas/${citaId}`, { estado_cita_id: 3 }); // 3 = Cancelada
+      toast.success('Turno cancelado exitosamente');
       refetchCitas();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al cancelar la cita');
+      toast.error(err instanceof Error ? err.message : 'Error al cancelar la cita');
     }
   };
 
   const handleConfirmBooking = async () => {
     if (!mascotaId || !clinicaId || !veterinarioId || !fecha || !hora) {
-      alert('Por favor completa todos los pasos del turno.');
+      toast.warning('Por favor completa todos los pasos del turno.');
       return;
     }
 
@@ -145,7 +148,7 @@ export function OwnerCitasView() {
         motivo_id: Number(motivoId),
         estado_cita_id: 1, // Agendada (Pendiente)
       });
-      alert('¡Turno solicitado exitosamente!');
+      toast.success('¡Turno solicitado exitosamente!');
       refetchCitas();
       // Reset wizard
       setMascotaId('');
@@ -155,7 +158,7 @@ export function OwnerCitasView() {
       setHora('');
       setStep(1);
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al agendar cita');
+      toast.error(err instanceof Error ? err.message : 'Error al agendar cita');
     } finally {
       setBooking(false);
     }

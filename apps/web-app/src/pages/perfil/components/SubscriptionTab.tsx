@@ -5,14 +5,15 @@ import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Badge } from '../../../components/ui/Badge';
 import { Spinner } from '../../../components/ui/Spinner';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 import type { Suscripcion } from '@vetvault/shared';
 
 export function SubscriptionTab() {
+  const { toast } = useToast();
   const { data, isLoading, error } = useFetch<{ subscription: Suscripcion | null }>('/suscripciones/mi-suscripcion');
   const [selectedPlan, setSelectedPlan] = useState<'independent' | 'clinic_pro'>('clinic_pro');
   const [actionStatus, setActionStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const [errorMsg, setErrorMsg] = useState('');
   const [showContactModal, setShowContactModal] = useState(false);
 
   const sub = data?.subscription;
@@ -20,7 +21,6 @@ export function SubscriptionTab() {
 
   const handleCheckout = async (plan: 'independent' | 'clinic_pro') => {
     setActionStatus('loading');
-    setErrorMsg('');
     try {
       const res = await api.post<{ initPoint: string }>('/suscripciones/checkout', {
         plan,
@@ -32,7 +32,8 @@ export function SubscriptionTab() {
       }
     } catch (err: any) {
       setActionStatus('error');
-      setErrorMsg(err.message || 'Error al conectar con Mercado Pago. Reintente por favor.');
+      const msg = err.message || 'Error al conectar con Mercado Pago. Reintente por favor.';
+      toast.error(msg);
     } finally {
       setActionStatus('idle');
     }
@@ -45,7 +46,8 @@ export function SubscriptionTab() {
       window.location.reload();
     } catch (err: any) {
       setActionStatus('error');
-      setErrorMsg(err.message || 'Error al simular pago.');
+      const msg = err.message || 'Error al simular pago.';
+      toast.error(msg);
     } finally {
       setActionStatus('idle');
     }
@@ -101,12 +103,6 @@ export function SubscriptionTab() {
       {error && (
         <div className="p-3 rounded-xl text-sm font-medium border border-rose-500/30 bg-rose-500/10 text-rose-500">
           {error}
-        </div>
-      )}
-
-      {errorMsg && (
-        <div className="p-3 rounded-xl text-sm font-medium border border-rose-500/30 bg-rose-500/10 text-rose-500">
-          {errorMsg}
         </div>
       )}
 

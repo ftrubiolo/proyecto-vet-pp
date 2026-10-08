@@ -2,11 +2,13 @@ import { useState } from 'react';
 import { Navigate, Link } from 'react-router-dom';
 import { Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import { ApiClientError } from '../../api/client';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 
 export function LoginPage() {
+  const { toast } = useToast();
   const { isAuthenticated, login } = useAuth();
 
   // Form fields
@@ -31,16 +33,14 @@ export function LoginPage() {
       await login(email, password);
     } catch (err) {
       setStatus('error');
-      if (err instanceof ApiClientError) {
-        setMessage(err.message);
-      } else {
-        setMessage('Error al conectar con el servidor');
-      }
+      const errText = err instanceof ApiClientError ? err.message : 'Error al conectar con el servidor';
+      setMessage(errText);
+      toast.error(errText);
     }
   };
 
   const handleForgotPassword = () => {
-    alert('Esta funcionalidad estará disponible próximamente. Por favor, contacte al administrador.');
+    toast.info('Esta funcionalidad estará disponible próximamente. Por favor, contacte al administrador.');
   };
 
   const isDisabled = status === 'loading';
@@ -119,11 +119,6 @@ export function LoginPage() {
           </Button>
         </form>
 
-        {status === 'error' && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-medium text-red-500 text-center animate-fade-in">
-            {message}
-          </div>
-        )}
         {status === 'success' && (
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-medium text-emerald-500 text-center animate-fade-in">
             {message}

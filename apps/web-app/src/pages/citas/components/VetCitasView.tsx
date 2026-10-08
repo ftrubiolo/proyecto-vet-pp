@@ -13,6 +13,7 @@ import {
   FileText
 } from 'lucide-react';
 import { useFetch } from '../../../hooks/useFetch';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
@@ -25,6 +26,7 @@ type EstadoCita = 'Todas' | 'Pendiente' | 'Confirmada' | 'Completada' | 'Cancela
 
 export function VetCitasView() {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
   const [viewMode, setViewMode] = useState<'day' | 'week'>('day');
   const [activeFilter, setActiveFilter] = useState<EstadoCita>('Todas');
@@ -130,10 +132,11 @@ export function VetCitasView() {
             tratamientos: [],
             vacunas: []
           });
+          toast.success('Cita completada y consulta registrada');
           refetch();
         }
       } catch (err) {
-        alert(err instanceof Error ? err.message : 'Error al completar cita');
+        toast.error(err instanceof Error ? err.message : 'Error al completar cita');
       }
       return;
     }
@@ -145,9 +148,10 @@ export function VetCitasView() {
 
     try {
       await api.patch(`/citas/${citaId}`, { estado_cita_id: statusId });
+      toast.success(`Estado actualizado a ${newStatus}`);
       refetch();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al cambiar estado');
+      toast.error(err instanceof Error ? err.message : 'Error al cambiar estado');
     }
   };
 

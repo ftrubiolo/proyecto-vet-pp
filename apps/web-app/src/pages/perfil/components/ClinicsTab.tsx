@@ -4,6 +4,7 @@ import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
 import { Spinner } from '../../../components/ui/Spinner';
+import { useToast } from '../../../hooks/useToast';
 import { api } from '../../../api/client';
 import type { VetProfile, HorarioLaboral } from '@vetvault/shared';
 
@@ -13,13 +14,13 @@ interface ClinicsTabProps {
 }
 
 export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
+  const { toast } = useToast();
   // Clinic Editing States
   const [editingClinicId, setEditingClinicId] = useState<string | null>(null);
   const [clinicNombreComercial, setClinicNombreComercial] = useState('');
   const [clinicDireccion, setClinicDireccion] = useState('');
   const [clinicTelefono, setClinicTelefono] = useState('');
   const [savingClinic, setSavingClinic] = useState(false);
-  const [clinicError, setClinicError] = useState('');
 
   // Invitation States
   const [inviteClinicId, setInviteClinicId] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
       const clinicSchedules = (response || []).filter((h) => h.clinica_id === clinicaId);
       setTempHorarios(clinicSchedules);
     } catch (err: any) {
-      alert(err.message || 'Error al cargar los horarios');
+      toast.error(err.message || 'Error al cargar los horarios');
       setActiveScheduleClinicId(null);
     } finally {
       setLoadingHorarios(false);
@@ -96,10 +97,10 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
       await api.put(`/veterinarios/${profile.id}/clinicas/${activeScheduleClinicId}/horarios`, {
         horarios: formattedHorarios
       });
-      alert('Horarios actualizados correctamente');
+      toast.success('Horarios actualizados correctamente');
       setActiveScheduleClinicId(null);
     } catch (err: any) {
-      alert(err.message || 'Error al guardar los horarios');
+      toast.error(err.message || 'Error al guardar los horarios');
     } finally {
       setSavingHorarios(false);
     }
@@ -107,7 +108,6 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
 
   const handleSaveClinic = async (clinicId: string) => {
     setSavingClinic(true);
-    setClinicError('');
 
     try {
       await api.patch(`/clinicas/${clinicId}`, {
@@ -115,10 +115,12 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
         direccion: clinicDireccion,
         telefono: clinicTelefono,
       });
+      toast.success('Datos de la clínica actualizados');
       setEditingClinicId(null);
       refetch();
     } catch (err: any) {
-      setClinicError(err.message || 'Error al guardar los cambios de la clínica');
+      const errText = err.message || 'Error al guardar los cambios de la clínica';
+      toast.error(errText);
     } finally {
       setSavingClinic(false);
     }
@@ -134,7 +136,7 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
       const response = await api.post<{ token: string }>('/veterinarios/invitar', { clinicaId });
       setInvitationToken(response.token);
     } catch (err: any) {
-      alert(err.message || 'Error al generar la invitación');
+      toast.error(err.message || 'Error al generar la invitación');
       setInviteClinicId(null);
     } finally {
       setInviting(false);
@@ -144,18 +146,13 @@ export function ClinicsTab({ profile, refetch }: ClinicsTabProps) {
   const handleCopyLink = (token: string) => {
     const inviteLink = `${window.location.origin}/register?invitation=${token}`;
     navigator.clipboard.writeText(inviteLink);
+    toast.success('Enlace de invitación copiado al portapapeles');
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
   return (
     <div className="flex flex-col gap-4">
-      {clinicError && (
-        <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 mb-4">
-          {clinicError}
-        </div>
-      )}
-
       <div className="flex flex-col gap-4">
         {!profile.clinicas || profile.clinicas.length === 0 ? (
           <Card className="p-6 border border-[var(--border)]">

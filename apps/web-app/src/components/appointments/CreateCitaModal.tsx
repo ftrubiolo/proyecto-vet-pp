@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/useToast';
 import { api } from '../../api/client';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
@@ -11,6 +12,7 @@ export interface CreateCitaModalProps {
 }
 
 export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
+  const { toast } = useToast();
   const [mascotaId, setMascotaId] = useState('');
   const [veterinarioId, setVeterinarioId] = useState('');
   const [clinicaId, setClinicaId] = useState('');
@@ -60,9 +62,10 @@ export function CreateCitaModal({ onClose, onCreate }: CreateCitaModalProps) {
         motivo_id: Number(motivoId),
         estado_cita_id: 1, // Agendada (Pendiente)
       });
+      toast.success('Cita agendada exitosamente');
       onCreate();
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Error al agendar cita');
+      toast.error(err instanceof Error ? err.message : 'Error al agendar cita');
     }
   };
 

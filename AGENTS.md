@@ -142,3 +142,29 @@ Eliminar los más de 1300 estilos de componentes remanentes en `src/index.css` m
 - **Verificación y Deploy**:
   - `npm run build` en `@vetvault/shared` y `apps/web-app` superado limpiamente con 0 errores.
   - Cambios commiteados y pusheados a `origin main`.
+
+### Goal (Part 3) — Toast Notification System & Error Handling Modernization
+Implementar un sistema de notificaciones Toast liviano, accesible y reactivo (cero dependencias externas) integrado con Tailwind CSS v4 y el motor de temas oscuro/claro, reemplazando todos los `alert()` nativos del navegador y estandarizando las notificaciones de error y éxito de acciones de la API.
+
+### Done (Part 3)
+- **Sistema de Toast**:
+  - `ToastContext.tsx`: Creado context global con soporte para tipos `success`, `error`, `warning` e `info`, auto-dismiss temporizado configurable y métodos tipados (`toast.success`, `toast.error`, `toast.warning`, `toast.info`, `toast.dismiss`).
+  - `ToastContainer.tsx`: Componente visual fijo (`top-5 right-5 z-[9999]`) con soporte para temas claros y oscuros, íconos de Lucide (`CheckCircle2`, `AlertCircle`, `AlertTriangle`, `Info`, `X`), fondos semánticos (`var(--surface-solid)`), bordes sutiles y animación `animate-slide-in-right`.
+  - `useToast.ts`: Hook exportado para consumo ergonómico en componentes.
+  - `index.css`: Agregada animación de entrada suave `slideInRight` y utility `.animate-slide-in-right`.
+  - `App.tsx`: Envoltorio `<ToastProvider>` agregado en la raíz de la aplicación bajo los proveedores de tema y autenticación.
+- **Reemplazo de `alert()` y fallos de API**:
+  - `ActiveConsultationForm.tsx`: Reemplazados 10 `alert()` de validación y confirmación por `toast.warning()`, `toast.success()` y `toast.error()`.
+  - `CreateCitaModal.tsx`: Reemplazado `alert()` por `toast.success()` y `toast.error()`.
+  - `OwnerCitasView.tsx`: Cancelación y reserva de turnos migradas a `toast.success()`, `toast.warning()` y `toast.error()`.
+  - `VetCitasView.tsx`: Cambios de estado y citas completadas notificadas vía `toast.success()` y `toast.error()`.
+  - `LoginPage.tsx`: Mensaje de recuperación de contraseña migrado a `toast.info()` y fallos de login a `toast.error()`.
+  - `RegisterPage.tsx`: Fallos de registro de cuenta y pagos notificados vía `toast.error()`.
+  - `DatosTab.tsx`: Copiado de código de mascota al portapapeles migrado a `toast.success()`.
+  - `HistorialTab.tsx` & `TratamientosTab.tsx`: Errores de descarga de PDF migrados a `toast.error()`.
+  - `ProtocolCurationModal.tsx`: Verificación y guardado de protocolo migrado a `toast.success()` y `toast.error()`.
+  - `ClinicsTab.tsx`: Guardado de horarios, edición de datos de clínica, generación de invitación y copiado de link migrados a `toast`.
+  - `EditMascotaModal.tsx`, `OwnerMascotas.tsx`, `VetMascotas.tsx`, `PersonalInfoTab.tsx`, `SubscriptionTab.tsx`, `AuthGuard.tsx`: Notificaciones añadidas para subida de imágenes, creación/edición de pacientes y flujo de suscripción.
+- **Verificación**:
+  - `grep -rn "alert(" apps/web-app/src` verificado en 0 ocurrencias.
+  - `npm run build` en `@vetvault/shared` y `apps/web-app` completado con 0 errores.

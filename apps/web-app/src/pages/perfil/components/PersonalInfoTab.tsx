@@ -3,6 +3,7 @@ import { Edit3, Upload, X } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Button } from '../../../components/ui/Button';
 import { Input } from '../../../components/ui/Input';
+import { useToast } from '../../../hooks/useToast';
 import { api, apiUpload } from '../../../api/client';
 import type { VetProfile, OwnerProfile } from '@vetvault/shared';
 
@@ -14,6 +15,7 @@ interface PersonalInfoTabProps {
 }
 
 export function PersonalInfoTab({ profile, profileId, isVet, refetch }: PersonalInfoTabProps) {
+  const { toast } = useToast();
   const [isEditing, setIsEditing] = useState(false);
   const [nombre, setNombre] = useState('');
   const [apellido, setApellido] = useState('');
@@ -22,7 +24,6 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
   const [fotoUrl, setFotoUrl] = useState('');
   const [uploading, setUploading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -46,8 +47,10 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
     try {
       const result = await apiUpload('/upload', file, isVet ? 'veterinarios' : 'propietarios');
       setFotoUrl(result.url);
+      toast.success('Imagen subida correctamente');
     } catch (err: any) {
-      setError(err.message || 'Error al subir la imagen');
+      const msg = err.message || 'Error al subir la imagen';
+      toast.error(msg);
     } finally {
       setUploading(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -57,7 +60,6 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
   const handleSave = async () => {
     if (!profileId) return;
     setSaving(true);
-    setError('');
     setSuccessMsg('');
 
     try {
@@ -68,10 +70,12 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
       await api.patch(updateEndpoint, body);
       setIsEditing(false);
       setSuccessMsg('Perfil actualizado correctamente.');
+      toast.success('Perfil actualizado correctamente');
       refetch();
       setTimeout(() => setSuccessMsg(''), 3000);
     } catch (err: any) {
-      setError(err.message || 'Error al guardar los cambios');
+      const msg = err.message || 'Error al guardar los cambios';
+      toast.error(msg);
     } finally {
       setSaving(false);
     }
@@ -96,12 +100,6 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
       {successMsg && (
         <div className="p-3 rounded-xl text-xs font-semibold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25 mb-4">
           {successMsg}
-        </div>
-      )}
-
-      {error && (
-        <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25 mb-4">
-          {error}
         </div>
       )}
 
@@ -170,7 +168,6 @@ export function PersonalInfoTab({ profile, profileId, isVet, refetch }: Personal
               variant="secondary"
               onClick={() => {
                 setIsEditing(false);
-                setError('');
                 if (profile) {
                   setNombre(profile.nombre);
                   setApellido(profile.apellido);

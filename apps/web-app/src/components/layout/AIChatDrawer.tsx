@@ -3,6 +3,7 @@ import { Sparkles, Send, PawPrint, X, Plus, FileDown } from 'lucide-react';
 import { useAIChat } from '../../hooks/useAIChat';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/useToast';
 import { api } from '../../api/client';
 import { downloadPdf } from '../../utils/download';
 import { cn } from '../../utils/cn';
@@ -83,6 +84,7 @@ function generateSuggestions(tabId: string, isVet: boolean, petName?: string): s
 }
 
 export function AIChatDrawer() {
+  const { toast } = useToast();
   const { user } = useAuth();
   const { isAIChatOpen, setIsAIChatOpen, activeMascotaId } = useAIChat();
 
@@ -129,7 +131,7 @@ export function AIChatDrawer() {
       });
     } catch (error) {
       console.error(error);
-      alert('No se pudo descargar el PDF del mensaje.');
+      toast.error('No se pudo descargar el PDF del mensaje.');
     } finally {
       setIsDownloadingMsg(null);
     }

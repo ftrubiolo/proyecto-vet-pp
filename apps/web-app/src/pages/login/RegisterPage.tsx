@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { PawPrint, Stethoscope, Eye, EyeOff, ArrowRight, ArrowLeft } from 'lucide-react';
 import { api } from '../../api/client';
 import { useAuth } from '../../hooks/useAuth';
+import { useToast } from '../../hooks/useToast';
 import { Input } from '../../components/ui/Input';
 import { Button } from '../../components/ui/Button';
 import { cn } from '../../utils/cn';
 
 export function RegisterPage() {
+  const { toast } = useToast();
   const { login } = useAuth();
   const navigate = useNavigate();
 
@@ -46,7 +48,6 @@ export function RegisterPage() {
 
   // Request States
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle');
-  const [errorMessage, setErrorMessage] = useState('');
 
   // Password Strength Checker
   useEffect(() => {
@@ -100,27 +101,23 @@ export function RegisterPage() {
     if (step === 1 && !role) return;
     if (step === 2) {
       if (password !== confirmPassword) {
-        setErrorMessage('Las contraseñas no coinciden');
+        toast.warning('Las contraseñas no coinciden');
         return;
       }
-      setErrorMessage('');
     }
     if (step === 3 && role === 'Veterinario' && licenseStatus !== 'valid') {
-      setErrorMessage('Por favor ingrese una matrícula profesional válida');
+      toast.warning('Por favor ingrese una matrícula profesional válida');
       return;
     }
-    setErrorMessage('');
     setStep((prev) => Math.min(prev + 1, maxSteps));
   };
 
   const handleBack = () => {
-    setErrorMessage('');
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
   const handleSubmit = async () => {
     setStatus('loading');
-    setErrorMessage('');
 
     try {
       if (role === 'Propietario') {
@@ -180,7 +177,8 @@ export function RegisterPage() {
       }
     } catch (err: any) {
       setStatus('error');
-      setErrorMessage(err.message || 'Error al completar el registro. Intente nuevamente.');
+      const msg = err.message || 'Error al completar el registro. Intente nuevamente.';
+      toast.error(msg);
     }
   };
 
@@ -610,13 +608,6 @@ export function RegisterPage() {
             </div>
           )}
         </div>
-
-        {/* Display Error Message */}
-        {errorMessage && (
-          <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/30 text-xs font-medium text-red-500 text-center animate-fade-in">
-            {errorMessage}
-          </div>
-        )}
 
         {/* Stepper Footer Action Buttons */}
         <div className="flex items-center justify-between pt-4 border-t border-[var(--border)]">

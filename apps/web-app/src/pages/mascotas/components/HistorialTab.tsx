@@ -6,6 +6,7 @@ import { Spinner } from '../../../components/ui/Spinner';
 import { EmptyState } from '../../../components/ui/EmptyState';
 import { formatDate } from '@vetvault/shared';
 import { Button } from '../../../components/ui/Button';
+import { useToast } from '../../../hooks/useToast';
 import { downloadPdf } from '../../../utils/download';
 
 interface HistorialTabProps {
@@ -14,6 +15,7 @@ interface HistorialTabProps {
 }
 
 export function HistorialTab({ atenciones, isLoading }: HistorialTabProps) {
+  const { toast } = useToast();
   const [isDownloading, setIsDownloading] = useState<string | null>(null);
 
   const handleDownloadPdf = async (id: string, mascotaNombre?: string) => {
@@ -23,7 +25,7 @@ export function HistorialTab({ atenciones, isLoading }: HistorialTabProps) {
       await downloadPdf(`/atenciones/${id}/pdf`, `consulta-${name}-${id.substring(0, 8)}.pdf`);
     } catch (error) {
       console.error(error);
-      alert('No se pudo descargar el PDF de la consulta.');
+      toast.error('No se pudo descargar el PDF de la consulta.');
     } finally {
       setIsDownloading(null);
     }

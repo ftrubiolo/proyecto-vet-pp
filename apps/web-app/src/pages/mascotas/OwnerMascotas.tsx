@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { PawPrint, Search, Plus, Calendar, Tag } from 'lucide-react';
 import { useAuth } from '../../hooks/useAuth';
 import { useFetch } from '../../hooks/useFetch';
+import { useToast } from '../../hooks/useToast';
 import { api } from '../../api/client';
 import { Card } from '../../components/ui/Card';
 import { Button } from '../../components/ui/Button';
@@ -147,6 +148,7 @@ interface CreateMascotaModalProps {
 }
 
 function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalProps) {
+  const { toast } = useToast();
   const [nombre, setNombre] = useState('');
   const [fechaNacimiento, setFechaNacimiento] = useState('');
   const [sexo, setSexo] = useState('');
@@ -154,7 +156,6 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
   const [esCastrado, setEsCastrado] = useState(false);
   const [tipoRelacionId, setTipoRelacionId] = useState('1'); // Por defecto 'Dueño'
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState('');
 
   // Fetch especies (with razas)
   const { data: especies } = useFetch<Especie[]>('/catalogo/especies');
@@ -176,11 +177,10 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!userId) {
-      setError('No se pudo identificar tu perfil de propietario.');
+      toast.error('No se pudo identificar tu perfil de propietario.');
       return;
     }
     setSaving(true);
-    setError('');
 
     try {
       await api.post('/mascotas', {
@@ -196,9 +196,11 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
           tipo_relacion_id: Number(tipoRelacionId),
         },
       });
+      toast.success('Mascota registrada exitosamente');
       onCreated();
     } catch (err: any) {
-      setError(err.message || 'Error al crear mascota');
+      const msg = err.message || 'Error al crear mascota';
+      toast.error(msg);
       setSaving(false);
     }
   };
@@ -271,10 +273,6 @@ function CreateMascotaModal({ userId, onClose, onCreated }: CreateMascotaModalPr
           onChange={(e) => setTipoRelacionId(e.target.value)}
           required
         />
-
-        {error && (
-          <div className="p-3 rounded-xl text-xs font-semibold bg-rose-500/10 text-rose-600 dark:text-rose-400 border border-rose-500/25">{error}</div>
-        )}
       </form>
     </Modal>
   );

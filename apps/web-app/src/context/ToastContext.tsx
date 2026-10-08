@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useMemo } from 'react';
 import { ToastContainer } from '../components/ui/ToastContainer';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
@@ -30,6 +30,7 @@ interface ToastContextType {
   toast: ToastMethods;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: React.ReactNode }) {
@@ -79,12 +80,4 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
       <ToastContainer toasts={toasts} onDismiss={dismiss} />
     </ToastContext.Provider>
   );
-}
-
-export function useToast() {
-  const context = useContext(ToastContext);
-  if (!context) {
-    throw new Error('useToast must be used within a ToastProvider');
-  }
-  return context;
 }

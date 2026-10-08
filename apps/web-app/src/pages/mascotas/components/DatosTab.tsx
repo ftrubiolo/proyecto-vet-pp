@@ -2,6 +2,7 @@ import { Phone, Mail, MessageCircle, Plus } from 'lucide-react';
 import { Card } from '../../../components/ui/Card';
 import { Badge } from '../../../components/ui/Badge';
 import { Button } from '../../../components/ui/Button';
+import { useToast } from '../../../hooks/useToast';
 import { WeightChart } from './WeightChart';
 import { formatDate, calcAge } from '@vetvault/shared'
 import type { MascotaDetail } from '@vetvault/shared';
@@ -35,6 +36,7 @@ interface DatosTabProps {
 }
 
 export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTabProps) {
+  const { toast } = useToast();
   // Extract unique veterinarians from past care history
   const contactVets = Array.from(
     new Map(
@@ -417,7 +419,7 @@ export function DatosTab({ mascota, isOwner, atenciones, onEditClick }: DatosTab
               <Button
                 onClick={() => {
                   navigator.clipboard.writeText(mascota.id);
-                  alert('Código copiado al portapapeles');
+                  toast.success('Código copiado al portapapeles');
                 }}
                 size="sm"
               >
